@@ -8,7 +8,7 @@ compatibility_date = "2025-11-28"
 send_metrics = false
 
 # 定义Worker的主要脚本入口
-main = "worker.js"
+main = "src/main.jsx"
 
 # 配置环境变量
 [vars]
