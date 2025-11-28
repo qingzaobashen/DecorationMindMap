@@ -1,0 +1,833 @@
+/* 设置根元素的样式 */
+#root {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  place-items: center;
+  overflow-x: hidden;
+}
+
+/* 全局样式防止横向滚动条 */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* 应用主布局 */
+.app-layout {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* 主内容区域 */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: 200px;
+  transition: margin-left 0.3s ease;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  width: calc(100% - 200px);
+  overflow-x: hidden;
+}
+
+.main-content.expanded {
+  margin-left: 60px; /* 当侧边栏折叠时，主内容区域的左边距也相应减少 */
+  transition: margin-left 0.3s ease;
+  width: calc(100% - 60px);
+}
+
+.mainMap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 视图标题和切换器 */
+.view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  z-index: 100;
+}
+
+.view-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.view-switcher {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.view-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.view-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* 侧边栏样式 */
+.sidebar {
+  width: 200px;
+  height: 100vh;
+  background: #2c3e50;
+  color: white;
+  transition: width 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+}
+
+.sidebar.collapsed {
+  width: 60px;
+}
+
+.sidebar-header {
+  padding: 15px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.toggle-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 5px;
+}
+
+.nav-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+}
+
+.nav-btn_col {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+  color: white;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s ease;
+  justify-content: flex-start;
+}
+
+.nav-btn_col:hover {
+  background-color: rgba(255,255,255,0.1);
+}
+
+/* 修复图标样式 */
+.nav-btn_col svg {
+  min-width: 16px;
+  min-height: 16px;
+  width: 16px;
+  height: 16px;
+  color: white;
+  margin-right: 10px;
+}
+
+.sidebar.collapsed .nav-btn_col {
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.sidebar.collapsed .nav-btn_col svg {
+  margin-right: 0;
+}
+
+.nav-btn_col span {
+  margin-left: 0;
+  white-space: nowrap;
+}
+
+.sidebar.collapsed .nav-btn_col span {
+  display: none;
+}
+
+/* 用户信息区域样式 */
+.user-profile {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+}
+
+.user-profile .username {
+  font-size: 14px;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.premium-tag {
+  margin-top: 4px;
+  font-size: 10px;
+  padding: 0 5px;
+  height: 18px;
+  line-height: 18px;
+}
+
+.sidebar.collapsed .user-profile {
+  justify-content: center;
+  padding: 10px 5px;
+}
+
+.upgrade-btn {
+  background-color: rgba(255, 215, 0, 0.1) !important;
+  margin-top: 10px;
+}
+
+.upgrade-btn:hover {
+  background-color: rgba(255, 215, 0, 0.2) !important;
+}
+
+.upgrade-icon {
+  color: #ffd700 !important;
+}
+
+.logout-btn {
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 设置思维导图容器样式 */
+.mindmap-container {
+  position: relative;
+  flex: 1;
+  padding: 0px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: rgba(210, 226, 243, 0.8);
+  width: 100%;
+}
+
+.mindmap-wrapper {
+  flex: 1;
+  position: relative;
+  overflow-y: auto; /* 默认允许Y轴滚动 */
+  overflow-x: hidden; /* 禁止X轴滚动 */
+  width: 100%;
+  max-width: 100%;
+}
+
+.mindmap-wrapper.docs-view-active {
+  overflow-y: auto; /* 确保文档视图时可以垂直滚动 */
+  overflow-x: hidden; /* 文档视图通常不需要水平滚动 */
+  display: block; /* 确保 DocsViewer 可以正常布局 */
+}
+
+/* 加载动画 */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 1000;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 细节面板样式 */
+.detail-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+  z-index: 1000;
+  max-width: 1050px;
+  width: 80%;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.detail-panel h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-size: 1.8rem;
+  text-align: left;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.panel-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(2px);
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.close-btn:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+/* 内容滚动区域 */
+.content-scroll {
+  flex: 1;
+  overflow: auto;
+  padding-right: 5px;
+}
+
+/* 分割布局 */
+.split-layout {
+  display: flex;
+  gap: 30px;
+  height: 100%;
+}
+
+.image-carousel {
+  flex: 1.5;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.carousel-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.text-content {
+  flex: 2;
+  min-width: 0;
+  border-left: 1px solid #eee;
+  padding-left: 25px;
+  overflow-y: auto;
+}
+
+.knowledge-points {
+  text-align: left;
+}
+
+.point {
+  margin-bottom: 15px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+  position: relative;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 60px;
+  }
+  
+  .sidebar .nav-btn_col span {
+    display: none;
+  }
+
+  
+  .split-layout {
+    flex-direction: column;
+  }
+  
+  
+  .text-content {
+    border-left: none;
+    border-top: 1px solid #eee;
+    padding-left: 0;
+    padding-top: 15px;
+    margin-top: 15px;
+  }
+  
+  .view-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px;
+  }
+  
+  .view-switcher {
+    width: 100%;
+    overflow-x: auto;
+    padding: 5px 0;
+  }
+}
+
+/* 设置链接样式 */
+.link {
+  fill: none;
+  stroke: #555;
+  stroke-width: 1.5px;
+  stroke-opacity: 0.7;
+  transition: stroke-width 0.2s, stroke-opacity 0.2s;
+}
+
+.link:hover {
+  stroke-width: 2.5px;
+  stroke-opacity: 1;
+}
+
+/* 设置logo的样式 */
+.logo {
+  /* 高度为6em */
+  height: 6em;
+  /* 内边距为1.5em */
+  padding: 1.5em;
+  /* 告知浏览器该元素的filter属性会发生变化 */
+  will-change: filter;
+  /* 过渡效果，持续300ms */
+  transition: filter 300ms;
+}
+/* 鼠标悬停时的logo样式 */
+.logo:hover {
+  /* 添加阴影效果 */
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+/* React logo鼠标悬停时的样式 */
+.logo.react:hover {
+  /* 添加阴影效果 */
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+/* 定义logo旋转的动画 */
+@keyframes logo-spin {
+  /* 动画开始时的状态 */
+  from {
+    /* 旋转角度为0度 */
+    transform: rotate(0deg);
+  }
+  /* 动画结束时的状态 */
+  to {
+    /* 旋转角度为360度 */
+    transform: rotate(360deg);
+  }
+}
+
+/* 当用户不偏好减少动画效果时的样式 */
+@media (prefers-reduced-motion: no-preference) {
+  /* 选择第二个a元素下的logo */
+  a:nth-of-type(2) .logo {
+    /* 应用logo旋转动画，无限循环，持续20s，线性运动 */
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+/* 设置卡片的样式 */
+.card {
+  /* // 内边距为2em */
+  padding: 2em;
+}
+
+/* // 设置阅读文档提示的样式 */
+.read-the-docs {
+  /* // 文字颜色为#888 */
+  color: #888;
+}
+
+.appContainer-size {
+  width: 100vw;
+  height: 100vh;
+}
+
+.mindWrapper-size {
+  width: 100vw;
+  height: 100vh;
+}
+
+.navbar {
+  gap: 1.5rem;
+  left: 3vw;
+  width: 92vw;
+  z-index: 1;
+  background: rgba(241, 237, 237, 0.9);
+  padding: 10px 10px;  /* 调节导航栏到右侧的距离 */
+  position: fixed;
+  border-radius: 10;
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0.8rem;
+    gap: 1rem;
+  }
+  
+  .nav-buttons {
+    gap: 0.8rem;
+  }
+}
+
+/* 欢迎消息样式 */
+.welcome-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 400px;
+  max-width: 90%;
+  z-index: 1000;
+  animation: slideInRight 0.5s ease;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.welcome-card {
+  margin-top: 10px;
+}
+
+.welcome-card .ant-statistic-title {
+  font-size: 12px;
+}
+
+.welcome-card .ant-statistic-content {
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .welcome-container {
+    width: 90%;
+    right: 5%;
+    top: 10px;
+  }
+}
+
+/* VIP用户编辑按钮 */
+.edit-mindmap-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Excel下载按钮 */
+.download-excel-btn {
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.premium-feature-notice {
+  padding: 10px;
+  background-color: #fffbe6;
+  border: 1px solid #ffe58f;
+  border-radius: 4px;
+  margin-top: 10px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.premium-feature-notice .anticon {
+  color: #faad14;
+  margin-right: 8px;
+}
+
+/* 欢迎页容器样式 - 完全允许滚动 */
+.welcome-page-container {
+  min-height: 100vh;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  overflow-x: hidden;
+}
+
+/* 英雄区域样式 */
+.hero-section {
+  padding: 80px 20px;
+  text-align: center;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.welcome-title {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.welcome-subtitle {
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  margin-bottom: 30px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.welcome-actions {
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.demo-login-btn {
+  background-color: #ecf0f1;
+  color: #2c3e50;
+}
+
+.demo-login-btn:hover {
+  background-color: #bdc3c7;
+}
+
+.demo-info {
+  color: #95a5a6;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* 功能展示区域样式 */
+.features-section {
+  padding: 60px 20px;
+  background: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.features-section .ant-typography {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.features-grid {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+}
+
+.features-grid > div {
+  display: flex;
+  justify-content: center;
+}
+
+.feature-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.feature-icon {
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: #3498db;
+  background-color: #f0f8ff;
+}
+
+.feature-action {
+  margin-top: auto;
+  justify-content: flex-end;
+}
+
+/* VIP特权区域样式 */
+.premium-section {
+  padding: 60px 20px;
+  background: #fff;
+}
+
+.premium-section .ant-typography {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.premium-card {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #fff9e6 0%, #fff1c1 100%);
+  border: 1px solid #ffe58f;
+}
+
+.premium-feature {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.premium-icon {
+  color: #faad14;
+  margin-right: 10px;
+}
+
+.premium-demo-btn {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4a 100%);
+  border-color: #ffd700;
+  color: #333;
+  font-weight: 500;
+}
+
+.premium-demo-btn:hover {
+  background: linear-gradient(135deg, #ffed4a 0%, #ffd700 100%);
+  border-color: #ffed4a;
+}
+
+/* 页脚样式 */
+.welcome-footer {
+  padding: 20px;
+  text-align: center;
+  background: #2c3e50;
+  color: white;
+  margin-top: auto;
+}
+
+.footer-text {
+  margin: 0;
+  color: #bdc3c7;
+}
+
+/* 响应式设计 - 欢迎页 */
+@media (max-width: 768px) {
+  .welcome-title {
+    font-size: 2rem;
+  }
+  
+  .welcome-subtitle {
+    font-size: 1rem;
+  }
+  
+  .hero-section {
+    padding: 60px 15px;
+  }
+  
+  .features-section,
+  .premium-section {
+    padding: 40px 15px;
+  }
+  
+  .feature-icon {
+    height: 80px;
+    font-size: 2.5rem;
+  }
+  
+  .premium-feature {
+    font-size: 14px;
+  }
+}
+
+
+
+.mindmap-wrapper {
+  flex: 1;
+  position: relative;
+  /* overflow: hidden; */ /* 移除或注释掉这一行，以允许内容溢出 */
+  overflow-y: auto; /* 默认允许Y轴滚动，主要针对思维导图本身可能需要的滚动 */
+}

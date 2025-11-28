@@ -1,0 +1,134 @@
+/* 设置根元素的全局样式 */
+:root {
+  /* 设置字体族，优先使用系统默认字体，其次是指定的几种字体 */
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* 设置行高为1.5 */
+  line-height: 1.5;
+  /* 设置字体粗细为400 */
+  font-weight: 400;
+
+  /* 设置颜色模式为浅色和深色模式 */
+  color-scheme: light dark;
+  /* 设置文字颜色为带有一定透明度的白色 */
+  color: rgba(255, 255, 255, 0.87);
+  /* 设置背景颜色为深灰色 */
+  background-color: #242424;
+
+  /* 禁止字体合成，以保持字体的原始外观 */
+  font-synthesis: none;
+  /* 优化文字渲染，提高可读性 */
+  text-rendering: optimizeLegibility;
+  /* 开启webkit内核浏览器的字体抗锯齿 */
+  -webkit-font-smoothing: antialiased;
+  /* 开启Firefox浏览器的字体抗锯齿 */
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 设置链接的样式 */
+ a {
+  /* 设置字体粗细为500 */
+  font-weight: 500;
+  /* 设置链接颜色为蓝色 */
+  color: #646cff;
+  /* 去除链接的下划线 */
+  text-decoration: inherit;
+}
+/* 鼠标悬停在链接上时的样式 */
+ a:hover {
+  /* 改变链接颜色 */
+  color: #535bf2;
+}
+
+/* 设置body元素的样式 */
+ body {
+  /* 去除body元素的默认外边距 */
+  margin: 0;
+  /* 使用flex布局 */
+  display: flex;
+  /* 设置宽度为100% */
+  width: 100%;
+  /* 设置最小高度为100%视口高度 */
+  min-height: 100vh;
+  /* 禁止横向滚动，允许纵向滚动 */
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+
+/* 补充App容器样式 */
+.app-container {
+  flex: 1;
+  display: flex;
+  position: relative;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+
+/* 思维导图容器适配 */
+.mindmap-wrapper {
+  flex: 1;
+  min-width: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* 设置h1标题的样式 */
+ h1 {
+  /* 设置字体大小为3.2em */
+  font-size: 3.2em;
+  /* 设置行高为1.1 */
+  line-height: 1.1;
+}
+
+/* 设置按钮的样式 */
+ button {
+  /* 设置按钮的圆角为8px */
+  border-radius: 8px;
+  /* 设置按钮的边框为1px透明边框 */
+  border: 1px solid transparent;
+  /* 设置按钮的内边距 */
+  padding: 0.6em 1.2em;
+  /* 设置按钮的字体大小为1em */
+  font-size: 1em;
+  /* 设置按钮的字体粗细为500 */
+  font-weight: 500;
+  /* 设置按钮的字体族为继承父元素的字体 */
+  font-family: inherit;
+  /* 设置按钮的背景颜色为深灰色 */
+  background-color: #1a1a1a;
+  /* 设置鼠标指针样式为手型 */
+  cursor: pointer;
+  /* 设置边框颜色的过渡效果，持续时间为0.25s */
+  transition: border-color 0.25s;
+}
+/* 鼠标悬停在按钮上时的样式 */
+ button:hover {
+  /* 改变按钮的边框颜色为蓝色 */
+  border-color: #646cff;
+}
+/* 按钮获得焦点时的样式 */
+ button:focus,
+ button:focus-visible {
+  /* 设置按钮的焦点轮廓样式 */
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* 当系统偏好设置为浅色模式时的样式 */
+ @media (prefers-color-scheme: light) {
+  /* 修改根元素的文字颜色和背景颜色 */
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  /* 修改链接鼠标悬停时的颜色 */
+  a:hover {
+    color: #747bff;
+  }
+  /* 修改按钮的背景颜色 */
+  button {
+    background-color: #f9f9f9;
+  }
+}

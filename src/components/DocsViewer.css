@@ -1,0 +1,125 @@
+.docs-viewer-container {
+  padding: 20px;
+  line-height: 1.6;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 900px;
+  margin: 20px auto;
+  text-align: left;
+}
+
+.docs-viewer-container h1,
+.docs-viewer-container h2,
+.docs-viewer-container h3,
+.docs-viewer-container h4,
+.docs-viewer-container h5,
+.docs-viewer-container h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.docs-viewer-container h1 {
+  font-size: 2em;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.3em;
+}
+
+.docs-viewer-container h2 {
+  font-size: 1.75em;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.3em;
+}
+
+.docs-viewer-container h3 {
+  font-size: 1.5em;
+}
+
+.docs-viewer-container p {
+  margin-bottom: 16px;
+  color: #555;
+}
+
+.docs-viewer-container ul,
+.docs-viewer-container ol {
+  margin-bottom: 16px;
+  padding-left: 30px;
+}
+
+.docs-viewer-container li > p {
+  margin-bottom: 8px;
+}
+
+.docs-viewer-container code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(27, 31, 35, 0.05);
+  border-radius: 3px;
+  font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+}
+
+.docs-viewer-container pre {
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: #f6f8fa;
+  border-radius: 3px;
+}
+
+.docs-viewer-container pre code {
+  display: inline;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  line-height: inherit;
+  word-wrap: normal;
+  background-color: transparent;
+  border: 0;
+}
+
+.docs-viewer-container blockquote {
+  padding: 0 1em;
+  color: #6a737d;
+  border-left: 0.25em solid #dfe2e5;
+  margin-bottom: 16px;
+}
+
+.docs-viewer-container table {
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  width: 100%;
+  display: block;
+  overflow: auto;
+}
+
+.docs-viewer-container th,
+.docs-viewer-container td {
+  padding: 6px 13px;
+  border: 1px solid #dfe2e5;
+}
+
+.docs-viewer-container th {
+  font-weight: 600;
+  background-color: #f6f8fa;
+}
+
+.docs-viewer-container img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 10px auto;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.docs-viewer-loading,
+.docs-viewer-error {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.2em;
+  color: #888;
+} 

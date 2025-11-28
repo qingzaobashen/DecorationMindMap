@@ -1,0 +1,17 @@
+.custom-note-panel {
+    max-width: 300px;
+    border-radius: 4px;
+    border: 1px solid #e8e8e8;
+}
+
+.custom-note-panel p {
+    margin: 5px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.custom-note-panel img {
+    max-width: 100%;
+}
