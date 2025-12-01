@@ -12,14 +12,5 @@ import { cloudflare } from "@cloudflare/vite-plugin"
 // 这里配置了一个插件，即react插件，用于支持React开发
 // 同时添加了CloudFlare的vite插件，用于支持CloudFlare Worker开发
 export default defineConfig({
-  plugins: [react()],
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:5000',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
-      }
-    }
-  }
+  plugins: [react(), cloudflare()],
 })
