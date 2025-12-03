@@ -29,16 +29,21 @@ router.post('/login', async (req, res) => {
 
     // Use parameterized query to prevent SQL injection
     const [users] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
-
+    
     if (!users || users.length === 0) {
-      return res.status(401).json({ error: '无效凭证' });
+      console.log(users);
+      res.status(401).json({ error: '无效的用户名或密码！' });
+      return;
     }
 
-    const user = users[0];
+    let user = users[0];
+    if (!user){
+      user = users;  //sql查询到的一般只有一个用户，返回的users就是一个
+    }
     const validPassword = await bcrypt.compare(password, user.password_hash);
 
     if (!validPassword) {
-      return res.status(401).json({ error: '无效凭证' });
+      return res.status(401).json({ error: '无效的用户名或密码！' });
     }
 
     const token = jwt.sign(

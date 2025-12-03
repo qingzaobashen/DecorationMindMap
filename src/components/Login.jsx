@@ -79,22 +79,38 @@ export default function Login({ onSuccess }) {
       // 实际API调用
       const apiUrl = `http://localhost:5000/api/auth${endpoint}`;
       console.log("请求地址: ", apiUrl);
-
-      const { data } = await axios.post(apiUrl, {
-        username,
-        password,
-        ...(isLogin ? {} : { email }) // 注册时需要email
-      });
-
-      if (isLogin) {
-        // 使用Context的login方法，添加isPremium字段
-        login({
-          token: data.token,
+      try {
+        var { data } = await axios.post(apiUrl, {
           username,
-          isPremium: data.isPremium || false // 从API响应获取VIP状态
+          password,
+          ...(isLogin ? {} : { email }) // 注册时需要email
         });
-        message.success('登录成功!');
-        onSuccess();
+      } catch (error) {
+        console.error('登录错误:', error.response?.data || error.message);
+        // 确保表单字段在错误后获得焦点
+        if (isLogin) {
+          form.setFields([
+            {
+              name: 'password',
+              errors: ['用户名或密码错误，请重新输入']
+            }
+          ]);
+        }
+        throw error;
+      }
+      if (isLogin) {
+        if (data.token) {
+          // 使用Context的login方法，添加isPremium字段
+          login({
+            token: data.token,
+            username,
+            isPremium: data.isPremium || false // 从API响应获取VIP状态
+          });
+          message.success('登录成功!');
+          onSuccess();
+        } else {
+          message.error('登录失败，服务器返回空token');
+        }
       } else {
         message.success('注册成功，请登录!');
         setIsLogin(true);
@@ -104,15 +120,15 @@ export default function Login({ onSuccess }) {
       console.error('请求失败:', err);
 
       if (err.response?.status === 401) {
-        message.error('用户名或密码错误');
+        console.error('用户名或密码错误');
       } else if (err.response?.status === 409) {
-        message.error('用户名已存在');
+        console.error('用户名已存在');
       } else if (!navigator.onLine) {
-        message.error('网络连接已断开，请检查网络');
+        console.error('网络连接已断开，请检查网络');
       } else if (err.code === 'ECONNABORTED') {
-        message.error('服务器响应超时，请稍后再试');
+        console.error('服务器响应超时，请稍后再试');
       } else {
-        message.error(err.response?.data?.error || '请求失败，请稍后再试');
+        console.error(err.response?.data?.error || '请求失败，请稍后再试');
       }
     } finally {
       setLoading(false);
