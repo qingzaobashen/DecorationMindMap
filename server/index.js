@@ -12,8 +12,8 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // 配置中间件
-app.use(cors());
-app.use(express.json());
+app.use(cors());// 这行代码会允许来自任何域的请求
+app.use(express.json());// 这行代码会将外界的post请求中的json字符串自动解析为一个JS对象（Object）
 
 // 连接数据库
 db.connect(err => {

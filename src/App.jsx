@@ -23,6 +23,7 @@ import MindMap_SimpleMindMap from './MindMap_SimpleMindMap';
 import { FaFileAlt, FaUsers, FaProjectDiagram, FaCommentDots } from 'react-icons/fa';
 import Sidebar from './components/Sidebar';
 import UserWelcome from './components/UserWelcome';
+import LoginBySupabase from './components/Login_supabase';
 import DocsViewer from './components/DocsViewer';
 import MindMapControls from './components/MindMapControls';
 import FeedbackModal from './components/FeedbackModal';
@@ -30,6 +31,8 @@ import FeedbackModal from './components/FeedbackModal';
 import CommunityPage from './components/Community/CommunityPage';
 import PostDetailPage from './components/Community/PostDetailPage';
 import { sampleData } from './utils/sampleData';
+
+const PORT = 3000;
 
 // 返回主界面的思维导图及节点弹窗
 function MainAppUI() {
@@ -79,7 +82,7 @@ function MainAppUI() {
       try {
         if (viewType === 'simplemindmap') {
           try {
-            const response = await fetch('http://localhost:5000/api/nodes');
+            const response = await fetch(`http://localhost:${PORT}/api/nodes`);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             setMindData(buildMindMapStructure(await response.json()));
           } catch (error) {
@@ -104,21 +107,6 @@ function MainAppUI() {
     }
   }, [viewType, isAuthenticated]); // currentDocPath removed as docs view has its own route
 
-
-
-  // This function might be deprecated if view changes are mostly route-driven
-  const changeViewType = (newViewType) => {
-    console.log("Attempting to change view type to: ", newViewType, "(may be route-driven)");
-    setViewType(newViewType); // Still useful if some views are not separate routes but conditional renders on '/'
-    setSelectedNode(null);
-    setPanelVisible(false);
-  };
-
-  // This is for internal doc navigation within DocsViewer, if DocsViewer is on its own route
-  const handleDocNavigate = (newPath) => {
-    console.log("Navigating document to: ", newPath);
-    navigate(newPath); // Assuming newPath is a full route like /docs/some-doc.md
-  };
 
 
   // Determine what to render based on the current route (implicitly) or viewType state
@@ -403,10 +391,11 @@ export default function App() {
         maskClosable={false}
         destroyOnClose={true}
       >
-        <Login onSuccess={handleLoginSuccess} />
+        {/* <Login onSuccess={handleLoginSuccess} /> */}
+        <LoginBySupabase onSuccess={handleLoginSuccess} />
       </Modal>
       <FeedbackModal visible={feedbackModalVisible} onClose={handleCloseFeedbackModal} />
-      <div className="card">
+      {/* <div className="card">
         <button
           onClick={callApi}
           aria-label="get name"
@@ -416,7 +405,7 @@ export default function App() {
         <p>
           Edit <code>./start.js</code> to change the name
         </p>
-      </div>
+      </div> */}
     </div>
   );
 }

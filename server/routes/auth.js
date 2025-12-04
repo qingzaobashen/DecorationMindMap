@@ -40,6 +40,7 @@ router.post('/login', async (req, res) => {
     if (!user){
       user = users;  //sql查询到的一般只有一个用户，返回的users就是一个
     }
+    console.log(user);
     const validPassword = await bcrypt.compare(password, user.password_hash);
 
     if (!validPassword) {

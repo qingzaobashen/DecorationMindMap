@@ -4,6 +4,9 @@ import { Input, Button, Form, Checkbox, message, Spin } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { useUser } from '../context/UserContext';
 
+const PORT = 3000;
+
+
 export default function Login({ onSuccess }) {
   const [form] = Form.useForm();
   const [isLogin, setIsLogin] = useState(true);
@@ -77,7 +80,7 @@ export default function Login({ onSuccess }) {
       }
 
       // 实际API调用
-      const apiUrl = `http://localhost:5000/api/auth${endpoint}`;
+      const apiUrl = `http://localhost:${PORT}/api/auth${endpoint}`;
       console.log("请求地址: ", apiUrl);
       try {
         var { data } = await axios.post(apiUrl, {
