@@ -16,7 +16,7 @@ import './App.css';
 
 // 从UserContext导入useUser
 import { useUser } from './context/UserContext';
-import Login from './components/Login';
+import Login from './components/Login_test';
 // 导入WelcomePage组件
 import WelcomePage from './components/WelcomePage';
 import MindMap_SimpleMindMap from './MindMap_SimpleMindMap';
@@ -455,12 +455,14 @@ export default function App() {
       </Routes>
 
       <Modal
-        title="用户登录"
+        title=""
         open={loginVisible}
         footer={null}
         onCancel={() => setLoginVisible(false)}
         maskClosable={false}
         destroyOnHidden={true}
+        width={360} // 设置Modal宽度
+        style={{ borderRadius: '16px' }} // 添加圆角
       >
         {/* <Login onSuccess={handleLoginSuccess} /> */}
         <LoginBySupabaseUsername onSuccess={handleLoginSuccess} />

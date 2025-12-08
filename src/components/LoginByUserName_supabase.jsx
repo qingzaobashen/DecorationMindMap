@@ -12,6 +12,161 @@ const supabase = createClient(
   import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY
 );
 
+// 组件样式
+const loginContainerStyle = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  minHeight: '50vh',
+  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  padding: '35px',
+};
+
+const loginCardStyle = {
+  background: 'white', // 取消白边
+  borderRadius: '16px',
+  boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+  padding: '20px', // 减小内边距
+  width: '100%',
+  maxWidth: '320px', // 减小最大宽度
+  transition: 'all 0.3s ease',
+};
+
+const loginHeaderStyle = {
+  textAlign: 'center',
+  marginBottom: '20px', // 减小头部底部边距
+};
+
+const loginTitleStyle = {
+  fontSize: '24px', // 减小字体大小
+  fontWeight: '700',
+  color: 'black', 
+  marginBottom: '8px',
+};
+
+const loginSubtitleStyle = {
+  fontSize: '13px', // 减小字体大小
+  color: 'rgba(0, 0, 0, 0.8)', // 改为半透明白色
+};
+
+const formGroupStyle = {
+  marginBottom: '15px', // 减小表单组底部边距
+};
+
+const labelStyle = {
+  display: 'block',
+  fontSize: '13px', // 减小字体大小
+  fontWeight: '500',
+  color: 'black', 
+  marginBottom: '8px',
+};
+
+const inputStyle = {
+  width: '100%',
+  padding: '10px 14px', // 减小内边距
+  fontSize: '14px', // 减小字体大小
+  border: '2px solid rgba(255, 255, 255, 0.3)', // 半透明白色边框
+  borderRadius: '8px',
+  transition: 'all 0.3s ease',
+  outline: 'none',
+  boxSizing: 'border-box',
+  backgroundColor: 'rgba(255, 255, 255, 0.1)', // 半透明背景
+  color: 'black', // 白色文字
+};
+
+const inputFocusStyle = {
+  borderColor: '#ffffff',
+  boxShadow: '0 0 0 3px rgba(255, 255, 255, 0.2)',
+};
+
+const buttonStyle = {
+  width: '100%',
+  padding: '12px', // 减小内边距
+  fontSize: '14px', // 减小字体大小
+  fontWeight: '600',
+  color: '#667eea', // 改为与背景对比的颜色
+  backgroundColor: '#e7f6f6ff', // 白色背景
+  border: 'none',
+  borderRadius: '8px',
+  cursor: 'pointer',
+  transition: 'all 0.3s ease',
+  marginBottom: '12px', // 减小底部外边距
+};
+
+const buttonHoverStyle = {
+  backgroundColor: '#f0f0f0',
+  transform: 'translateY(-2px)',
+  boxShadow: '0 6px 20px rgba(255, 255, 255, 0.3)',
+};
+
+const buttonDisabledStyle = {
+  backgroundColor: '#cccccc',
+  cursor: 'not-allowed',
+  transform: 'none',
+  boxShadow: 'none',
+};
+
+const errorStyle = {
+  backgroundColor: 'rgba(220, 53, 69, 0.9)', // 半透明红色背景
+  color: 'black', // 白色文字
+  padding: '10px 14px', // 减小内边距
+  borderRadius: '8px',
+  marginBottom: '15px', // 减小底部外边距
+  fontSize: '13px', // 减小字体大小
+  borderLeft: '4px solid white', // 白色边框
+};
+
+const switchModeStyle = {
+  textAlign: 'center',
+  marginTop: '15px',
+  fontSize: '12px',
+  color: 'rgba(0, 0, 0, 0.8)',
+};
+
+const switchButtonStyle = {
+  background: 'none',
+  border: 'none',
+  color: 'black', 
+  cursor: 'pointer',
+  fontWeight: '600',
+  padding: '0 4px',
+  transition: 'color 0.3s ease',
+};
+
+const switchButtonHoverStyle = {
+  color: 'rgba(255, 255, 255, 0.8)',
+  textDecoration: 'underline',
+};
+
+const loggedInContainerStyle = {
+  ...loginCardStyle,
+  textAlign: 'center',
+};
+
+const welcomeMessageStyle = {
+  fontSize: '20px', // 减小字体大小
+  fontWeight: '700',
+  color: 'black', 
+  marginBottom: '8px',
+};
+
+const userInfoStyle = {
+  fontSize: '14px', // 减小字体大小
+  color: 'rgba(255, 255, 255, 0.8)', // 半透明白色
+  marginBottom: '15px', // 减小底部外边距
+};
+
+const logoutButtonStyle = {
+  ...buttonStyle,
+  backgroundColor: '#ef5350',
+};
+
+const logoutButtonHoverStyle = {
+  backgroundColor: '#e53935',
+  transform: 'translateY(-2px)',
+  boxShadow: '0 6px 20px rgba(239, 83, 80, 0.3)',
+};
+
 export default function LoginBySupabaseUsername({ onSuccess }) {
   // 认证状态管理
   const [session, setSession] = useState(null);
@@ -138,7 +293,7 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
   const renderError = () => {
     if (!authError) return null;
     return (
-      <div style={{ color: "red", margin: "10px 0" }}>
+      <div style={errorStyle}>
         {authError}
       </div>
     );
@@ -154,25 +309,22 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
       isPremium: session.user.user_metadata.isPremium || false // 从用户元数据获取VIP状态
     });
     return (
-      <div style={{ maxWidth: "400px", margin: "0 auto", padding: "20px" }}>
-        <h1>欢迎回来！</h1>
-        <p>您已登录为: {session.user.email}</p>
-        {session.user.user_metadata?.username && (
-          <p>用户名: {session.user.user_metadata.username}</p>
-        )}
-        <button
-          onClick={handleLogout}
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#ff4d4f",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer"
-          }}
-        >
-          登出
-        </button>
+      <div style={loginContainerStyle}>
+        <div style={loggedInContainerStyle}>
+          <h1 style={welcomeMessageStyle}>欢迎回来！</h1>
+          <p style={userInfoStyle}>您已登录为: {session.user.email}</p>
+          {session.user.user_metadata?.username && (
+            <p style={userInfoStyle}>用户名: {session.user.user_metadata.username}</p>
+          )}
+          <button
+            onClick={handleLogout}
+            style={logoutButtonStyle}
+            onMouseEnter={(e) => e.target.style = { ...logoutButtonStyle, ...logoutButtonHoverStyle }}
+            onMouseLeave={(e) => e.target.style = logoutButtonStyle}
+          >
+            登出
+          </button>
+        </div>
       </div>
     );
   }
@@ -181,179 +333,144 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
    * 渲染登录/注册表单
    */
   return (
-    <div style={{ maxWidth: "400px", margin: "0 auto", padding: "20px" }}>
-      <h1>{isRegister ? "用户注册" : "用户登录"}</h1>
+    <div style={loginContainerStyle}>
+      <div style={loginCardStyle}>
+        <div style={loginHeaderStyle}>
+          <h1 style={loginTitleStyle}>{isRegister ? "创建账号" : "欢迎回来"}</h1>
+          <p style={loginSubtitleStyle}>
+            {isRegister ? "注册一个新账号开始使用我们的服务" : "登录您的账号继续使用"}
+          </p>
+        </div>
 
-      {renderError()}
+        {renderError()}
 
-      {isRegister ? (
-        // 注册表单
-        <form onSubmit={handleRegister}>
-          <div style={{ marginBottom: "15px" }}>
-            <label style={{ display: "block", marginBottom: "5px" }}>
-              用户名:
-            </label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              style={{
-                width: "100%",
-                padding: "8px",
-                borderRadius: "4px",
-                border: "1px solid #d9d9d9"
-              }}
-            />
-          </div>
+        {isRegister ? (
+          // 注册表单
+          <form onSubmit={handleRegister}>
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>用户名</label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                style={inputStyle}
+                onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
+                onBlur={(e) => Object.assign(e.target.style, inputStyle)}
+                placeholder="请输入用户名"
+              />
+            </div>
 
-          <div style={{ marginBottom: "15px" }}>
-            <label style={{ display: "block", marginBottom: "5px" }}>
-              电子邮箱:
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              style={{
-                width: "100%",
-                padding: "8px",
-                borderRadius: "4px",
-                border: "1px solid #d9d9d9"
-              }}
-            />
-          </div>
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>电子邮箱</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                style={inputStyle}
+                onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
+                onBlur={(e) => Object.assign(e.target.style, inputStyle)}
+                placeholder="请输入电子邮箱"
+              />
+            </div>
 
-          <div style={{ marginBottom: "15px" }}>
-            <label style={{ display: "block", marginBottom: "5px" }}>
-              密码:
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6} // 密码最小长度
-              style={{
-                width: "100%",
-                padding: "8px",
-                borderRadius: "4px",
-                border: "1px solid #d9d9d9"
-              }}
-            />
-          </div>
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>密码</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+                style={inputStyle}
+                onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
+                onBlur={(e) => Object.assign(e.target.style, inputStyle)}
+                placeholder="请输入密码（至少6位）"
+              />
+            </div>
 
-          <div style={{ marginBottom: "15px" }}>
             <button
               type="submit"
               disabled={loading}
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#1890ff",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer"
-              }}
+              style={loading ? { ...buttonStyle, ...buttonDisabledStyle } : buttonStyle}
+              onMouseEnter={(e) => !loading && Object.assign(e.target.style, buttonHoverStyle)}
+              onMouseLeave={(e) => !loading && Object.assign(e.target.style, buttonStyle)}
             >
-              {loading ? "注册中..." : "注册"}
+              {loading ? "注册中..." : "创建账号"}
             </button>
-          </div>
-        </form>
-      ) : (
-        // 登录表单
-        <form onSubmit={handleLogin}>
-          <div style={{ marginBottom: "15px" }}>
-            <label style={{ display: "block", marginBottom: "5px" }}>
-              电子邮箱:
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              style={{
-                width: "100%",
-                padding: "8px",
-                borderRadius: "4px",
-                border: "1px solid #d9d9d9"
-              }}
-            />
-          </div>
+          </form>
+        ) : (
+          // 登录表单
+          <form onSubmit={handleLogin}>
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>电子邮箱</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                style={inputStyle}
+                onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
+                onBlur={(e) => Object.assign(e.target.style, inputStyle)}
+                placeholder="请输入电子邮箱"
+              />
+            </div>
 
-          <div style={{ marginBottom: "15px" }}>
-            <label style={{ display: "block", marginBottom: "5px" }}>
-              密码:
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={{
-                width: "100%",
-                padding: "8px",
-                borderRadius: "4px",
-                border: "1px solid #d9d9d9"
-              }}
-            />
-          </div>
+            <div style={formGroupStyle}>
+              <label style={labelStyle}>密码</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                style={inputStyle}
+                onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
+                onBlur={(e) => Object.assign(e.target.style, inputStyle)}
+                placeholder="请输入密码"
+              />
+            </div>
 
-          <div style={{ marginBottom: "15px" }}>
             <button
               type="submit"
               disabled={loading}
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#1890ff",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer"
-              }}
+              style={loading ? { ...buttonStyle, ...buttonDisabledStyle } : buttonStyle}
+              onMouseEnter={(e) => !loading && Object.assign(e.target.style, buttonHoverStyle)}
+              onMouseLeave={(e) => !loading && Object.assign(e.target.style, buttonStyle)}
             >
               {loading ? "登录中..." : "登录"}
             </button>
-          </div>
-        </form>
-      )}
-
-      {/* 切换登录/注册模式 */}
-      <div style={{ marginTop: "20px", textAlign: "center" }}>
-        {isRegister ? (
-          <p>
-            已有账号？
-            <button
-              onClick={() => setIsRegister(false)}
-              style={{
-                background: "none",
-                border: "none",
-                color: "#1890ff",
-                cursor: "pointer",
-                textDecoration: "underline"
-              }}
-            >
-              立即登录
-            </button>
-          </p>
-        ) : (
-          <p>
-            还没有账号？
-            <button
-              onClick={() => setIsRegister(true)}
-              style={{
-                background: "none",
-                border: "none",
-                color: "#1890ff",
-                cursor: "pointer",
-                textDecoration: "underline"
-              }}
-            >
-              立即注册
-            </button>
-          </p>
+          </form>
         )}
+
+        {/* 切换登录/注册模式 */}
+        <div style={switchModeStyle}>
+          {isRegister ? (
+            <>
+              已有账号？
+              <button
+                onClick={() => setIsRegister(false)}
+                style={switchButtonStyle}
+                onMouseEnter={(e) => e.target.style = { ...switchButtonStyle, ...switchButtonHoverStyle }}
+                onMouseLeave={(e) => e.target.style = switchButtonStyle}
+              >
+                立即登录
+              </button>
+            </>
+          ) : (
+            <>
+              还没有账号？
+              <button
+                onClick={() => setIsRegister(true)}
+                style={switchButtonStyle}
+                onMouseEnter={(e) => e.target.style = { ...switchButtonStyle, ...switchButtonHoverStyle }}
+                onMouseLeave={(e) => e.target.style = switchButtonStyle}
+              >
+                立即注册
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
