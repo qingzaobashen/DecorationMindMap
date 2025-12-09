@@ -465,7 +465,7 @@ export default function App() {
         style={{ borderRadius: '16px' }} // 添加圆角
       >
         {/* <Login onSuccess={handleLoginSuccess} /> */}
-        <LoginBySupabaseUsername onSuccess={handleLoginSuccess} />
+        <Login onSuccess={handleLoginSuccess} />
       </Modal>
       <FeedbackModal visible={feedbackModalVisible} onClose={handleCloseFeedbackModal} />
     </div>
