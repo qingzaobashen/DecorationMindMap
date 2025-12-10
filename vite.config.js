@@ -17,7 +17,8 @@ export default defineConfig({
   plugins: [react()],
   // 配置base路径，解决GitHub Pages部署时的404错误
   // 注意：如果仓库名称改变，需要相应修改这里的路径
-  base: '/DecorationMindMap_github/'
+  // 动态设置base路径：生产构建时使用GitHub Pages路径，开发和本地预览时使用根路径
+  base: process.env.NODE_ENV === 'production' ? '/DecorationMindMap/' : '/'
   ,
 
   // 以下是vite的典型配置的说明，可参考
