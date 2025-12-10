@@ -34,8 +34,9 @@ import { sampleData } from './utils/sampleData';
 
 const PORT = 5000;
 // CSV文件路径（基于public目录）
-const csvFilePath = '/backend_data/nodes_details_data.csv';
-const imageFilePath = '/backend_data/images/';
+// 使用import.meta.env.BASE_URL来动态获取base路径，确保在不同部署环境下都能正确访问资源
+const csvFilePath = `${import.meta.env.BASE_URL}backend_data/nodes_details_data.csv`;
+const imageFilePath = `${import.meta.env.BASE_URL}backend_data/images/`;
 // 浏览器端解析CSV文件的函数（使用Papa Parse库）
 const parseCSV = () => {
   return fetch(csvFilePath)
@@ -484,8 +485,9 @@ function MainAppUIWrapperForDocs() {
   const docName = rawDocNameFromParams || 'README'; // Fallback, e.g. if somehow /docs/:docName is hit with no param
 
   // Construct the path for fetching: served from /docs/filename.md
+  // 使用import.meta.env.BASE_URL来动态获取base路径，确保在不同部署环境下都能正确访问文档
   //const documentToFetch = docName.endsWith('.md') ? docName : `${docName}.md`;
-  const finalDocPath = `/docs/${docName}`;
+  const finalDocPath = `${import.meta.env.BASE_URL}docs/${docName}`;
 
   const handleDocNavigate = (newPath) => {
     // newPath from DocsViewer is usually a relative path like 'AnotherFile.md' or '../OtherDir/File.md'

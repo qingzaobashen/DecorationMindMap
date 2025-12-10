@@ -15,6 +15,10 @@ export default defineConfig({
   // plugins:[react(),cloudflare()], // 这里还是暂时不用cloudflare的vite插件，这会导致npm run dev时报错，
   // 若想启动worker，则运行命令：npx wrangler dev; 运行npm run dev只会启动前端服务器
   plugins: [react()],
+  // 配置base路径，解决GitHub Pages部署时的404错误
+  // 注意：如果仓库名称改变，需要相应修改这里的路径
+  base: '/DecorationMindMap_github/'
+  ,
 
   // 以下是vite的典型配置的说明，可参考
   // // 项目根目录，默认为当前工作目录
