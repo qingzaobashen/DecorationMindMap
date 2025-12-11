@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaBars, FaTimes, FaUser, FaCrown } from 'react-icons/fa';
 import { Button, Avatar, Tooltip, Popconfirm, Tag } from 'antd';
 import { LogoutOutlined, LoginOutlined, CrownOutlined, DollarOutlined } from '@ant-design/icons';
@@ -16,9 +16,25 @@ import { FaUserTie, FaUsers, FaBoxTissue, FaCommentDots } from 'react-icons/fa';
  * @param {function} props.onToggleCollapse - 切换折叠状态的回调函数
  */
 export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, isCollapsed, onToggleCollapse }) {
+  // 监听屏幕宽度，用于响应式设计
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  
   //const [isCollapsed, setIsCollapsed] = useState(false);
   const username = localStorage.getItem('username') || '用户';
   const { upgradeToPremium } = useUser(); // 使用UserContext中的升级方法
+  
+  // 监听窗口大小变化
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // 添加事件监听器
+    window.addEventListener('resize', handleResize);
+    
+    // 清理事件监听器
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // 处理退出登录
   const handleLogout = () => {
@@ -45,9 +61,9 @@ export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, is
           <Avatar
             style={{ backgroundColor: isPremium ? '#ffd700' : '#1890ff' }}
             icon={isPremium ? <FaCrown /> : <FaUser />}
-            size={isCollapsed ? 'small' : 'default'}
+            size={isCollapsed || isMobile ? 'small' : 'default'}
           />
-          {!isCollapsed && (
+          {!isCollapsed && !isMobile && (
             <div className="user-info">
               <span className="username">{username}</span>
               {isPremium && <Tag color="gold" className="premium-tag">VIP用户</Tag>}

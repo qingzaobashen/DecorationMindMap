@@ -413,6 +413,11 @@ body {
   .sidebar .nav-btn_col span {
     display: none;
   }
+/* 修复主内容区域在移动设备上的显示 */
+  .main-content {
+    margin-left: 60px; /* 与侧边栏宽度一致 */
+    width: calc(100% - 60px);
+  }
 
   
   .split-layout {
