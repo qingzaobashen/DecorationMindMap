@@ -12,6 +12,13 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
   const mindMapRef = useRef(null);
   const { isPremium, username } = useUser(); // 获取VIP状态和用户信息
   const [showUpgradeModal, setShowUpgradeModal] = useState(false); // 控制升级弹窗
+  
+  // 存储触摸事件处理函数的引用，以便在清理函数中使用
+  const touchEventHandlersRef = useRef({
+    handleWindowTouchStart: null,
+    handleWindowTouchMove: null,
+    handleWindowTouchEnd: null
+  });
 
   const handleDownloadClick = useCallback((nodeData) => {
     if (isPremium) {
@@ -78,7 +85,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
           }
         },
         isDisableDrag: false,
-        useLeftKeySelectionRightKeyDrag: true,
+        useLeftKeySelectionRightKeyDrag: false,
 
       });
 
@@ -88,6 +95,101 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
       if (onMindMapLoad) {
         onMindMapLoad(mindMap);
       }
+
+      // mindMap.on('drag', (e) => {
+      //   console.log('mindMap.on("drag"):');
+      // })
+      // mindMap.on('mousemove', (e) => {
+      //   console.log('mindMap.on("mousemove"):', e);
+      // })
+      // mindMap.on('mousewheel', (e) => {
+      //   console.log('mindMap.on("mousewheel"):');
+      // })
+
+      // // 添加触摸事件监听器，以支持移动设备拖拽
+      // mindMap.on('touchstart', (e) => {
+      //   console.log('mindMap.on("touchstart"):', e);
+      // })
+      // mindMap.on('touchmove', (e) => {
+      //   console.log('mindMap.on("touchmove"):', e);
+      // })
+      // mindMap.on('touchend', (e) => {
+      //   console.log('mindMap.on("touchend"):', e);
+      // })
+
+      // // 创建命名的事件处理函数，以便正确移除事件监听器
+      // const handleWindowTouchStart = (e) => {
+      //   console.log('window.addEventListener("touchstart"):', e);
+      // };
+      // const handleWindowTouchMove = (e) => {
+      //   console.log('window.addEventListener("touchmove"):', e);
+      // };
+      // const handleWindowTouchEnd = (e) => {
+      //   console.log('window.addEventListener("touchend"):', e);
+      // };
+
+      // // 存储事件处理函数引用
+      // touchEventHandlersRef.current = {
+      //   handleWindowTouchStart,
+      //   handleWindowTouchMove,
+      //   handleWindowTouchEnd
+      // };
+
+      // // 同时在window上添加触摸事件监听，确保能接收到信号
+      // window.addEventListener('touchstart', handleWindowTouchStart);
+      // window.addEventListener('touchmove', handleWindowTouchMove);
+      // window.addEventListener('touchend', handleWindowTouchEnd);
+      
+      // 在画布容器上添加触摸事件监听器，并将触摸事件转换为鼠标事件
+      // 这样simple-mind-map库就能识别和处理移动设备上的拖拽操作
+      const handleCanvasTouchStart = (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousedown', {
+          clientX: touch.clientX,
+          clientY: touch.clientY,
+          bubbles: true,
+          cancelable: true
+        });
+        touch.target.dispatchEvent(mouseEvent);
+      };
+      
+      const handleCanvasTouchMove = (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousemove', {
+          clientX: touch.clientX,
+          clientY: touch.clientY,
+          bubbles: true,
+          cancelable: true
+        });
+        touch.target.dispatchEvent(mouseEvent);
+      };
+      
+      const handleCanvasTouchEnd = (e) => {
+        e.preventDefault();
+        const touch = e.changedTouches[0];
+        const mouseEvent = new MouseEvent('mouseup', {
+          clientX: touch.clientX,
+          clientY: touch.clientY,
+          bubbles: true,
+          cancelable: true
+        });
+        touch.target.dispatchEvent(mouseEvent);
+      };
+      
+      // 在画布容器上添加触摸事件监听器
+      const canvasElement = containerRef.current;
+      canvasElement.addEventListener('touchstart', handleCanvasTouchStart);
+      canvasElement.addEventListener('touchmove', handleCanvasTouchMove);
+      canvasElement.addEventListener('touchend', handleCanvasTouchEnd);
+      
+      // 存储画布触摸事件处理函数引用，以便清理
+      touchEventHandlersRef.current.canvasHandlers = {
+        handleCanvasTouchStart,
+        handleCanvasTouchMove,
+        handleCanvasTouchEnd
+      };
 
       mindMap.on('node_click', (node, e) => {
         if (node === null) return;
@@ -122,6 +224,23 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
         mindMapRef.current.destroy();
         mindMapRef.current = null;
       }
+      // 清理触摸事件监听器
+      const { handleWindowTouchStart, handleWindowTouchMove, handleWindowTouchEnd, canvasHandlers } = touchEventHandlersRef.current;
+      if (handleWindowTouchStart) window.removeEventListener('touchstart', handleWindowTouchStart);
+      if (handleWindowTouchMove) window.removeEventListener('touchmove', handleWindowTouchMove);
+      if (handleWindowTouchEnd) window.removeEventListener('touchend', handleWindowTouchEnd);
+      
+      // 清理画布上的触摸事件监听器
+      if (canvasHandlers) {
+        const { handleCanvasTouchStart, handleCanvasTouchMove, handleCanvasTouchEnd } = canvasHandlers;
+        const canvasElement = containerRef.current;
+        if (canvasElement) {
+          canvasElement.removeEventListener('touchstart', handleCanvasTouchStart);
+          canvasElement.removeEventListener('touchmove', handleCanvasTouchMove);
+          canvasElement.removeEventListener('touchend', handleCanvasTouchEnd);
+        }
+      }
+      
       // 清理可能存在的弹窗
       const existingPanels = document.querySelectorAll('.custom-note-panel');
       existingPanels.forEach(panel => panel.remove());
