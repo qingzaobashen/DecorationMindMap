@@ -216,10 +216,6 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
           }
         }
         
-        // 3、处理普通节点点击（包括手机端触摸点击）
-        // 如果不是点击图标或备注，则视为普通节点点击
-        console.log("mindMap.on('node_click'):普通节点点击", node.nodeData);
-        onNodeClick(node.nodeData);
       });
     } catch (error) {
       console.error('思维导图初始化失败:', error);
