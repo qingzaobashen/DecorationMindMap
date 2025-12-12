@@ -99,22 +99,11 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
       // mindMap.on('drag', (e) => {
       //   console.log('mindMap.on("drag"):');
       // })
-      // mindMap.on('mousemove', (e) => {
-      //   console.log('mindMap.on("mousemove"):', e);
-      // })
+      mindMap.on('mousedown', (e) => {
+        console.log('mindMap.on("mousedown"):', e);
+      })
       // mindMap.on('mousewheel', (e) => {
       //   console.log('mindMap.on("mousewheel"):');
-      // })
-
-      // // 添加触摸事件监听器，以支持移动设备拖拽
-      // mindMap.on('touchstart', (e) => {
-      //   console.log('mindMap.on("touchstart"):', e);
-      // })
-      // mindMap.on('touchmove', (e) => {
-      //   console.log('mindMap.on("touchmove"):', e);
-      // })
-      // mindMap.on('touchend', (e) => {
-      //   console.log('mindMap.on("touchend"):', e);
       // })
 
       // // 创建命名的事件处理函数，以便正确移除事件监听器
@@ -169,13 +158,24 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
       const handleCanvasTouchEnd = (e) => {
         e.preventDefault();
         const touch = e.changedTouches[0];
-        const mouseEvent = new MouseEvent('mouseup', {
+        
+        // 触发mouseup事件
+        const mouseUpEvent = new MouseEvent('mouseup', {
           clientX: touch.clientX,
           clientY: touch.clientY,
           bubbles: true,
           cancelable: true
         });
-        touch.target.dispatchEvent(mouseEvent);
+        touch.target.dispatchEvent(mouseUpEvent);
+        
+        // 触发click事件，确保节点点击事件能够被正确处理
+        const clickEvent = new MouseEvent('click', {
+          clientX: touch.clientX,
+          clientY: touch.clientY,
+          bubbles: true,
+          cancelable: true
+        });
+        touch.target.dispatchEvent(clickEvent);
       };
       
       // 在画布容器上添加触摸事件监听器
@@ -212,8 +212,14 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
             if (mindMap.plugins && mindMap.plugins.customNoteContentShow != undefined) {
               mindMap.plugins.customNoteContentShow.hide();
             }
+            return;
           }
         }
+        
+        // 3、处理普通节点点击（包括手机端触摸点击）
+        // 如果不是点击图标或备注，则视为普通节点点击
+        console.log("mindMap.on('node_click'):普通节点点击", node.nodeData);
+        onNodeClick(node.nodeData);
       });
     } catch (error) {
       console.error('思维导图初始化失败:', error);
