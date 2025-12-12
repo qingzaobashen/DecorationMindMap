@@ -10,7 +10,6 @@ import { customNoteContentShowPlugin } from './utils/mindmapPlugins';
 const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
   const containerRef = useRef(null);
   const mindMapRef = useRef(null);
-  const [isReady, setIsReady] = useState(false);
   const { isPremium, username } = useUser(); // 获取VIP状态和用户信息
   const [showUpgradeModal, setShowUpgradeModal] = useState(false); // 控制升级弹窗
 
@@ -67,7 +66,6 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
         // 新增自定义备注配置
         customNoteContentShow: customNoteContentShowPlugin,
         direction: MindMap.RIGHT,
-        draggable: true,
         contextMenu: true,
         toolBar: true,
         nodeMenu: true,
@@ -79,6 +77,8 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
             '--bgcolor': '#fff',
           }
         },
+        isDisableDrag: false,
+        useLeftKeySelectionRightKeyDrag: true,
 
       });
 
@@ -112,10 +112,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
             }
           }
         }
-
       });
-
-      setIsReady(true);
     } catch (error) {
       console.error('思维导图初始化失败:', error);
     }

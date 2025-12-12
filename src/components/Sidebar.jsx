@@ -45,18 +45,21 @@ export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, is
   };
 
   return (
-    <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
-      <div className="sidebar-header">
-        <Button 
-          className="toggle-btn"
-          onClick={() => onToggleCollapse(!isCollapsed)}
-          icon={isCollapsed ? <FaBars /> : <FaTimes />}
-          type="text"
-        />
-      </div>
+    <div className={`sidebar ${isCollapsed && !isMobile ? 'collapsed' : ''}`}>
+      {/* 只在非移动设备上显示折叠按钮 */}
+      {!isMobile && (
+        <div className="sidebar-header">
+          <Button 
+            className="toggle-btn"
+            onClick={() => onToggleCollapse(!isCollapsed)}
+            icon={isCollapsed ? <FaBars /> : <FaTimes />}
+            type="text"
+          />
+        </div>
+      )}
       
-      {/* 用户信息区域 */}
-      {isAuthenticated && (
+      {/* 只在非移动设备上显示用户信息区域 */}
+      {isAuthenticated && !isMobile && (
         <div className="user-profile">
           <Avatar
             style={{ backgroundColor: isPremium ? '#ffd700' : '#1890ff' }}

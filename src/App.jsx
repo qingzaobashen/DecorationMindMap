@@ -334,6 +334,18 @@ const Layout = ({
 }) => {
   // 侧边栏折叠状态
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  // 屏幕宽度状态
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  // 监听窗口大小变化
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // 处理侧边栏折叠状态切换
   const handleToggleCollapse = () => {
@@ -361,7 +373,7 @@ const Layout = ({
       />
 
       {/* 子路由内容 */}
-      <div className={`main-content ${isSidebarCollapsed ? 'expanded' : ''}`}>
+      <div className={`main-content ${isSidebarCollapsed && !isMobile ? 'expanded' : ''}`}>
         <Outlet />
       </div>
     </div>

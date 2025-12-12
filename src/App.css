@@ -238,7 +238,7 @@ body {
   position: relative;
   flex: 1;
   padding: 0px;
-  overflow-y: auto;
+  /* overflow-y: auto; */
   overflow-x: hidden;
   background: rgba(210, 226, 243, 0.8);
   width: 100%;
@@ -247,7 +247,7 @@ body {
 .mindmap-wrapper {
   flex: 1;
   position: relative;
-  overflow-y: auto; /* 默认允许Y轴滚动 */
+  /*overflow-y: auto; /* 默认允许Y轴滚动 */
   overflow-x: hidden; /* 禁止X轴滚动 */
   width: 100%;
   max-width: 100%;
@@ -406,25 +406,70 @@ body {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+  /* 将侧边栏移到底部 */
   .sidebar {
-    width: 60px;
+    width: 100%;
+    height: 60px;
+    left: 0;
+    bottom: 0;
+    top: auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0;
   }
   
+  /* 隐藏侧边栏头部的折叠按钮 */
+  .sidebar-header {
+    display: none;
+  }
+  
+  /* 调整用户信息区域 */
+  .user-profile {
+    display: none;
+  }
+  
+  /* 调整导航按钮布局 */
+  .nav-buttons {
+    flex-direction: row;
+    width: 100%;
+    padding: 0;
+    gap: 0;
+  }
+  
+  /* 调整单个导航按钮样式 */
+  .nav-btn_col {
+    flex: 1;
+    justify-content: center;
+    padding: 10px 0;
+    margin: 0;
+    border-radius: 0;
+  }
+  
+  /* 显示导航按钮的文字 */
   .sidebar .nav-btn_col span {
     display: none;
   }
-/* 修复主内容区域在移动设备上的显示 */
+  
+  /* 调整主内容区域布局 */
   .main-content {
-    margin-left: 60px; /* 与侧边栏宽度一致 */
-    width: calc(100% - 60px);
+    margin-left: 0;
+    margin-bottom: 60px;
+    width: 100%;
+  }
+  
+  .main-content.expanded {
+    margin-left: 0;
+    margin-bottom: 60px;
+    width: 100%;
   }
 
-  
+  /* 调整布局为垂直堆叠 */
   .split-layout {
     flex-direction: column;
   }
   
-  
+  /* 文本内容区域调整 */
   .text-content {
     border-left: none;
     border-top: 1px solid #eee;
@@ -433,6 +478,7 @@ body {
     margin-top: 15px;
   }
   
+  /* 视图头部调整 */
   .view-header {
     flex-direction: column;
     align-items: flex-start;
@@ -440,6 +486,7 @@ body {
     padding: 10px;
   }
   
+  /* 视图切换器调整 */
   .view-switcher {
     width: 100%;
     overflow-x: auto;
