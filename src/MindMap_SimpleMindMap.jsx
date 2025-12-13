@@ -96,53 +96,113 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
         onMindMapLoad(mindMap);
       }
       
+      // 存储双指触摸距离，用于计算缩放比例
+      let lastDistance = null;
+      
       // 在画布容器上添加触摸事件监听器，并将触摸事件转换为鼠标事件
-      // 这样simple-mind-map库就能识别和处理移动设备上的拖拽操作
+      // 这样simple-mind-map库就能识别和处理移动设备上的拖拽和缩放操作
       const handleCanvasTouchStart = (e) => {
         e.preventDefault();
-        const touch = e.touches[0];
-        const mouseEvent = new MouseEvent('mousedown', {
-          clientX: touch.clientX,
-          clientY: touch.clientY,
-          bubbles: true,
-          cancelable: true
-        });
-        touch.target.dispatchEvent(mouseEvent);
+        
+        // 处理单指触摸，转换为mousedown事件
+        if (e.touches.length === 1) {
+          const touch = e.touches[0];
+          const mouseEvent = new MouseEvent('mousedown', {
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+            bubbles: true,
+            cancelable: true
+          });
+          touch.target.dispatchEvent(mouseEvent);
+        }
+        // 处理双指触摸，记录初始距离
+        else if (e.touches.length === 2) {
+          const touch1 = e.touches[0];
+          const touch2 = e.touches[1];
+          lastDistance = Math.hypot(
+            touch2.clientX - touch1.clientX,
+            touch2.clientY - touch1.clientY
+          );
+        }
       };
       
       const handleCanvasTouchMove = (e) => {
         e.preventDefault();
-        const touch = e.touches[0];
-        const mouseEvent = new MouseEvent('mousemove', {
-          clientX: touch.clientX,
-          clientY: touch.clientY,
-          bubbles: true,
-          cancelable: true
-        });
-        touch.target.dispatchEvent(mouseEvent);
+        
+        // 处理单指触摸，转换为mousemove事件
+        if (e.touches.length === 1) {
+          const touch = e.touches[0];
+          const mouseEvent = new MouseEvent('mousemove', {
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+            bubbles: true,
+            cancelable: true
+          });
+          touch.target.dispatchEvent(mouseEvent);
+        }
+        // 处理双指触摸，计算缩放比例并转换为mousewheel事件
+        else if (e.touches.length === 2) {
+          const touch1 = e.touches[0];
+          const touch2 = e.touches[1];
+          const currentDistance = Math.hypot(
+            touch2.clientX - touch1.clientX,
+            touch2.clientY - touch1.clientY
+          );
+          
+          if (lastDistance) {
+            // 计算缩放比例，转换为鼠标滚轮事件的delta值
+            const scale = currentDistance / lastDistance;
+            const deltaY = scale > 1 ? -100 : 100; // 放大时deltaY为负，缩小时为正
+            
+            // 获取双指中心点作为缩放中心
+            const centerX = (touch1.clientX + touch2.clientX) / 2;
+            const centerY = (touch1.clientY + touch2.clientY) / 2;
+            
+            // 创建并触发鼠标滚轮事件
+            const wheelEvent = new WheelEvent('wheel', {
+              deltaY: deltaY,
+              clientX: centerX,
+              clientY: centerY,
+              bubbles: true,
+              cancelable: true
+            });
+            touch1.target.dispatchEvent(wheelEvent);
+            
+            lastDistance = currentDistance;
+          }
+        }
       };
       
       const handleCanvasTouchEnd = (e) => {
         e.preventDefault();
-        const touch = e.changedTouches[0];
         
-        // 触发mouseup事件
-        const mouseUpEvent = new MouseEvent('mouseup', {
-          clientX: touch.clientX,
-          clientY: touch.clientY,
-          bubbles: true,
-          cancelable: true
-        });
-        touch.target.dispatchEvent(mouseUpEvent);
+        // 重置双指触摸距离
+        if (e.touches.length < 2) {
+          lastDistance = null;
+        }
         
-        // 触发click事件，确保节点点击事件能够被正确处理
-        const clickEvent = new MouseEvent('click', {
-          clientX: touch.clientX,
-          clientY: touch.clientY,
-          bubbles: true,
-          cancelable: true
-        });
-        touch.target.dispatchEvent(clickEvent);
+        // 处理单指触摸结束，触发mouseup和click事件
+        if (e.changedTouches.length === 1 && e.touches.length === 0) {
+          const touch = e.changedTouches[0];
+          
+          // 触发mouseup事件
+          const mouseUpEvent = new MouseEvent('mouseup', {
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+            bubbles: true,
+            cancelable: true
+          });
+          touch.target.dispatchEvent(mouseUpEvent);
+          
+          // 触发click事件，确保节点点击事件能够被正确处理
+          const clickEvent = new MouseEvent('click', {
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+            bubbles: true,
+            cancelable: true
+          });
+          touch.target.dispatchEvent(clickEvent);
+        }
       };
       
       // 在画布容器上添加触摸事件监听器
