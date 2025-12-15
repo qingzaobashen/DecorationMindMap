@@ -98,6 +98,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
       
       // 存储双指触摸距离，用于计算缩放比例
       let lastDistance = null;
+      let lastDeltaY = null;
       
       // 在画布容器上添加触摸事件监听器，并将触摸事件转换为鼠标事件
       // 这样simple-mind-map库就能识别和处理移动设备上的拖拽和缩放操作
@@ -154,7 +155,10 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
             // 计算缩放比例，转换为鼠标滚轮事件的delta值
             let scale = currentDistance / lastDistance;
             let deltaY = scale > 1 ? -scale+1 : 1-scale; // 放大时deltaY为负，缩小时为正
-            
+            // 限制缩放比例，防止过快缩放
+            if (Math.abs(deltaY - lastDeltaY) > 0.2) {
+              deltaY = (deltaY - lastDeltaY)>0 ? 0.2 + deltaY : -0.2 + deltaY;
+            }
             // console.log('scale:', scale, ', deltaY:', deltaY);
             // 获取双指中心点作为缩放中心
             const centerX = (touch1.clientX + touch2.clientX) / 2;
@@ -173,6 +177,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
             });
             touch1.target.dispatchEvent(wheelEvent);
             lastDistance = currentDistance;
+            lastDeltaY = deltaY;
           }
         }
       };
