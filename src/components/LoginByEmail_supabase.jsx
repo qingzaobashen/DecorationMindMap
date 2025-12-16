@@ -1,11 +1,7 @@
 import "../index.css";
 import { useState, useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  import.meta.env.VITE_PUBLIC_SUPABASE_URL,
-  import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY
-);
+// 导入共享的Supabase客户端实例
+import supabase from '../utils/supabase';
 
 export default function LoginBySupabase({ onSuccess }) {
     const [loading, setLoading] = useState(false);

@@ -1,5 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { message } from 'antd';
+// 导入共享的Supabase客户端实例
+import supabase from '../utils/supabase';
 
 // 创建上下文
 export const UserContext = createContext();
@@ -58,16 +60,26 @@ export const UserProvider = ({ children }) => {
   };
 
   // 注销处理
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    localStorage.removeItem('isPremium');
-    
-    setIsAuthenticated(false);
-    setUsername('');
-    setIsPremium(false);
-    
-    message.info('您已退出登录');
+  const logout = async () => {
+    try {
+      // 调用Supabase的登出接口
+      await supabase.auth.signOut();
+      console.log("logouting... ");
+      // 清理本地存储
+      localStorage.removeItem('token');
+      localStorage.removeItem('username');
+      localStorage.removeItem('isPremium');
+      
+      // 更新状态
+      setIsAuthenticated(false);
+      setUsername('');
+      setIsPremium(false);
+      
+      message.info('您已退出登录');
+    } catch (error) {
+      message.error(`登出失败: ${error.message}`);
+      console.error('登出失败:', error);
+    }
   };
 
   // 升级为VIP用户

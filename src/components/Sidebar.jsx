@@ -21,7 +21,7 @@ export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, is
   
   //const [isCollapsed, setIsCollapsed] = useState(false);
   const username = localStorage.getItem('username') || '用户';
-  const { upgradeToPremium } = useUser(); // 使用UserContext中的升级方法
+  const { upgradeToPremium, logout } = useUser(); // 使用UserContext中的方法
   
   // 监听窗口大小变化
   useEffect(() => {
@@ -37,11 +37,9 @@ export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, is
   }, []);
 
   // 处理退出登录
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    // 保留"记住我"的信息，不删除rememberedUser
-    onLogin(false);
+  const handleLogout = async () => {
+    await logout(); // 调用UserContext的登出方法，触发完整登出流程
+    onLogin(false); // 通知父组件更新登录状态
   };
 
   return (

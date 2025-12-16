@@ -1,16 +1,14 @@
-import "../index.css";
-import { useState, useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
-import { useUser } from '../context/UserContext';
-
 /**
  * Supabase用户名/密码认证组件
  * 实现用户注册、登录、登出等功能
  */
-const supabase = createClient(
-  import.meta.env.VITE_PUBLIC_SUPABASE_URL,
-  import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY
-);
+import "../index.css";
+import { useState, useEffect } from "react";
+import { useUser } from '../context/UserContext';
+import { message } from 'antd'; // 添加消息提示组件
+
+// 导入共享的Supabase客户端实例
+import supabase from '../utils/supabase';
 
 // 组件样式
 const loginContainerStyle = {
@@ -178,7 +176,7 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const { login } = useUser();
+  const { login, logout } = useUser(); // 从UserContext获取login和logout方法
 
   /**
    * 初始化时检查用户会话状态
@@ -188,15 +186,33 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
     // 查询supabase中是否存在现有会话
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      // 如果有会话，更新UserContext
+      if (session) {
+        const usernameFromMetadata = session.user.user_metadata?.username || session.user.email.split('@')[0];
+        login({
+          token: session.access_token,
+          username: usernameFromMetadata,
+          isPremium: session.user.user_metadata?.isPremium || false
+        });
+      }
     });
 
     // 监听认证状态变化
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      // 如果会话变化，更新UserContext
+      if (session) {
+        const usernameFromMetadata = session.user.user_metadata?.username || session.user.email.split('@')[0];
+        login({
+          token: session.access_token,
+          username: usernameFromMetadata,
+          isPremium: session.user.user_metadata?.isPremium || false
+        });
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [login, logout]);
 
   /**
    * 处理用户注册
@@ -208,13 +224,14 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
     setAuthError(null);
 
     try {
-      console.log("注册尝试:", { email, password, username });
+      console.log("注册尝试:", { email, username });
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             username: username, // 存储用户名到用户元数据
+            isPremium: false // 默认非VIP用户
           },
         },
       });
@@ -227,10 +244,16 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
       if (data.user) {
         onSuccess?.(data.user);
         console.log("注册成功:", data.user);
+        message.success('注册成功，请登录');
         setIsRegister(false); // 切换回登录模式
+        // 清空表单
+        setEmail('');
+        setPassword('');
+        setUsername('');
       }
     } catch (error) {
       setAuthError(error.message);
+      message.error(`注册失败: ${error.message}`);
       console.error("注册失败:", error);
     } finally {
       setLoading(false);
@@ -247,7 +270,7 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
     setAuthError(null);
 
     try {
-      console.log("登录尝试:", { email, password });
+      console.log("登录尝试:", { email });
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -260,15 +283,19 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
       // 登录成功，调用成功回调
       if (data.session) {
         console.log("login success data: ", data);
+        // 从用户元数据中获取用户名
+        const usernameFromMetadata = data.session.user.user_metadata?.username || data.session.user.email.split('@')[0];
         login({
           token: data.session.access_token,
-          username,
-          isPremium: data.isPremium || false // 从API响应获取VIP状态
+          username: usernameFromMetadata,
+          isPremium: data.session.user.user_metadata?.isPremium || false // 从用户元数据获取VIP状态
         });
         onSuccess?.(data.user);
+        message.success('登录成功');
       }
     } catch (error) {
       setAuthError(error.message);
+      message.error(`登录失败: ${error.message}`);
       console.error("登录失败:", error);
     } finally {
       setLoading(false);
@@ -280,9 +307,10 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
    */
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      await logout(); // 调用UserContext的登出方法，触发完整登出流程
       setSession(null);
     } catch (error) {
+      message.error(`登出失败: ${error.message}`);
       console.error("登出失败:", error);
     }
   };
@@ -300,34 +328,29 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
   };
 
   /**
-   * 渲染已登录状态
+   * 渲染已登录状态  // 2025-12-16 暂无需渲染登录状态
    */
-  if (session) {
-    login({
-      token: session.access_token,
-      username: session.user.user_metadata.username,
-      isPremium: session.user.user_metadata.isPremium || false // 从用户元数据获取VIP状态
-    });
-    return (
-      <div style={loginContainerStyle}>
-        <div style={loggedInContainerStyle}>
-          <h1 style={welcomeMessageStyle}>欢迎回来！</h1>
-          <p style={userInfoStyle}>您已登录为: {session.user.email}</p>
-          {session.user.user_metadata?.username && (
-            <p style={userInfoStyle}>用户名: {session.user.user_metadata.username}</p>
-          )}
-          <button
-            onClick={handleLogout}
-            style={logoutButtonStyle}
-            onMouseEnter={(e) => e.target.style = { ...logoutButtonStyle, ...logoutButtonHoverStyle }}
-            onMouseLeave={(e) => e.target.style = logoutButtonStyle}
-          >
-            登出
-          </button>
-        </div>
-      </div>
-    );
-  }
+  //if (session) {
+  //  return (
+  //    <div style={loginContainerStyle}>
+  //      <div style={loggedInContainerStyle}>
+  //        <h1 style={welcomeMessageStyle}>欢迎回来！</h1>
+  //        <p style={userInfoStyle}>您已登录为: {session.user.email}</p>
+  //        {session.user.user_metadata?.username && (
+  //          <p style={userInfoStyle}>用户名: {session.user.user_metadata.username}</p>
+  //        )}
+  //        <button
+  //          onClick={handleLogout}
+  //          style={logoutButtonStyle}
+  //          onMouseEnter={(e) => e.target.style = { ...logoutButtonStyle, ...logoutButtonHoverStyle }}
+  //          onMouseLeave={(e) => e.target.style = logoutButtonStyle}
+  //        >
+  //          登出
+  //        </button>
+  //      </div>
+  //    </div>
+  //  );
+  //}
 
   /**
    * 渲染登录/注册表单

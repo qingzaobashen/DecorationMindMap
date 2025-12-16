@@ -16,14 +16,14 @@ import './App.css';
 
 // 从UserContext导入useUser
 import { useUser } from './context/UserContext';
-import Login from './components/Login_test';
+
 // 导入WelcomePage组件
 import WelcomePage from './components/WelcomePage';
 import MindMap_SimpleMindMap from './MindMap_SimpleMindMap';
 import { FaFileAlt, FaUsers, FaProjectDiagram, FaCommentDots } from 'react-icons/fa';
 import Sidebar from './components/Sidebar';
 import UserWelcome from './components/UserWelcome';
-// import LoginBySupabaseUsername from './components/LoginByUserName_supabase';
+import LoginBySupabaseUsername from './components/LoginByUserName_supabase';
 import DocsViewer from './components/DocsViewer';
 import MindMapSaver from './components/MindMapSaver';
 import FeedbackModal from './components/FeedbackModal';
@@ -88,11 +88,10 @@ function MainAppUI() {
   const [panelVisible, setPanelVisible] = useState(false); // 弹出窗是否可见
   const [mindData, setMindData] = useState(null);          // 思维导图的数据
   const [loading, setLoading] = useState(true);            // 是否正在加载中，初始为true
-  const [viewType, setViewType] = useState('simplemindmap'); // 导图的显示类型，默认simplemindmap
+  const [viewType] = useState('simplemindmap'); // 导图的显示类型，默认simplemindmap
   const [fullscreenImageVisible, setFullscreenImageVisible] = useState(false); // 全屏图片查看器是否可见
   const [currentImageIndex, setCurrentImageIndex] = useState(0); // 当前查看的图片索引
   const mindMapInstanceRef = useRef(null);                   // 缓存思维导图实例
-  const navigate = useNavigate(); // React Router's navigate hook
 
   const { isAuthenticated } = useUser();
 
@@ -386,7 +385,7 @@ export default function App() {
 
 
   const [loginVisible, setLoginVisible] = useState(false);
-  const { isAuthenticated, isPremium, logout, login } = useUser(); // Ensure login is available if needed directly
+  const { isAuthenticated, isPremium, logout } = useUser();
 
   const [showWelcome, setShowWelcome] = useState(false);
   const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
@@ -478,7 +477,7 @@ export default function App() {
         style={{ borderRadius: '16px' }} // 添加圆角
       >
         {/* <Login onSuccess={handleLoginSuccess} /> */}
-        <Login onSuccess={handleLoginSuccess} />
+        <LoginBySupabaseUsername onSuccess={handleLoginSuccess} />
       </Modal>
       <FeedbackModal visible={feedbackModalVisible} onClose={handleCloseFeedbackModal} />
     </div>
