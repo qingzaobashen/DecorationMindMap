@@ -6,7 +6,7 @@ import { createClient } from '@supabase/supabase-js';
 
 // 创建唯一的Supabase客户端实例
 const supabase = createClient(
-  import.meta.env.VITE_PUBLIC_SUPABASE_URL,
+  "https://uwgvflkueracnwgwdwpe.supabase.co",
   import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY
 );
 
