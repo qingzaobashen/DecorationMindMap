@@ -588,8 +588,8 @@ body {
 }
 
 /* 详情面板中的升级按钮样式 */
-.detail-panel .upgrade-btn {
-  background-color: #ff9800;
+.detail-panel .upgrade-btn-detail {
+  background-color: #f09d21e4;
   color: white;
   border: none;
   padding: 8px 20px;
@@ -599,13 +599,13 @@ body {
   transition: background-color 0.3s;
 }
 
-.detail-panel .upgrade-btn:hover {
+.detail-panel .upgrade-btn-detail:hover {
   background-color: #f57c00;
 }
 
 /* 详情面板中的支付按钮样式 */
-.detail-panel .pay-btn {
-  background-color: #2196f3;
+.detail-panel .pay-btn-detail {
+  background-color: #a6d812d5;
   color: white;
   border: none;
   padding: 8px 20px;
@@ -613,11 +613,10 @@ body {
   cursor: pointer;
   font-weight: 500;
   transition: background-color 0.3s;
-  margin-left: 10px;
 }
 
-.detail-panel .pay-btn:hover {
-  background-color: #1976d2;
+.detail-panel .pay-btn-detail:hover {
+  background-color: #1976d24b;
 }
 
 /* 付费操作按钮组样式 */
@@ -1176,4 +1175,49 @@ body {
   position: relative;
   /* overflow: hidden; */ /* 移除或注释掉这一行，以允许内容溢出 */
   overflow-y: auto; /* 默认允许Y轴滚动，主要针对思维导图本身可能需要的滚动 */
+}
+
+/* 404页面样式 */
+.not-found-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  text-align: center;
+  padding: 20px;
+}
+
+.not-found-content {
+  max-width: 600px;
+  width: 100%;
+}
+
+.not-found-number {
+  font-size: 12rem;
+  font-weight: bold;
+  color: #1890ff;
+  line-height: 1;
+  margin-bottom: 20px;
+  opacity: 0.8;
+}
+
+.not-found-title {
+  font-size: 2.5rem;
+  color: #262626;
+  margin-bottom: 15px;
+}
+
+.not-found-description {
+  font-size: 1.2rem;
+  color: #8c8c8c;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.not-found-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
 }

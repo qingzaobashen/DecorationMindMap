@@ -30,6 +30,7 @@ import FeedbackModal from './components/FeedbackModal';
 // Import community pages with corrected casing
 import CommunityPage from './components/Community/CommunityPage';
 import PostDetailPage from './components/Community/PostDetailPage';
+import NotFoundPage from './components/NotFoundPage';
 import { sampleData } from './utils/sampleData';
 
 const PORT = 5000;
@@ -326,14 +327,14 @@ function MainAppUI() {
                                     <>
                                       <div dangerouslySetInnerHTML={{ __html: marked.parse(truncateText(item.text)) }} />
                                       <div className="premium-locked">
-                                        <p>该内容为VIP专属，仅对VIP用户开放全部内容</p>
+                                        <p>该内容为VIP专属，仅对VIP用户开放全部内容，或直接付费阅读</p>
                                         {isAuthenticated ? (
                                           // 已登录用户，显示升级按钮和支付按钮
                                           <div className="premium-actions">
-                                            <button className="upgrade-btn" onClick={upgradeToPremium}>
+                                            <button className="upgrade-btn-detail" onClick={upgradeToPremium}>
                                               立即升级为VIP
                                             </button>
-                                            <button className="pay-btn" onClick={() => setPaymentModalVisible(true)}>
+                                            <button className="pay-btn-detail" onClick={() => setPaymentModalVisible(true)}>
                                               立即支付阅读
                                             </button>
                                           </div>
@@ -521,7 +522,7 @@ export default function App() {
           <Route path="/docs/:docName" element={
             <MainAppUIWrapperForDocs />
           } />
-          <Route path="*" element={<Navigate to="/" />} /> {/* 捕获所有未匹配的路由并重定向到主页 */}
+          <Route path="*" element={<NotFoundPage />} /> {/* 捕获所有未匹配的路由并显示404页面 */}
           {/* Add other routes as needed */}
         </Route>
       </Routes>
