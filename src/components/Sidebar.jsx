@@ -100,7 +100,15 @@ export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, is
             <Button 
               className="nav-btn_col upgrade-btn"
               type="text"
-              onClick={upgradeToPremium}
+              onClick={() => {
+                // 触发支付流程，实际的弹窗逻辑在App.jsx中处理
+                // 这里需要通过事件或其他方式通知App.jsx显示支付弹窗
+                // 由于Sidebar和App.jsx的层级关系，我们可以使用全局事件或React Context
+                // 为了简化，这里直接调用upgradeToPremium，实际项目中应该使用更优雅的方式
+                upgradeToPremium();
+                // 触发自定义事件，通知App.jsx显示支付弹窗
+                window.dispatchEvent(new CustomEvent('showPaymentModal'));
+              }}
             >
               <FaUserTie className="upgrade-icon" />
               <span>升级为VIP用户</span>

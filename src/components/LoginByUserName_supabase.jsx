@@ -189,10 +189,11 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
       // 如果有会话，更新UserContext
       if (session) {
         const usernameFromMetadata = session.user.user_metadata?.username || session.user.email.split('@')[0];
+        console.log("用户元数据获取:", session.user);
         login({
           token: session.access_token,
           username: usernameFromMetadata,
-          isPremium: session.user.user_metadata?.isPremium || false
+          isPremium: session.user?.user_metadata?.is_premium || false
         });
       }
     });
@@ -206,7 +207,7 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
         login({
           token: session.access_token,
           username: usernameFromMetadata,
-          isPremium: session.user.user_metadata?.isPremium || false
+          isPremium: session.user?.user_metadata?.is_premium || false
         });
       }
     });
@@ -288,7 +289,7 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
         login({
           token: data.session.access_token,
           username: usernameFromMetadata,
-          isPremium: data.session.user.user_metadata?.isPremium || false // 从用户元数据获取VIP状态
+          isPremium: data.session.user?.user_metadata?.is_premium || false // 从用户元数据获取VIP状态
         });
         onSuccess?.(data.user);
         message.success('登录成功');

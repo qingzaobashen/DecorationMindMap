@@ -15,21 +15,59 @@ export const UserProvider = ({ children }) => {
 
   // 初始化 - 检查用户登录状态和VIP状态
   useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem('token');
-      const savedUsername = localStorage.getItem('username');
-      const userPremiumStatus = localStorage.getItem('isPremium');
-      
-      if (token) {
-        setIsAuthenticated(true);
-        setUsername(savedUsername || '');
-        setIsPremium(userPremiumStatus === 'true');
-      } else {
-        setIsAuthenticated(false);
-        setIsPremium(false);
-        setUsername('');
+    const checkAuth = async () => {
+      try {
+        // 尝试从Supabase获取当前用户信息
+        const { data, error } = await supabase.auth.getUser();
+        
+        if (data?.user) {
+          // 用户已登录，从Supabase获取VIP状态
+          const isPremiumUser = data.user.user_metadata?.is_premium || false;
+          const username = data.session.user.user_metadata?.username || data.user.email?.split('@')[0] || data.user.id;
+          
+          // 更新本地存储和状态
+          localStorage.setItem('token', data.user.token || localStorage.getItem('token'));
+          localStorage.setItem('username', username);
+          localStorage.setItem('isPremium', isPremiumUser ? 'true' : 'false');
+          
+          setIsAuthenticated(true);
+          setUsername(username);
+          setIsPremium(isPremiumUser);
+        } else {
+          // 检查本地存储
+          //const token = localStorage.getItem('token');
+          //const savedUsername = localStorage.getItem('username');
+          //const userPremiumStatus = localStorage.getItem('isPremium');
+          //
+          //if (token) {
+          //  setIsAuthenticated(true);
+          //  setUsername(savedUsername || '');
+          //  setIsPremium(userPremiumStatus === 'true');
+          //} else {
+            setIsAuthenticated(false);
+            setIsPremium(false);
+            setUsername('');
+          //}
+        }
+      } catch (error) {
+        console.error('检查用户状态失败:', error);
+        // 出错时回退到本地存储
+        const token = localStorage.getItem('token');
+        const savedUsername = localStorage.getItem('username');
+        const userPremiumStatus = localStorage.getItem('isPremium');
+        
+        if (token) {
+          setIsAuthenticated(true);
+          setUsername(savedUsername || '');
+          setIsPremium(userPremiumStatus === 'true');
+        } else {
+          setIsAuthenticated(false);
+          setIsPremium(false);
+          setUsername('');
+        }
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     
     checkAuth();
@@ -52,11 +90,13 @@ export const UserProvider = ({ children }) => {
   const login = (userData) => {
     localStorage.setItem('token', userData.token);
     localStorage.setItem('username', userData.username);
-    localStorage.setItem('isPremium', userData.isPremium ? 'true' : 'false');
+    // 从用户数据中获取VIP状态，如果没有则默认为false
+    const isPremiumUser = userData.user?.user_metadata?.is_premium || userData.isPremium || false;
+    localStorage.setItem('isPremium', isPremiumUser ? 'true' : 'false');
     
     setIsAuthenticated(true);
     setUsername(userData.username);
-    setIsPremium(userData.isPremium);
+    setIsPremium(isPremiumUser);
   };
 
   // 注销处理
@@ -82,12 +122,47 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // 升级为VIP用户
+  // 升级为VIP用户 - 开始支付流程
   const upgradeToPremium = () => {
-    // 这里应该有一个实际的支付流程，现在我们简化处理
-    localStorage.setItem('isPremium', 'true');
-    setIsPremium(true);
-    message.success('恭喜！您已成功升级为VIP用户');
+    // 不直接执行升级，而是触发支付流程
+    // 支付流程将在UI层处理，完成后调用completeUpgradeToPremium
+    return new Promise((resolve) => {
+      // 这里可以添加触发支付二维码弹窗的逻辑
+      // 但由于弹窗是UI组件，我们将在App.jsx中处理
+      resolve();
+    });
+  };
+
+  // 完成VIP升级 - 支付成功后调用
+  const completeUpgradeToPremium = async () => {
+    try {
+      // 0. TODO验证用户是否支付成功
+      
+      // 1. 更新Supabase用户的元数据，标记为VIP用户
+      const { data, error } = await supabase.auth.updateUser({
+        data: { 
+          is_premium: true,
+          premium_expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString() // 默认为1年有效期
+        }
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      console.log('Supabase用户更新响应:', data);
+      
+      // 2. 更新本地存储和状态
+      localStorage.setItem('isPremium', 'true');
+      setIsPremium(true);
+      
+      message.success('恭喜！您已成功升级为VIP用户');
+      return true;
+    } catch (error) {
+      message.error(`升级VIP用户失败: ${error.message}`);
+      console.error('升级VIP用户失败:', error);
+      return false;
+    }
   };
 
   // 保存用户数据
@@ -138,6 +213,7 @@ export const UserProvider = ({ children }) => {
     login,
     logout,
     upgradeToPremium,
+    completeUpgradeToPremium,
     saveUserData,
     getUserData
   };

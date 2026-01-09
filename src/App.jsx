@@ -8,7 +8,7 @@ import Papa from 'papaparse';
 import './App.css';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { Modal } from 'antd';
+import { Modal, Button } from 'antd';
 import { marked } from 'marked';
 
 // 导入App.css样式文件
@@ -95,7 +95,7 @@ function MainAppUI() {
   const [paymentModalVisible, setPaymentModalVisible] = useState(false); // 支付二维码弹窗是否可见
   const mindMapInstanceRef = useRef(null);                   // 缓存思维导图实例
 
-  const { isAuthenticated, isPremium, upgradeToPremium } = useUser();
+  const { isAuthenticated, isPremium, upgradeToPremium, completeUpgradeToPremium } = useUser();
 
   // 截断文本函数，用于付费内容的部分显示
   const truncateText = (text, maxLength = 200) => {
@@ -108,6 +108,21 @@ function MainAppUI() {
   const memoizedOnMindMapLoad = useCallback((instance) => {
     console.log("MindMap instance loaded/reloaded in MainAppUI:", instance);
     mindMapInstanceRef.current = instance;
+  }, []);
+
+  // 监听来自Sidebar的支付弹窗事件
+  useEffect(() => {
+    const handleShowPaymentModal = () => {
+      setPaymentModalVisible(true);
+    };
+
+    // 添加事件监听器
+    window.addEventListener('showPaymentModal', handleShowPaymentModal);
+
+    // 清理事件监听器
+    return () => {
+      window.removeEventListener('showPaymentModal', handleShowPaymentModal);
+    };
   }, []);
 
   // 处理节点点击事件的回调函数，传给MindMap_SimpleMindMap子组件，让它点击节点时调用
@@ -242,7 +257,22 @@ function MainAppUI() {
         title="扫码支付"
         open={paymentModalVisible}
         onCancel={() => setPaymentModalVisible(false)}
-        footer={null}
+        footer={[
+          <Button key="cancel" onClick={() => setPaymentModalVisible(false)}>
+            取消
+          </Button>,
+          <Button key="confirm" type="primary" onClick={async () => {
+            // 调用完成VIP升级的函数
+            const success = await completeUpgradeToPremium();
+            if (success) {
+              setPaymentModalVisible(false);
+              // 关闭节点详情面板，以便重新加载内容
+              setPanelVisible(false);
+            }
+          }}>
+            支付已完成
+          </Button>
+        ]}
         width={360}
         centered
         zIndex={2000}
@@ -252,13 +282,13 @@ function MainAppUI() {
           <div className="qr-code-container">
             {/* 这里使用示例二维码，实际项目中应替换为真实支付二维码 */}
             <img
-              src="https://via.placeholder.com/200x200?text=支付二维码"
-              alt="支付二维码"
+              src="https://via.placeholder.com/200x200?text=VIP支付二维码"
+              alt="VIP支付二维码"
               className="qr-code"
             />
           </div>
           <p className="payment-amount">支付金额：¥9.00</p>
-          <p className="payment-note">支付成功后，系统将自动为您开通文章阅读权限</p>
+          <p className="payment-note">支付成功后，点击"支付完成"按钮完成VIP升级</p>
         </div>
       </Modal>
 
@@ -331,7 +361,7 @@ function MainAppUI() {
                                         {isAuthenticated ? (
                                           // 已登录用户，显示升级按钮和支付按钮
                                           <div className="premium-actions">
-                                            <button className="upgrade-btn-detail" onClick={upgradeToPremium}>
+                                            <button className="upgrade-btn-detail" onClick={() => setPaymentModalVisible(true)}>
                                               立即升级为VIP
                                             </button>
                                             <button className="pay-btn-detail" onClick={() => setPaymentModalVisible(true)}>
@@ -446,7 +476,7 @@ export default function App() {
 
 
   const [loginVisible, setLoginVisible] = useState(false);
-  const { isAuthenticated, isPremium, logout } = useUser();
+  const { isAuthenticated, isPremium, logout, loading } = useUser();
 
   const [showWelcome, setShowWelcome] = useState(false);
   const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
@@ -496,6 +526,16 @@ export default function App() {
     setLoginVisible(false);
     // UserContext's login function should have already updated isAuthenticated
   };
+
+  // 当加载中时，显示加载界面
+  if (loading) {
+    return (
+      <div className="loading-overlay">
+        <div className="loading-spinner"></div>
+        <p>正在加载用户信息...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="app-container">
