@@ -132,3 +132,8 @@
     background-color: #f9f9f9;
   }
 }
+
+/* 取消Ant Design模态框内容区域的默认padding */
+.ant-modal-content {
+  padding: 0 !important;
+}
