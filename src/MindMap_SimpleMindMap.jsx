@@ -269,7 +269,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
           // 2、处理节点备注点击
           const isNoteClick = e.target.closest('.smm-node-note');
           if (isNoteClick) {
-            console.log("mindMap.on('node_click') isNoteClick:", node.nodeData);
+            console.log("mindMap.on('node_click') isNoteClick:", node);
             onNodeClick(node.nodeData);
             if (mindMap.plugins && mindMap.plugins.customNoteContentShow != undefined) {
               mindMap.plugins.customNoteContentShow.hide();

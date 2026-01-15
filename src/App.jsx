@@ -94,7 +94,9 @@ function MainAppUI() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0); // 当前查看的图片索引
   const mindMapInstanceRef = useRef(null);                   // 缓存思维导图实例
 
-  const { isAuthenticated, isPremium, upgradeToPremium, completeUpgradeToPremium, paymentModalVisible, setPaymentModalVisible } = useUser();
+  const { isAuthenticated, isPremium, upgradeToPremium, completeUpgradeToPremium,
+     purchaseArticle, completePurchaseArticle, paymentModalVisible, closePaymentModal, 
+     paymentType, hasPurchasedArticle } = useUser();
 
   // 截断文本函数，用于付费内容的部分显示
   const truncateText = (text, maxLength = 200) => {
@@ -123,8 +125,10 @@ function MainAppUI() {
     let img_url = nodeData.img_url || nodeData.data?.img_url || [];
     // 添加节点的付费状态
     const is_premium = nodeData.is_premium || nodeData.data?.is_premium || false;
+    // 获取节点的唯一标识，优先使用node_id，其次使用name作为回退
+    const nodeId = nodeData.node_id || nodeData.data?.node_id || nodeName;
     console.log("is_premium: ", is_premium);
-    setSelectedNode({ name: nodeName, details, img_url: img_url, is_premium });
+    setSelectedNode({ name: nodeName, details, img_url: img_url, is_premium, id: nodeId });
     setPanelVisible(true);
     if (clickDetails && clickDetails.type === 'attachment_icon_click') {
       console.log('MainAppUI: Attachment icon click received:', clickDetails.attachment);
@@ -240,18 +244,25 @@ function MainAppUI() {
       
       {/* 支付二维码弹窗 */}
       <Modal
-        title="扫码支付"
+        title={paymentType === 'vip' ? "扫码支付 - VIP升级" : "扫码支付 - 单篇文章"}
         open={paymentModalVisible}
-        onCancel={() => setPaymentModalVisible(false)}
+        onCancel={closePaymentModal}
         footer={[
-          <Button key="cancel" onClick={() => setPaymentModalVisible(false)}>
+          <Button key="cancel" onClick={closePaymentModal}>
             取消
           </Button>,
           <Button key="confirm" type="primary" onClick={async () => {
-            // 调用完成VIP升级的函数
-            const success = await completeUpgradeToPremium();
+            let success = false;
+            if (paymentType === 'vip') {
+              // 调用完成VIP升级的函数
+              success = await completeUpgradeToPremium();
+            } else if (paymentType === 'article') {
+              // 调用完成单篇文章购买的函数
+              success = await completePurchaseArticle();
+            }
+            
             if (success) {
-              setPaymentModalVisible(false);
+              closePaymentModal();
               // 关闭节点详情面板，以便重新加载内容
               setPanelVisible(false);
             }
@@ -268,13 +279,15 @@ function MainAppUI() {
           <div className="qr-code-container">
             {/* 这里使用示例二维码，实际项目中应替换为真实支付二维码 */}
             <img
-              src="https://via.placeholder.com/200x200?text=VIP支付二维码"
-              alt="VIP支付二维码"
+              src={paymentType === 'vip' ? "https://via.placeholder.com/200x200?text=VIP支付二维码" : "https://via.placeholder.com/200x200?text=文章支付二维码"}
+              alt={paymentType === 'vip' ? "VIP支付二维码" : "文章支付二维码"}
               className="qr-code"
             />
           </div>
-          <p className="payment-amount">支付金额：¥9.00</p>
-          <p className="payment-note">支付成功后，点击"支付完成"按钮完成VIP升级</p>
+          <p className="payment-amount">支付金额：{paymentType === 'vip' ? "¥9.00" : "¥3.00"}</p>
+          <p className="payment-note">
+            {paymentType === 'vip' ? "支付成功后，点击'支付完成'按钮完成VIP升级" : "支付成功后，点击'支付完成'按钮查看完整文章"}
+          </p>
         </div>
       </Modal>
 
@@ -338,7 +351,7 @@ function MainAppUI() {
                                   key={idx}
                                   className="point"
                                 >
-                                  {selectedNode.is_premium && !isPremium ? (
+                                  {selectedNode.is_premium && !isPremium && !hasPurchasedArticle(selectedNode.id) ? (
                                     // 付费节点且非VIP用户，只显示部分内容
                                     <>
                                       <div dangerouslySetInnerHTML={{ __html: marked.parse(truncateText(item.text)) }} />
@@ -347,11 +360,11 @@ function MainAppUI() {
                                         {isAuthenticated ? (
                                           // 已登录用户，显示升级按钮和支付按钮
                                           <div className="premium-actions">
-                                            <button className="upgrade-btn-detail" onClick={() => setPaymentModalVisible(true)}>
+                                            <button className="upgrade-btn-detail" onClick={() => upgradeToPremium()}>
                                               立即升级为VIP
                                             </button>
-                                            <button className="pay-btn-detail" onClick={() => setPaymentModalVisible(true)}>
-                                              立即支付阅读
+                                            <button className="pay-btn-detail" onClick={() => purchaseArticle(selectedNode.id)}>
+                                              立即付费阅读
                                             </button>
                                           </div>
                                         ) : (

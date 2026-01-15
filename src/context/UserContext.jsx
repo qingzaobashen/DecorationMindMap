@@ -13,27 +13,35 @@ export const UserProvider = ({ children }) => {
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(true);
   const [paymentModalVisible, setPaymentModalVisible] = useState(false);
+  const [paymentType, setPaymentType] = useState(null); // null, 'vip' or 'article'
+  const [currentArticleId, setCurrentArticleId] = useState(null); // 当前正在付费的文章ID
+  const [purchasedArticles, setPurchasedArticles] = useState([]); // 用户已购买的文章列表
 
   // 从Supabase更新用户状态
   const updateUserState = (user) => {
     if (user) {
       const isPremiumUser = user.user_metadata?.is_premium || false;
       const userUsername = user.user_metadata?.username || user.email?.split('@')[0] || user.id;
+      const userPurchasedArticles = user.user_metadata?.purchased_articles || [];
       
       setIsAuthenticated(true);
       setUsername(userUsername);
       setIsPremium(isPremiumUser);
+      setPurchasedArticles(userPurchasedArticles);
       
-      // 仅保留VIP状态的本地存储，用于快速恢复
+      // 仅保留VIP状态和已购买文章的本地存储，用于快速恢复
       localStorage.setItem('isPremium', isPremiumUser ? 'true' : 'false');
       localStorage.setItem('username', userUsername);
+      localStorage.setItem('purchasedArticles', JSON.stringify(userPurchasedArticles));
     } else {
       setIsAuthenticated(false);
       setUsername('');
       setIsPremium(false);
+      setPurchasedArticles([]);
       
       localStorage.removeItem('isPremium');
       localStorage.removeItem('username');
+      localStorage.removeItem('purchasedArticles');
     }
   };
 
@@ -46,12 +54,14 @@ export const UserProvider = ({ children }) => {
         
         if (error) {
           console.error('获取用户信息失败:', error);
-          // 尝试从本地存储快速恢复VIP状态
+          // 尝试从本地存储快速恢复状态
           const isPremiumUser = localStorage.getItem('isPremium') === 'true';
           const userUsername = localStorage.getItem('username') || '';
+          const userPurchasedArticles = JSON.parse(localStorage.getItem('purchasedArticles')) || [];
           
           setIsPremium(isPremiumUser);
           setUsername(userUsername);
+          setPurchasedArticles(userPurchasedArticles);
           setIsAuthenticated(false);
         } else {
           updateUserState(data?.user);
@@ -61,9 +71,11 @@ export const UserProvider = ({ children }) => {
         // 出错时尝试从本地存储恢复状态
         const isPremiumUser = localStorage.getItem('isPremium') === 'true';
         const userUsername = localStorage.getItem('username') || '';
+        const userPurchasedArticles = JSON.parse(localStorage.getItem('purchasedArticles')) || [];
         
         setIsPremium(isPremiumUser);
         setUsername(userUsername);
+        setPurchasedArticles(userPurchasedArticles);
         setIsAuthenticated(false);
       } finally {
         setLoading(false);
@@ -127,18 +139,105 @@ export const UserProvider = ({ children }) => {
 
   // 升级为VIP用户 - 开始支付流程
   const upgradeToPremium = () => {
+    // 设置支付类型为VIP
+    setPaymentType('vip');
     // 显示支付模态框
     setPaymentModalVisible(true);
     return new Promise((resolve) => {
-      // 这里可以添加触发支付二维码弹窗的逻辑
-      // 但由于弹窗是UI组件，我们将在App.jsx中处理
       resolve();
     });
+  };
+  
+  // 购买单篇文章 - 开始支付流程
+  const purchaseArticle = (articleId) => {
+    // 设置支付类型为单篇文章
+    setPaymentType('article');
+    // 设置当前正在购买的文章ID
+    setCurrentArticleId(articleId);
+    // 显示支付模态框
+    setPaymentModalVisible(true);
+    return new Promise((resolve) => {
+      resolve();
+    });
+  };
+  
+  // 检查用户是否已经购买了某篇文章
+  const hasPurchasedArticle = (articleId) => {
+    // VIP用户可以查看所有文章
+    if (isPremium) {
+      return true;
+    }
+    // 检查是否在已购买列表中
+    return purchasedArticles.includes(articleId);
   };
   
   // 关闭支付模态框
   const closePaymentModal = () => {
     setPaymentModalVisible(false);
+    // 重置支付类型和当前文章ID
+    setPaymentType(null);
+    setCurrentArticleId(null);
+  };
+  
+  // 完成单篇文章购买 - 支付成功后调用
+  const completePurchaseArticle = async () => {
+    try {
+      // 1. 验证用户是否支付成功
+      const isPaymentSuccessful = await validatePayment();
+      
+      if (!isPaymentSuccessful) {
+        message.error('支付验证失败，请检查支付状态');
+        return false;
+      }
+      
+      if (!currentArticleId) {
+        message.error('文章ID不能为空');
+        return false;
+      }
+      
+      // 2. 获取当前用户信息
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !userData?.user) {
+        message.error('获取用户信息失败');
+        return false;
+      }
+      
+      // 3. 更新用户的已购买文章列表
+      const currentPurchasedArticles = userData.user.user_metadata?.purchased_articles || [];
+      
+      // 避免重复购买
+      if (currentPurchasedArticles.includes(currentArticleId)) {
+        message.success('您已经购买过这篇文章');
+        return true;
+      }
+      
+      // 添加新购买的文章ID
+      const updatedPurchasedArticles = [...currentPurchasedArticles, currentArticleId];
+      
+      // 4. 更新Supabase用户的元数据
+      const { data, error } = await supabase.auth.updateUser({
+        data: {
+          purchased_articles: updatedPurchasedArticles
+        }
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      console.log('文章购买成功响应:', data);
+      
+      // 5. 更新本地状态
+      updateUserState(data?.user);
+      
+      message.success('文章购买成功，您现在可以查看完整内容了');
+      return true;
+    } catch (error) {
+      message.error(`文章购买失败: ${error.message}`);
+      console.error('文章购买失败:', error);
+      return false;
+    }
   };
 
   // 完成VIP升级 - 支付成功后调用
@@ -224,11 +323,17 @@ export const UserProvider = ({ children }) => {
     username,
     loading,
     paymentModalVisible,
+    paymentType,
+    currentArticleId,
+    purchasedArticles,
     setPaymentModalVisible,
     login,
     logout,
     upgradeToPremium,
     completeUpgradeToPremium,
+    purchaseArticle,
+    completePurchaseArticle,
+    hasPurchasedArticle,
     closePaymentModal,
     saveUserData,
     getUserData

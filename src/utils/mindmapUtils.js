@@ -127,6 +127,7 @@ export const convertObjectToMindMap = (obj) => {
         return {
             data: {
                 text: node.name,
+                node_id: node.node_id,
                 // 使用双换行符分隔段落，并限制每段文字长度
                 note: limitTextLength(Array.isArray(node.details) ? node.details.map(d => d.text).join('\n') : (node.details || '')),
                 details: node.details,
@@ -147,6 +148,7 @@ export const convertObjectToMindMap = (obj) => {
     return {
         data: {
             text: obj.name || '装修流程',
+            node_id: obj.node_id,
             note: obj.details?.map(d => d.text).join('\n') || '',
             details: obj.details,
             img_url: obj.img_url,

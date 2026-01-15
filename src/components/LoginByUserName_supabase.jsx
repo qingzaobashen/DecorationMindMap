@@ -251,12 +251,12 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
         throw error;
       }
       // 测试VIP取消的代码
-      //const { datas, errors } = await supabase.auth.updateUser({
-      //        data: { 
-      //          is_premium: false,
-      //          premium_expires_at: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString() // 默认为1天有效期
-      //        }
-      //      });
+      const { datas, errors } = await supabase.auth.updateUser({
+              data: { 
+                is_premium: false,
+                premium_expires_at: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString() // 默认为1天有效期
+              }
+            });
       // 登录成功，调用成功回调
       if (data.session) {
         console.log("登录成功:", data);
