@@ -311,38 +311,65 @@ function MainAppUI() {
                   {selectedNode.details && (
                     <div className="content-scroll">
                       <div className="split-layout">
-                        <div className="image-carousel">
-                          <Swiper
-                            loop={selectedNode.details?.length >= 2}
-                            pagination={{ clickable: true }}
-                            slidesPerView={1}
-                            className="my-swiper"
-                          >
-                            {selectedNode.img_url?.map((item, i) => (
-                              item && typeof item === 'string' && (
-                                <SwiperSlide key={i}>
-                                  <img
-                                        src={imageFilePath + (item || '/error0.png')}
-                                        className="carousel-image"
-                                        alt={`知识点配图${i + 1}`}
-                                        onClick={() => {
-                                          setCurrentImageIndex(i);
-                                          setFullscreenImageVisible(true);
-                                        }}
-                                        onError={(e) => {
-                                          e.target.onerror = null; // 防止循环错误
-                                          e.target.style.display = 'none';
-                                          // 可以在这里添加一个占位符图片或文本
-                                          const placeholderText = document.createElement('p');
-                                          placeholderText.textContent = '图片加载失败';
-                                          if (e.target.parentNode) e.target.parentNode.appendChild(placeholderText);
-                                        }}
-                                      />
-                                </SwiperSlide>
-                              )
-                            ))}
-                          </Swiper>
-                        </div>
+                        {/* 只有当存在有效图片地址时才显示图片轮播区域 */}
+                        {selectedNode.img_url && Array.isArray(selectedNode.img_url) && selectedNode.img_url.some(img => img && typeof img === 'string') && (
+                          <div className="image-carousel">
+                            <Swiper
+                              loop={selectedNode.img_url?.filter(img => img && typeof img === 'string').length >= 2}
+                              pagination={{ clickable: true }}
+                              slidesPerView={1}
+                              className="my-swiper"
+                              onSwiper={(swiper) => {
+                                // 获取图片轮播区域元素
+                                const carouselElement = document.querySelector('.image-carousel');
+                                if (carouselElement) {
+                                  // 添加鼠标滚轮事件监听
+                                  const handleWheel = (e) => {
+                                    e.preventDefault();
+                                    // 根据滚轮方向切换图片
+                                    if (e.deltaY > 0) {
+                                      swiper.slideNext();
+                                    } else {
+                                      swiper.slidePrev();
+                                    }
+                                  };
+                                  
+                                  // 添加事件监听器
+                                  carouselElement.addEventListener('wheel', handleWheel);
+                                  
+                                  // 组件卸载时移除事件监听器
+                                  return () => {
+                                    carouselElement.removeEventListener('wheel', handleWheel);
+                                  };
+                                }
+                              }}
+                            >
+                              {selectedNode.img_url?.map((item, i) => (
+                                item && typeof item === 'string' && (
+                                  <SwiperSlide key={i}>
+                                    <img
+                                          src={imageFilePath + (item || '/error0.png')}
+                                          className="carousel-image"
+                                          alt={`知识点配图${i + 1}`}
+                                          onClick={() => {
+                                            setCurrentImageIndex(i);
+                                            setFullscreenImageVisible(true);
+                                          }}
+                                          onError={(e) => {
+                                            e.target.onerror = null; // 防止循环错误
+                                            e.target.style.display = 'none';
+                                            // 可以在这里添加一个占位符图片或文本
+                                            const placeholderText = document.createElement('p');
+                                            placeholderText.textContent = '图片加载失败';
+                                            if (e.target.parentNode) e.target.parentNode.appendChild(placeholderText);
+                                          }}
+                                        />
+                                  </SwiperSlide>
+                                )
+                              ))}
+                            </Swiper>
+                          </div>
+                        )}
                         <div className="text-content">
                           <div className="knowledge-points">
                             {selectedNode.details?.map((item, idx) => (
@@ -672,8 +699,9 @@ function buildMindMapStructure(flatData) {
       }
     }
     // 设置根节点
-    if (item.parent_id === null) {
+    if (item.parent_id === null && !isNaN(item.node_id)) {
       root = nodeMap.get(item.node_id);
+      console.log("buildMindTreeStructure() root:",root);
     }
   });
   const nodeMapCp = nodeMap;
@@ -693,7 +721,6 @@ function buildMindMapStructure(flatData) {
       });
     }
   });
-  console.log("buildMindTreeStructure() root:", root);
   return root ? {
     name: root.name,
     details: root.details,
