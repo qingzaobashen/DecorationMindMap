@@ -92,7 +92,9 @@ function MainAppUI() {
   const [viewType] = useState('simplemindmap'); // 导图的显示类型，默认simplemindmap
   const [fullscreenImageVisible, setFullscreenImageVisible] = useState(false); // 全屏图片查看器是否可见
   const [currentImageIndex, setCurrentImageIndex] = useState(0); // 当前查看的图片索引
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0); // 当前轮播图索引
   const mindMapInstanceRef = useRef(null);                   // 缓存思维导图实例
+  const swiperInstanceRef = useRef(null);                    // 缓存Swiper实例
 
   const { isAuthenticated, isPremium, upgradeToPremium, completeUpgradeToPremium,
      purchaseArticle, completePurchaseArticle, paymentModalVisible, closePaymentModal, 
@@ -317,9 +319,18 @@ function MainAppUI() {
                             <Swiper
                               loop={selectedNode.img_url?.filter(img => img && typeof img === 'string').length >= 2}
                               pagination={{ clickable: true }}
+                              navigation={{
+                                nextEl: '.swiper-button-next',
+                                prevEl: '.swiper-button-prev',
+                              }}
                               slidesPerView={1}
                               className="my-swiper"
                               onSwiper={(swiper) => {
+                                // 保存Swiper实例
+                                swiperInstanceRef.current = swiper;
+                                // 初始化时设置当前索引
+                                setCurrentSlideIndex(swiper.realIndex);
+                                
                                 // 获取图片轮播区域元素
                                 const carouselElement = document.querySelector('.image-carousel');
                                 if (carouselElement) {
@@ -342,6 +353,10 @@ function MainAppUI() {
                                     carouselElement.removeEventListener('wheel', handleWheel);
                                   };
                                 }
+                              }}
+                              onSlideChange={(swiper) => {
+                                // 更新当前幻灯片索引
+                                setCurrentSlideIndex(swiper.realIndex);
                               }}
                             >
                               {selectedNode.img_url?.map((item, i) => (
@@ -368,6 +383,35 @@ function MainAppUI() {
                                 )
                               ))}
                             </Swiper>
+                            {/* 左右切换按钮 */}
+                            <div 
+                              className="swiper-button-prev"
+                              onClick={() => {
+                                if (swiperInstanceRef.current) {
+                                  swiperInstanceRef.current.slidePrev();
+                                }
+                              }}
+                            >
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                              </svg>
+                            </div>
+                            <div 
+                              className="swiper-button-next"
+                              onClick={() => {
+                                if (swiperInstanceRef.current) {
+                                  swiperInstanceRef.current.slideNext();
+                                }
+                              }}
+                            >
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                              </svg>
+                            </div>
+                            {/* 图片序号显示 */}
+                            <div className="image-counter-pre">
+                              {currentSlideIndex + 1}/{selectedNode.img_url?.filter(img => img && typeof img === 'string').length}
+                            </div>
                           </div>
                         )}
                         <div className="text-content">

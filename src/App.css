@@ -384,6 +384,19 @@ body {
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
+.image-counter-pre {
+    position: absolute;
+    bottom: 10px;
+    left: 17%;
+    background-color: rgba(0, 0, 0, 0.15);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 10;
+  }
+
 .text-content {
   flex: 2;
   min-width: 0;
@@ -540,6 +553,7 @@ body {
     width: 100%;
     max-height: 60vh;
     margin-bottom: 10px;
+    position: relative;
   }
   
   /* 轮播图片自适应 */
@@ -548,6 +562,52 @@ body {
     height: auto;
     object-fit: contain;
     border-radius: 8px;
+  }
+  
+  /* 图片序号显示样式 */
+  .detail-panel .image-counter-pre {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.15);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 10;
+  }
+  
+  /* 左右切换按钮样式 */
+  .detail-panel .swiper-button-prev,
+  .detail-panel .swiper-button-next {
+    position: absolute;
+    top: 53%;
+    transform: translateY(-43%);
+    background-color: rgba(0, 0, 0, 0.15);
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+  }
+  
+  .detail-panel .swiper-button-prev {
+    left: 2%;
+  }
+  
+  .detail-panel .swiper-button-next {
+    left: 34%;
+  }
+  
+  /* 切换按钮悬停效果 */
+  .detail-panel .swiper-button-prev:hover,
+  .detail-panel .swiper-button-next:hover {
+    background-color: rgba(0, 0, 0, 0.8);
   }
   
   /* 文本内容区域 - 不单独滚动 */
@@ -811,6 +871,37 @@ body {
   border-radius: 20px;
   font-size: 14px;
 }
+/* 左右切换按钮样式 */
+  .detail-panel .swiper-button-prev,
+  .detail-panel .swiper-button-next {
+    position: absolute;
+    top: 53%;
+    transform: translateY(-43%);
+    background-color: rgba(0, 0, 0, 0.15);
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+  }
+  
+  .detail-panel .swiper-button-prev {
+    left: 2%;
+  }
+  
+  .detail-panel .swiper-button-next {
+    left: 34%;
+  }
+  
+  /* 切换按钮悬停效果 */
+  .detail-panel .swiper-button-prev:hover,
+  .detail-panel .swiper-button-next:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
