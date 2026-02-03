@@ -546,10 +546,11 @@ export default function App() {
 
 
   const [loginVisible, setLoginVisible] = useState(false);
-  const { isAuthenticated, isPremium, logout, loading } = useUser();
+  const { isAuthenticated, isPremium, logout, loading, isEmailVerified, sendEmailVerification } = useUser();
 
   const [showWelcome, setShowWelcome] = useState(false);
   const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
+  const [showEmailVerificationPrompt, setShowEmailVerificationPrompt] = useState(false);
 
   const handleOpenFeedbackModal = () => setFeedbackModalVisible(true);
   const handleCloseFeedbackModal = () => setFeedbackModalVisible(false);
@@ -586,10 +587,16 @@ export default function App() {
     }
   ];
 
-  // Effect for welcome message
+  // Effect for welcome message and email verification
   useEffect(() => {
-    if (isAuthenticated) setShowWelcome(true);
-  }, [isAuthenticated]);
+    if (isAuthenticated) {
+      setShowWelcome(true);
+      // 检查邮箱验证状态
+      if (!isEmailVerified) {
+        setShowEmailVerificationPrompt(true);
+      }
+    }
+  }, [isAuthenticated, isEmailVerified]);
 
   const showLoginModal = () => setLoginVisible(true);
   const handleLoginSuccess = () => {
@@ -649,6 +656,29 @@ export default function App() {
       >
         {/* <Login onSuccess={handleLoginSuccess} /> */}
         <LoginBySupabaseUsername onSuccess={handleLoginSuccess} />
+      </Modal>
+      <Modal
+        title="邮箱验证"
+        open={showEmailVerificationPrompt}
+        onCancel={() => setShowEmailVerificationPrompt(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setShowEmailVerificationPrompt(false)}>
+            稍后验证
+          </Button>,
+          <Button key="confirm" type="primary" onClick={async () => {
+            await sendEmailVerification();
+            setShowEmailVerificationPrompt(false);
+          }}>
+            发送验证邮件
+          </Button>
+        ]}
+        width={360}
+        style={{ borderRadius: '16px' }}
+      >
+        <div style={{ padding: '20px 0' }}>
+          <p style={{ marginBottom: '16px' }}>您的邮箱尚未验证，请点击下方按钮发送验证邮件。</p>
+          <p style={{ fontSize: '14px', color: '#666' }}>验证邮箱后，您将可以使用完整的账号功能。</p>
+        </div>
       </Modal>
       <FeedbackModal visible={feedbackModalVisible} onClose={handleCloseFeedbackModal} />
     </div>

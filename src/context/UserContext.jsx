@@ -16,6 +16,7 @@ export const UserProvider = ({ children }) => {
   const [paymentType, setPaymentType] = useState(null); // null, 'vip' or 'article'
   const [currentArticleId, setCurrentArticleId] = useState(null); // 当前正在付费的文章ID
   const [purchasedArticles, setPurchasedArticles] = useState([]); // 用户已购买的文章列表
+  const [isEmailVerified, setIsEmailVerified] = useState(false); // 邮箱验证状态
 
   // 从Supabase更新用户状态
   const updateUserState = (user) => {
@@ -23,25 +24,32 @@ export const UserProvider = ({ children }) => {
       const isPremiumUser = user.user_metadata?.is_premium || false;
       const userUsername = user.user_metadata?.username || user.email?.split('@')[0] || user.id;
       const userPurchasedArticles = user.user_metadata?.purchased_articles || [];
+      const isEmailVerified = user.email_confirmed_at ? true : false;
       
       setIsAuthenticated(true);
       setUsername(userUsername);
       setIsPremium(isPremiumUser);
       setPurchasedArticles(userPurchasedArticles);
+      setIsEmailVerified(isEmailVerified);
       
-      // 仅保留VIP状态和已购买文章的本地存储，用于快速恢复
+      // 保存用户状态到本地存储，用于快速恢复
+      localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('isPremium', isPremiumUser ? 'true' : 'false');
       localStorage.setItem('username', userUsername);
       localStorage.setItem('purchasedArticles', JSON.stringify(userPurchasedArticles));
+      localStorage.setItem('isEmailVerified', isEmailVerified ? 'true' : 'false');
     } else {
       setIsAuthenticated(false);
       setUsername('');
       setIsPremium(false);
       setPurchasedArticles([]);
+      setIsEmailVerified(false);
       
+      localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('isPremium');
       localStorage.removeItem('username');
       localStorage.removeItem('purchasedArticles');
+      localStorage.removeItem('isEmailVerified');
     }
   };
 
@@ -49,34 +57,44 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // 尝试从Supabase获取当前用户信息
+        // 首先从本地存储快速恢复状态，提升用户体验
+        const isPremiumUser = localStorage.getItem('isPremium') === 'true';
+        const userUsername = localStorage.getItem('username') || '';
+        const userPurchasedArticles = JSON.parse(localStorage.getItem('purchasedArticles')) || [];
+        const isEmailVerifiedUser = localStorage.getItem('isEmailVerified') === 'true';
+        const isAuthenticatedUser = localStorage.getItem('isAuthenticated') === 'true';
+        
+        // 快速设置本地状态，让用户立即看到界面
+        if (isAuthenticatedUser) {
+          setIsAuthenticated(true);
+          setUsername(userUsername);
+          setIsPremium(isPremiumUser);
+          setPurchasedArticles(userPurchasedArticles);
+          setIsEmailVerified(isEmailVerifiedUser);
+        }
+        
+        // 然后尝试从Supabase获取最新的用户信息，确保状态同步
         const { data, error } = await supabase.auth.getUser();
         
         if (error) {
           console.error('获取用户信息失败:', error);
-          // 尝试从本地存储快速恢复状态
-          const isPremiumUser = localStorage.getItem('isPremium') === 'true';
-          const userUsername = localStorage.getItem('username') || '';
-          const userPurchasedArticles = JSON.parse(localStorage.getItem('purchasedArticles')) || [];
-          
-          setIsPremium(isPremiumUser);
-          setUsername(userUsername);
-          setPurchasedArticles(userPurchasedArticles);
-          setIsAuthenticated(false);
+          // 如果从Supabase获取失败，保持本地存储的状态
+          // 但如果本地存储显示已登录，实际可能已过期，需要进一步处理
+          if (isAuthenticatedUser) {
+            // 尝试刷新会话
+            const { error: refreshError } = await supabase.auth.refreshSession();
+            if (refreshError) {
+              // 刷新会话也失败，说明登录已过期
+              updateUserState(null);
+            }
+          }
         } else {
+          // 从Supabase获取成功，更新状态
           updateUserState(data?.user);
         }
       } catch (error) {
         console.error('检查用户状态失败:', error);
-        // 出错时尝试从本地存储恢复状态
-        const isPremiumUser = localStorage.getItem('isPremium') === 'true';
-        const userUsername = localStorage.getItem('username') || '';
-        const userPurchasedArticles = JSON.parse(localStorage.getItem('purchasedArticles')) || [];
-        
-        setIsPremium(isPremiumUser);
-        setUsername(userUsername);
-        setPurchasedArticles(userPurchasedArticles);
-        setIsAuthenticated(false);
+        // 出错时保持本地存储的状态
       } finally {
         setLoading(false);
       }
@@ -133,6 +151,7 @@ export const UserProvider = ({ children }) => {
       });
     } catch (error) {
       console.error('支付验证失败:', error);
+      message.error('支付验证失败，请稍后重试');
       return false;
     }
   };
@@ -199,7 +218,7 @@ export const UserProvider = ({ children }) => {
       const { data: userData, error: userError } = await supabase.auth.getUser();
       
       if (userError || !userData?.user) {
-        message.error('获取用户信息失败');
+        message.error('获取用户信息失败，请重新登录后重试');
         return false;
       }
       
@@ -234,8 +253,15 @@ export const UserProvider = ({ children }) => {
       message.success('文章购买成功，您现在可以查看完整内容了');
       return true;
     } catch (error) {
-      message.error(`文章购买失败: ${error.message}`);
       console.error('文章购买失败:', error);
+      // 提供更友好的错误提示
+      if (error.code === 'unauthorized') {
+        message.error('登录已过期，请重新登录后重试');
+      } else if (error.code === 'network') {
+        message.error('网络连接失败，请检查网络后重试');
+      } else {
+        message.error('文章购买失败，请稍后重试');
+      }
       return false;
     }
   };
@@ -271,8 +297,15 @@ export const UserProvider = ({ children }) => {
       message.success('恭喜！您已成功升级为VIP用户');
       return true;
     } catch (error) {
-      message.error(`升级VIP用户失败: ${error.message}`);
       console.error('升级VIP用户失败:', error);
+      // 提供更友好的错误提示
+      if (error.code === 'unauthorized') {
+        message.error('登录已过期，请重新登录后重试');
+      } else if (error.code === 'network') {
+        message.error('网络连接失败，请检查网络后重试');
+      } else {
+        message.error('升级VIP用户失败，请稍后重试');
+      }
       return false;
     }
   };
@@ -305,6 +338,46 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  // 发送邮箱验证链接
+  const sendEmailVerification = async () => {
+    try {
+      const { error } = await supabase.auth.resend({ 
+        type: 'signup',
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      message.success('验证邮件已发送，请检查您的邮箱');
+      return true;
+    } catch (error) {
+      console.error('发送邮箱验证失败:', error);
+      message.error(`发送验证邮件失败: ${error.message}`);
+      return false;
+    }
+  };
+
+  // 发送密码重置邮件
+  const sendPasswordResetEmail = async (email) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      message.success('密码重置邮件已发送，请检查您的邮箱');
+      return true;
+    } catch (error) {
+      console.error('发送密码重置邮件失败:', error);
+      message.error(`发送密码重置邮件失败: ${error.message}`);
+      return false;
+    }
+  };
+
   // 获取用户数据
   const getUserData = (type = 'mindmap') => {
     try {
@@ -322,6 +395,7 @@ export const UserProvider = ({ children }) => {
     isPremium,
     username,
     loading,
+    isEmailVerified,
     paymentModalVisible,
     paymentType,
     currentArticleId,
@@ -336,7 +410,9 @@ export const UserProvider = ({ children }) => {
     hasPurchasedArticle,
     closePaymentModal,
     saveUserData,
-    getUserData
+    getUserData,
+    sendEmailVerification,
+    sendPasswordResetEmail
   };
 
   return (
