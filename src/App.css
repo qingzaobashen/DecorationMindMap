@@ -608,8 +608,9 @@ body {
   /* 图片序号显示样式 */
   .detail-panel .image-counter-pre {
     position: absolute;
-    bottom: 10px;
-    right: 10px;
+    width:50px;
+    bottom: -20px;
+    left: 45%;
     background-color: rgba(0, 0, 0, 0.15);
     color: white;
     padding: 5px 10px;
@@ -642,7 +643,7 @@ body {
   }
   
   .detail-panel .swiper-button-next {
-    left: 34%;
+    left: 94%;
   }
   
   /* 切换按钮悬停效果 */
@@ -933,9 +934,10 @@ body {
   .detail-panel .swiper-button-prev {
     left: 2%;
   }
-  
+  @media (min-width: 768px) {
   .detail-panel .swiper-button-next {
     left: 34%;
+  }
   }
   
   /* 切换按钮悬停效果 */
