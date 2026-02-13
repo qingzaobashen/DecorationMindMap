@@ -32,7 +32,8 @@ export const customNoteContentShowPlugin = {
             zIndex: 9999,
             maxWidth: '400px',  // 最大宽度限制
             maxHeight: '500px', // 最大高度限制
-            overflowY: 'auto'   // 支持内容滚动
+            overflowY: 'auto',   // 支持内容滚动
+            pointerEvents: 'none' // 防止备注框拦截鼠标事件，避免与备注图标重叠时闪烁
         });
 
         // 为弹窗内的Markdown标题添加更小的字体大小样式（直接在页面中添加<style>标签）
