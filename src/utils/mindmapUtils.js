@@ -143,7 +143,7 @@ export const convertObjectToMindMap = (obj) => {
             children: (node.children || []).map(mapNode)
         };
     };
-    console.log("convertObjectToMindMap() obj:", obj);
+    // console.log("convertObjectToMindMap() obj:", obj);
     // 创建根节点
     return {
         data: {

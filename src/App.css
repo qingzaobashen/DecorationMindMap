@@ -289,6 +289,34 @@ body {
   100% { transform: rotate(360deg); }
 }
 
+.loading-subtext {
+  font-size: 14px;
+  color: #666;
+  margin-top: 8px;
+  text-align: center;
+}
+
+.empty-state {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.empty-subtext {
+  font-size: 14px;
+  color: #999;
+  margin-top: 8px;
+  text-align: center;
+}
+
 /* 细节面板样式 */
 .detail-panel {
   position: fixed;
@@ -310,7 +338,7 @@ body {
 
 .detail-panel h3 {
   margin-top: 0;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   color: #2c3e50;
   font-size: 1.3rem;
   text-align: left;
@@ -332,7 +360,7 @@ body {
 
 .detail-panel h3 {
   font-size: 1.1rem;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   color: #444;
 }
 
@@ -415,6 +443,19 @@ body {
   min-width: 0;
   display: flex;
   justify-content: center;
+  position: relative;
+}
+
+.image-carousel .swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.image-carousel .swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: auto;
 }
 
 .carousel-image {
@@ -427,8 +468,8 @@ body {
 
 .image-counter-pre {
     position: absolute;
-    bottom: 10px;
-    left: 17%;
+    bottom: 0px;
+    left: 42%;
     background-color: rgba(0, 0, 0, 0.15);
     color: white;
     padding: 5px 10px;
@@ -437,6 +478,38 @@ body {
     font-weight: 500;
     z-index: 10;
   }
+
+/* Swiper导航按钮样式 */
+.swiper-button-prev,
+.swiper-button-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.15);
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: background-color 0.2s;
+}
+
+.swiper-button-prev {
+  left: 10px;
+}
+
+.swiper-button-next {
+  right: 10px;
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
 
 .text-content {
   flex: 2;
@@ -568,7 +641,7 @@ body {
   /* 弹窗标题 */
   .detail-panel h3 {
     font-size: 1rem;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     text-align: left;
   }
   
@@ -592,15 +665,16 @@ body {
   .detail-panel .image-carousel {
     flex: none;
     width: 100%;
-    max-height: 60vh;
-    margin-bottom: 10px;
+    max-height: 45vh;
     position: relative;
+    overflow: hidden;
   }
   
   /* 轮播图片自适应 */
   .detail-panel .carousel-image {
     width: 100%;
     height: auto;
+    max-height: 45vh;
     object-fit: contain;
     border-radius: 8px;
   }
@@ -609,12 +683,12 @@ body {
   .detail-panel .image-counter-pre {
     position: absolute;
     width:50px;
-    bottom: -20px;
+    bottom: 0px;
     left: 45%;
     background-color: rgba(0, 0, 0, 0.15);
     color: white;
-    padding: 5px 10px;
-    border-radius: 15px;
+    padding: 4px 10px;
+    border-radius: 12px;
     font-size: 14px;
     font-weight: 500;
     z-index: 10;
@@ -1031,7 +1105,7 @@ body {
   position: absolute;
   top: 20px;
   right: 20px;
-  width: 400px;
+  width: 320px;
   max-width: 90%;
   z-index: 1000;
   animation: slideInRight 0.5s ease;
@@ -1049,20 +1123,25 @@ body {
 }
 
 .welcome-card {
-  margin-top: 10px;
+  margin-top: 8px;
+  padding: 8px;
 }
 
 .welcome-card .ant-statistic-title {
-  font-size: 12px;
+  font-size: 10px;
 }
 
 .welcome-card .ant-statistic-content {
-  font-size: 14px;
+  font-size: 12px;
+}
+
+.welcome-card .ant-statistic {
+  margin: 4px 0;
 }
 
 @media (max-width: 768px) {
   .welcome-container {
-    width: 90%;
+    width: 280px;
     right: 5%;
     top: 10px;
   }
@@ -1354,4 +1433,51 @@ body {
   display: flex;
   justify-content: center;
   gap: 15px;
+}
+
+/* 错误边界样式 */
+.error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding: 20px;
+}
+
+.error-content {
+  max-width: 600px;
+  width: 100%;
+  background-color: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.error-content h2 {
+  font-size: 2rem;
+  color: #ff4d4f;
+  margin-bottom: 20px;
+}
+
+.error-content p {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.error-message {
+  font-size: 1rem;
+  color: #666;
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px 0;
+  word-break: break-all;
+}
+
+.error-content button {
+  margin-top: 20px;
 }

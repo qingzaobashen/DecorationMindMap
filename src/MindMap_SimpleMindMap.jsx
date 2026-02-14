@@ -64,7 +64,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
         return;
       }
 
-      console.log('SimpleMindMap 数据:', mindMapData);
+      //console.log('SimpleMindMap 数据:', mindMapData);
 
       // 创建思维导图实例
       const mindMap = new MindMap({

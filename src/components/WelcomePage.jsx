@@ -62,10 +62,6 @@ const WelcomePage = ({ showLogin }) => {
             登录 / 注册
           </Button>
         </Space>
-        <div className="demo-info">
-          <InfoCircleOutlined /> 
-          <Text>演示账号: demo/demo | VIP演示账号: premium/premium</Text>
-        </div>
       </div>
 
       {/* 核心功能展示区域 */}

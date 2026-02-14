@@ -52,6 +52,14 @@ export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, is
             onClick={() => onToggleCollapse(!isCollapsed)}
             icon={isCollapsed ? <FaBars /> : <FaTimes />}
             type="text"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onToggleCollapse(!isCollapsed);
+              }
+            }}
+            aria-label={isCollapsed ? "展开侧边栏" : "折叠侧边栏"}
           />
         </div>
       )}
@@ -84,6 +92,14 @@ export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, is
               className="nav-btn_col"
               onClick={item.onClick}
               type="text"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  item.onClick();
+                }
+              }}
+              aria-label={item.label}
             >
               {item.icon}
               <span>{item.label}</span>
@@ -109,6 +125,15 @@ export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, is
                 // 触发自定义事件，通知App.jsx显示支付弹窗
                 window.dispatchEvent(new CustomEvent('showPaymentModal'));
               }}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  upgradeToPremium();
+                  window.dispatchEvent(new CustomEvent('showPaymentModal'));
+                }
+              }}
+              aria-label="升级为VIP用户"
             >
               <FaUserTie className="upgrade-icon" />
               <span>升级为VIP用户</span>
@@ -131,6 +156,15 @@ export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, is
               <Button
                 className="nav-btn_col logout-btn"
                 type="text"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    // 触发点击事件，显示Popconfirm
+                    e.currentTarget.click();
+                  }
+                }}
+                aria-label="退出登录"
               >
                 <FaBoxTissue />
                 <span>退出登录</span>
@@ -146,6 +180,14 @@ export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, is
               className="nav-btn_col" 
               onClick={() => onLogin(true)}
               type="text"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onLogin(true);
+                }
+              }}
+              aria-label="登录"
             >
               <LoginOutlined />
               <span>登录</span>

@@ -33,6 +33,7 @@ export const UserProvider = ({ children }) => {
       setIsEmailVerified(isEmailVerified);
       
       // 保存用户状态到本地存储，用于快速恢复
+      // 只存储非敏感信息
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('isPremium', isPremiumUser ? 'true' : 'false');
       localStorage.setItem('username', userUsername);
@@ -94,7 +95,8 @@ export const UserProvider = ({ children }) => {
         }
       } catch (error) {
         console.error('检查用户状态失败:', error);
-        // 出错时保持本地存储的状态
+        // 出错时清除本地存储的状态，确保安全
+        updateUserState(null);
       } finally {
         setLoading(false);
       }
@@ -105,7 +107,12 @@ export const UserProvider = ({ children }) => {
     // 监听Supabase认证状态变化
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('认证状态变化:', event, session);
-      updateUserState(session?.user);
+      // 增强认证状态验证
+      if (event === 'SIGNED_OUT' || !session?.user) {
+        updateUserState(null);
+      } else {
+        updateUserState(session.user);
+      }
     });
     
     return () => {

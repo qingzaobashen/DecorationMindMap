@@ -133,7 +133,7 @@
   }
 }
 
-/* 取消Ant Design模态框内容区域的默认padding */
-.ant-modal-content {
+/* 取消Ant Design登录模态框内容区域的默认padding */
+.login-modal .ant-modal-content {
   padding: 0 !important;
 }
