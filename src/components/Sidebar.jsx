@@ -1,12 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { FaBars, FaTimes, FaUser, FaCrown } from 'react-icons/fa';
-import { Button, Avatar, Tooltip, Popconfirm, Tag } from 'antd';
-import { LogoutOutlined, LoginOutlined, CrownOutlined, DollarOutlined } from '@ant-design/icons';
-import { useUser } from '../context/UserContext';
-import { FaUserTie, FaUsers, FaBoxTissue, FaCommentDots } from 'react-icons/fa';
-
 /**
  * 可折叠侧边栏组件
+ * 提供导航功能、用户信息展示和VIP升级入口
+ * 采用现代简约专业风格，注重流畅的交互体验
+ */
+
+import React, { useState, useEffect } from 'react';
+import { FaBars, FaTimes, FaUser, FaCrown } from 'react-icons/fa';
+import { Button, Avatar, Tooltip, Popconfirm, Tag, Badge } from 'antd';
+import { LogoutOutlined, LoginOutlined, CrownOutlined, DollarOutlined } from '@ant-design/icons';
+import { useUser } from '../context/UserContext';
+import { FaUserTie, FaUsers, FaBoxTissue, FaCommentDots, FaFileAlt, FaProjectDiagram } from 'react-icons/fa';
+
+/**
+ * 侧边栏组件
  * @param {Object} props - 组件属性
  * @param {Array} props.items - 导航项数组
  * @param {function} props.onLogin - 登录回调函数
@@ -18,10 +24,10 @@ import { FaUserTie, FaUsers, FaBoxTissue, FaCommentDots } from 'react-icons/fa';
 export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, isCollapsed, onToggleCollapse }) {
   // 监听屏幕宽度，用于响应式设计
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [activeItem, setActiveItem] = useState(null);
   
-  //const [isCollapsed, setIsCollapsed] = useState(false);
   const username = localStorage.getItem('username') || '用户';
-  const { upgradeToPremium, logout } = useUser(); // 使用UserContext中的方法
+  const { upgradeToPremium, logout } = useUser();
   
   // 监听窗口大小变化
   useEffect(() => {
@@ -29,17 +35,35 @@ export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, is
       setIsMobile(window.innerWidth < 768);
     };
     
-    // 添加事件监听器
     window.addEventListener('resize', handleResize);
-    
-    // 清理事件监听器
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // 处理退出登录
+  /**
+   * 处理退出登录
+   */
   const handleLogout = async () => {
-    await logout(); // 调用UserContext的登出方法，触发完整登出流程
-    onLogin(false); // 通知父组件更新登录状态
+    await logout();
+    onLogin(false);
+  };
+
+  /**
+   * 处理导航项点击
+   * @param {Object} item - 导航项
+   */
+  const handleItemClick = (item) => {
+    setActiveItem(item.id);
+    if (item.onClick) {
+      item.onClick();
+    }
+  };
+
+  /**
+   * 处理VIP升级
+   */
+  const handleUpgrade = () => {
+    upgradeToPremium();
+    window.dispatchEvent(new CustomEvent('showPaymentModal'));
   };
 
   return (
@@ -47,6 +71,10 @@ export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, is
       {/* 只在非移动设备上显示折叠按钮 */}
       {!isMobile && (
         <div className="sidebar-header">
+          <div className="sidebar-logo">
+            <FaProjectDiagram />
+            {!isCollapsed && <span className="logo-text">装修导图</span>}
+          </div>
           <Button 
             className="toggle-btn"
             onClick={() => onToggleCollapse(!isCollapsed)}
@@ -67,20 +95,32 @@ export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, is
       {/* 只在非移动设备上显示用户信息区域 */}
       {isAuthenticated && !isMobile && (
         <div className="user-profile">
-          <Avatar
-            style={{ backgroundColor: isPremium ? '#ffd700' : '#1890ff' }}
-            icon={isPremium ? <FaCrown /> : <FaUser />}
-            size={isCollapsed || isMobile ? 'small' : 'default'}
-          />
-          {!isCollapsed && !isMobile && (
+          <Badge offset={[-5, 5]} count={isPremium ? <CrownOutlined style={{ color: '#ffd700' }} /> : 0}>
+            <Avatar
+              style={{ 
+                backgroundColor: isPremium ? 'linear-gradient(135deg, #ffd700 0%, #ffed4e 100%)' : 'linear-gradient(135deg, #0d9488 0%, #0f766e 100%)',
+                color: 'white'
+              }}
+              icon={isPremium ? <FaCrown /> : <FaUser />}
+              size={isCollapsed ? 'default' : 'large'}
+            />
+          </Badge>
+          {!isCollapsed && (
             <div className="user-info">
               <span className="username">{username}</span>
-              {isPremium && <Tag color="gold" className="premium-tag">VIP用户</Tag>}
+              {isPremium ? (
+                <Tag color="gold" className="premium-tag">
+                  <CrownOutlined /> VIP用户
+                </Tag>
+              ) : (
+                <Tag color="default" className="free-tag">普通用户</Tag>
+              )}
             </div>
           )}
         </div>
       )}
       
+      {/* 导航按钮区域 */}
       <div className="nav-buttons">
         {items.map((item) => (
           <Tooltip
@@ -89,14 +129,14 @@ export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, is
             placement="right"
           >
             <Button
-              className="nav-btn_col"
-              onClick={item.onClick}
+              className={`nav-btn_col ${activeItem === item.id ? 'active' : ''}`}
+              onClick={() => handleItemClick(item)}
               type="text"
               tabIndex={0}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
-                  item.onClick();
+                  handleItemClick(item);
                 }
               }}
               aria-label={item.label}
@@ -116,31 +156,24 @@ export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, is
             <Button 
               className="nav-btn_col upgrade-btn"
               type="text"
-              onClick={() => {
-                // 触发支付流程，实际的弹窗逻辑在App.jsx中处理
-                // 这里需要通过事件或其他方式通知App.jsx显示支付弹窗
-                // 由于Sidebar和App.jsx的层级关系，我们可以使用全局事件或React Context
-                // 为了简化，这里直接调用upgradeToPremium，实际项目中应该使用更优雅的方式
-                upgradeToPremium();
-                // 触发自定义事件，通知App.jsx显示支付弹窗
-                window.dispatchEvent(new CustomEvent('showPaymentModal'));
-              }}
+              onClick={handleUpgrade}
               tabIndex={0}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
-                  upgradeToPremium();
-                  window.dispatchEvent(new CustomEvent('showPaymentModal'));
+                  handleUpgrade();
                 }
               }}
               aria-label="升级为VIP用户"
             >
               <FaUserTie className="upgrade-icon" />
               <span>升级为VIP用户</span>
+              {!isCollapsed && <Badge count="NEW" size="small" className="upgrade-badge" />}
             </Button>
           </Tooltip>
         )}
         
+        {/* 登录/退出按钮 */}
         {isAuthenticated ? (
           <Tooltip
             title={isCollapsed ? "退出登录" : ""}
@@ -160,7 +193,6 @@ export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, is
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    // 触发点击事件，显示Popconfirm
                     e.currentTarget.click();
                   }
                 }}
@@ -177,7 +209,7 @@ export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, is
             placement="right"
           >
             <Button 
-              className="nav-btn_col" 
+              className="nav-btn_col login-btn" 
               onClick={() => onLogin(true)}
               type="text"
               tabIndex={0}
@@ -195,6 +227,15 @@ export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, is
           </Tooltip>
         )}
       </div>
+
+      {/* 侧边栏底部信息 */}
+      {!isMobile && !isCollapsed && (
+        <div className="sidebar-footer">
+          <div className="footer-info">
+            <p className="footer-text">© 2025 装修思维导图</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

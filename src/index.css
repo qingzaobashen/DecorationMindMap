@@ -1,61 +1,317 @@
-/* 设置根元素的全局样式 */
+/**
+ * 全局样式文件
+ * 定义应用的基础样式、颜色变量和字体系统
+ * 采用现代简约专业风格，注重层次感和流畅的交互体验
+ */
+
 :root {
-  /* 设置字体族，优先使用系统默认字体，其次是指定的几种字体 */
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  /* 设置行高为1.5 */
-  line-height: 1.5;
-  /* 设置字体粗细为400 */
+  /* 字体系统 - 使用专业的字体组合 */
+  font-family: 'Noto Sans SC', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  line-height: 1.6;
   font-weight: 400;
 
-  /* 设置颜色模式为浅色和深色模式 */
-  color-scheme: light dark;
-  /* 设置文字颜色为带有一定透明度的白色 */
-  color: rgba(255, 255, 255, 0.87);
-  /* 设置背景颜色为深灰色 */
-  background-color: #242424;
+  /* 颜色系统 - 专业配色方案 */
+  --color-primary: #0d9488;
+  --color-primary-dark: #0f766e;
+  --color-primary-light: #14b8a6;
+  --color-secondary: #f97316;
+  --color-secondary-light: #fb923c;
+  
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #94a3b8;
+  
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8fafc;
+  --color-bg-tertiary: #f1f5f9;
+  
+  --color-border: #e2e8f0;
+  --color-border-light: #f1f5f9;
+  
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+  
+  /* 阴影系统 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  /* 圆角系统 */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+  
+  /* 过渡动画 */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* 禁止字体合成，以保持字体的原始外观 */
-  font-synthesis: none;
-  /* 优化文字渲染，提高可读性 */
-  text-rendering: optimizeLegibility;
-  /* 开启webkit内核浏览器的字体抗锯齿 */
-  -webkit-font-smoothing: antialiased;
-  /* 开启Firefox浏览器的字体抗锯齿 */
-  -moz-osx-font-smoothing: grayscale;
+  /* 深色模式变量 */
+  --color-text-primary-dark: #f8fafc;
+  --color-text-secondary-dark: #cbd5e1;
+  --color-bg-primary-dark: #0f172a;
+  --color-bg-secondary-dark: #1e293b;
+  --color-border-dark: #334155;
 }
 
-/* 设置链接的样式 */
- a {
-  /* 设置字体粗细为500 */
+/* 颜色模式设置 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: var(--color-text-primary-dark);
+    background-color: var(--color-bg-primary-dark);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-primary);
+  }
+}
+
+/* 链接样式优化 */
+a {
   font-weight: 500;
-  /* 设置链接颜色为蓝色 */
-  color: #646cff;
-  /* 去除链接的下划线 */
-  text-decoration: inherit;
-}
-/* 鼠标悬停在链接上时的样式 */
- a:hover {
-  /* 改变链接颜色 */
-  color: #535bf2;
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
-/* 设置body元素的样式 */
- body {
-  /* 去除body元素的默认外边距 */
+a:hover {
+  color: var(--color-primary-dark);
+}
+
+/* 全局重置和基础样式 */
+* {
   margin: 0;
-  /* 使用flex布局 */
-  display: flex;
-  /* 设置宽度为100% */
-  width: 100%;
-  /* 设置最小高度为100%视口高度 */
-  min-height: 100vh;
-  /* 禁止横向滚动，允许纵向滚动 */
-  overflow-x: hidden;
-  overflow-y: visible;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
 
-/* 补充App容器样式 */
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+}
+
+/* 滚动条样式优化 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  transition: background var(--transition-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+/* 选择文本样式 */
+::selection {
+  background-color: var(--color-primary-light);
+  color: white;
+}
+
+/* 按钮基础样式 */
+button {
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 0.95em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* 标题样式 */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-text-primary);
+  margin-bottom: 0.5em;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 2rem;
+  letter-spacing: -0.01em;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+h4 {
+  font-size: 1.25rem;
+}
+
+h5 {
+  font-size: 1.125rem;
+}
+
+h6 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* 段落和文本样式 */
+p {
+  line-height: 1.7;
+  margin-bottom: 1em;
+  color: var(--color-text-secondary);
+}
+
+/* 列表样式 */
+ul, ol {
+  margin-left: 1.5em;
+  margin-bottom: 1em;
+}
+
+li {
+  line-height: 1.7;
+  margin-bottom: 0.5em;
+  color: var(--color-text-secondary);
+}
+
+/* 代码样式 */
+code, pre {
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--radius-sm);
+  padding: 0.2em 0.4em;
+  font-size: 0.9em;
+}
+
+pre {
+  padding: 1em;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+pre code {
+  padding: 0;
+  background: none;
+  font-size: 1em;
+}
+
+/* 图片样式 */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* 表格样式 */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1em;
+}
+
+th, td {
+  padding: 0.75em 1em;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+th {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-secondary);
+}
+
+/* 分隔线样式 */
+hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 2em 0;
+}
+
+/* 引用样式 */
+blockquote {
+  border-left: 4px solid var(--color-primary);
+  padding-left: 1em;
+  margin: 1.5em 0;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+/* 输入框样式 */
+input, textarea, select {
+  font-family: inherit;
+  font-size: 1em;
+  padding: 0.6em 1em;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  outline: none;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+/* App容器样式 */
 .app-container {
   flex: 1;
   display: flex;
@@ -63,8 +319,8 @@
   padding: 0;
   width: 100%;
   overflow-x: hidden;
+  background-color: var(--color-bg-primary);
 }
-
 
 /* 思维导图容器适配 */
 .mindmap-wrapper {
@@ -75,65 +331,142 @@
   width: 100%;
 }
 
-/* 设置h1标题的样式 */
- h1 {
-  /* 设置字体大小为3.2em */
-  font-size: 3.2em;
-  /* 设置行高为1.1 */
-  line-height: 1.1;
+/* 卡片样式 */
+.card {
+  padding: 2em;
+  background-color: var(--color-bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: box-shadow var(--transition-base), transform var(--transition-base);
 }
 
-/* 设置按钮的样式 */
- button {
-  /* 设置按钮的圆角为8px */
-  border-radius: 8px;
-  /* 设置按钮的边框为1px透明边框 */
-  border: 1px solid transparent;
-  /* 设置按钮的内边距 */
-  padding: 0.6em 1.2em;
-  /* 设置按钮的字体大小为1em */
-  font-size: 1em;
-  /* 设置按钮的字体粗细为500 */
-  font-weight: 500;
-  /* 设置按钮的字体族为继承父元素的字体 */
-  font-family: inherit;
-  /* 设置按钮的背景颜色为深灰色 */
-  background-color: #1a1a1a;
-  /* 设置鼠标指针样式为手型 */
-  cursor: pointer;
-  /* 设置边框颜色的过渡效果，持续时间为0.25s */
-  transition: border-color 0.25s;
-}
-/* 鼠标悬停在按钮上时的样式 */
- button:hover {
-  /* 改变按钮的边框颜色为蓝色 */
-  border-color: #646cff;
-}
-/* 按钮获得焦点时的样式 */
- button:focus,
- button:focus-visible {
-  /* 设置按钮的焦点轮廓样式 */
-  outline: 4px auto -webkit-focus-ring-color;
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }
 
-/* 当系统偏好设置为浅色模式时的样式 */
- @media (prefers-color-scheme: light) {
-  /* 修改根元素的文字颜色和背景颜色 */
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+/* 阅读文档提示样式 */
+.read-the-docs {
+  color: var(--color-text-tertiary);
+  font-size: 0.9em;
+}
+
+/* Logo样式 */
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+/* Logo旋转动画 */
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
   }
-  /* 修改链接鼠标悬停时的颜色 */
-  a:hover {
-    color: #747bff;
-  }
-  /* 修改按钮的背景颜色 */
-  button {
-    background-color: #f9f9f9;
+  to {
+    transform: rotate(360deg);
   }
 }
 
-/* 取消Ant Design登录模态框内容区域的默认padding */
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+/* Ant Design登录模态框样式优化 */
 .login-modal .ant-modal-content {
   padding: 0 !important;
+  border-radius: var(--radius-lg) !important;
+  overflow: hidden;
 }
+
+.login-modal .ant-modal-header {
+  border-bottom: 1px solid var(--color-border-light);
+  padding: 20px 24px;
+}
+
+
+.login-modal .ant-modal-footer {
+  border-top: 1px solid var(--color-border-light);
+  padding: 16px 24px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
+
+  .card {
+    padding: 1.5em;
+  }
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: var(--color-bg-primary-dark);
+    color: var(--color-text-primary-dark);
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg-secondary-dark);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border-dark);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-secondary-dark);
+  }
+
+  code, pre {
+    background-color: var(--color-bg-secondary-dark);
+  }
+
+  th {
+    background-color: var(--color-bg-secondary-dark);
+  }
+
+  blockquote {
+    border-left-color: var(--color-primary-light);
+  }
+
+  input, textarea, select {
+    background-color: var(--color-bg-secondary-dark);
+    border-color: var(--color-border-dark);
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--color-primary-light);
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
+  }
+
+  .card {
+    background-color: var(--color-bg-secondary-dark);
+  }
+}
+
