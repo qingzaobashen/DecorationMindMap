@@ -111,7 +111,7 @@ const WelcomePage = ({ showLogin }) => {
         </Space>
         <div className="hero-intro">
           <Paragraph className="intro-text">
-            无需注册即可预览核心功能，登录后解锁完整体验
+            登录后解锁完整体验
           </Paragraph>
           <div className="intro-stats">
             <div className="stat-item">
@@ -293,7 +293,7 @@ const WelcomePage = ({ showLogin }) => {
       <footer className="welcome-footer">
         <Divider />
         <Paragraph className="footer-text">
-          © 2025 装修思维导图系统 - 让装修更简单
+          © 2026 装修思维导图系统 - 让装修更简单
         </Paragraph>
       </footer>
     </div>
