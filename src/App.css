@@ -935,14 +935,14 @@ body {
   /* 图片序号显示样式 */
   .detail-panel .image-counter-pre {
     position: absolute;
-    width: 50px;
-    bottom: 20px;
+    width: 40px;
+    bottom: 0px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0);
     backdrop-filter: blur(8px);
     color: white;
-    padding: 6px 12px;
+    padding: 3px 5px;
     border-radius: var(--radius-full);
     font-size: 12px;
     font-weight: 600;
