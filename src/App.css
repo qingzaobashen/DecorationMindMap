@@ -793,6 +793,7 @@ body {
     margin: 0;
     border-radius: 0;
     min-height: 60px;
+    color: #000000 !important;
   }
   
   .nav-btn_col::before {
