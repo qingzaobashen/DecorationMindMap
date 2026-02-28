@@ -292,27 +292,43 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
             
             {/* 左右切换按钮 */}
             {currentImageIndex > 0 && (
-              <button className="fullscreen-nav-btn prev-btn" onClick={(e) => {
+              <button className="fullscreen-nav-btn prev-btn" 
+              onClick={(e) => {
                 e.stopPropagation();
                 setCurrentImageIndex(prev => prev - 1);
-              }} aria-label="上一张图片" tabIndex={0} onKeyDown={(e) => {
+              }} 
+              aria-label="上一张图片" 
+              tabIndex={0} 
+              onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowLeft') {
                   e.preventDefault();
                   setCurrentImageIndex(prev => prev - 1);
                 }
-              }}>‹</button>
+              }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
             )}
             
             {currentImageIndex < selectedNode.img_url.length - 1 && (
-              <button className="fullscreen-nav-btn next-btn" onClick={(e) => {
+              <button className="fullscreen-nav-btn next-btn" 
+                onClick={(e) => {
                 e.stopPropagation();
                 setCurrentImageIndex(prev => prev + 1);
-              }} aria-label="下一张图片" tabIndex={0} onKeyDown={(e) => {
+                }} 
+                aria-label="下一张图片" 
+                tabIndex={0} 
+                onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight') {
                   e.preventDefault();
                   setCurrentImageIndex(prev => prev + 1);
                 }
-              }}>›</button>
+              }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
             )}
             
             {/* 图片 */}

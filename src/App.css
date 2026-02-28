@@ -665,7 +665,7 @@ body {
   bottom: 5px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0);
+  background: rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(8px);
   color: white;
   padding: 3px 7px;
@@ -938,7 +938,7 @@ body {
     bottom: 0px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0);
+    background: rgba(0, 0, 0, 0.15);
     backdrop-filter: blur(8px);
     color: white;
     padding: 3px 5px;
@@ -1480,7 +1480,7 @@ body {
   position: absolute;
   top: -40px;
   right: -40px;
-  background-color: transparent;
+  background-color: rgba(255, 255, 255, 0.2);
   color: white;
   border: none;
   font-size: 18px;
@@ -1496,7 +1496,7 @@ body {
 }
 
 .fullscreen-close-btn:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 .fullscreen-nav-btn {
@@ -1507,9 +1507,9 @@ body {
   border: none;
   font-size: 25px;
   cursor: pointer;
-  padding: 10px;
-  width: 50px;
-  height: 50px;
+  padding: 5px;
+  width: 40px;
+  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1519,7 +1519,7 @@ body {
 }
 
 .fullscreen-nav-btn:hover {
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.35);
 }
 
 .prev-btn {
@@ -1586,16 +1586,16 @@ body {
   
   .fullscreen-nav-btn {
     font-size: 30px;
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
   }
   
   .prev-btn {
-    left: 10px;
+    left: 1px;
   }
   
   .next-btn {
-    right: 10px;
+    right: 1px;
   }
 }
 
