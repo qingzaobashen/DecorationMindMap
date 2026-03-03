@@ -152,8 +152,8 @@ export const convertObjectToMindMap = (obj) => {
             note: obj.details?.map(d => d.text).join('\n') || '',
             details: obj.details,
             img_url: obj.img_url,
-            attachmentUrl: '/resources/装修流程目录.md',
-            attachmentName: '装修流程目录.md'
+            attachmentUrl: '',
+            attachmentName: ''
         },
         children: (obj.children || []).map(mapNode)
     };
