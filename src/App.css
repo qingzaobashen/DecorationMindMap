@@ -516,9 +516,9 @@ body {
 
 .detail-panel h3 {
   margin: 0;
-  padding: 25px 30px;
+  padding: 8px 7px;
   color: var(--color-text-primary);
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 700;
   text-align: left;
   border-bottom: 1px solid var(--color-border);
@@ -541,7 +541,7 @@ body {
 
 .detail-panel h3 {
   font-size: 1.2rem;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   color: var(--color-text-primary);
   font-weight: 600;
 }
@@ -892,8 +892,8 @@ body {
   /* 弹窗标题 */
   .detail-panel h3 {
     font-size: 1.1rem;
-    margin-bottom: 10px;
-    padding: 20px;
+    margin-bottom: 2px;
+    padding: 5px;
   }
   
   /* 内容滚动区域 - 允许整体滚动 */
