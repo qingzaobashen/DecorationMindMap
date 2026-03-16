@@ -232,7 +232,7 @@ export default function Sidebar({ items, onLogin, isAuthenticated, isPremium, is
       {!isMobile && !isCollapsed && (
         <div className="sidebar-footer">
           <div className="footer-info">
-            <p className="footer-text">© 2025 装修思维导图</p>
+            <p className="footer-text">© 2026 装修思维导图</p>
           </div>
         </div>
       )}

@@ -120,7 +120,7 @@ body {
 }
 
 .sidebar.collapsed {
-  width: 70px;
+  width: 72px;
 }
 
 .sidebar-header {
@@ -132,8 +132,6 @@ body {
 }
 
 .sidebar-logo {
-  display: flex;
-  align-items: center;
   gap: 12px;
   font-size: 1.2rem;
   font-weight: 700;
@@ -149,6 +147,7 @@ body {
   white-space: nowrap;
   opacity: 1;
   transition: opacity var(--transition-base);
+  padding: 5px;
 }
 
 .sidebar.collapsed .logo-text {
@@ -300,6 +299,8 @@ body {
   height: auto;
   line-height: 1.4;
   font-weight: 600;
+  display: flex;
+  justify-content: center;
   background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
   border: none;
   color: #1a202c;
@@ -587,8 +588,8 @@ body {
 
 .close-btn {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 2px;
+  right: 15px;
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
   font-size: 20px;
