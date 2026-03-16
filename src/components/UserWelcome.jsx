@@ -14,19 +14,23 @@ const UserWelcome = ({ isVisible, onClose }) => {
   useEffect(() => {
     // 从本地存储获取访问记录
     const lastVisitTime = localStorage.getItem('lastVisit');
-    const count = parseInt(localStorage.getItem('visitCount')) || 0;
-    
-    if (lastVisitTime) {
-      const formatDate = new Date(lastVisitTime).toLocaleString();
-      setLastVisit(formatDate);
+    const nowtime = new Date().toISOString();
+    const deltaTime = new Date(nowtime) - new Date(lastVisitTime);
+    if (lastVisitTime && Math.abs(deltaTime) > 5000) {  // 因为要进入这里两次，所以这里要判断是否得到的时间真的是上次登录时间
+      const count = parseInt(localStorage.getItem('visitCount')) || 0;
+      
+      if (lastVisitTime) {
+        const formatDate = new Date(lastVisitTime).toLocaleString();
+        setLastVisit(formatDate);
+      }
+
+      // 更新访问次数
+      setVisitCount(count + 1);
+      localStorage.setItem('visitCount', (count + 1).toString());
+
+      // 记录本次访问时间
+      localStorage.setItem('lastVisit', new Date().toISOString());
     }
-    
-    // 更新访问次数
-    setVisitCount(count + 1);
-    localStorage.setItem('visitCount', (count + 1).toString());
-    
-    // 记录本次访问时间
-    localStorage.setItem('lastVisit', new Date().toISOString());
     // 3秒后自动关闭通知
     const timer = setTimeout(() => {
       if (onClose) onClose();
