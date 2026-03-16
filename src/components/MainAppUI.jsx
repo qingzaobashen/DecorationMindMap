@@ -382,7 +382,7 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
         <div className="payment-modal-content">
           <p className="payment-description">请使用微信或支付宝扫描下方二维码支付</p>
           <div className="qr-code-container">
-            {/* 这里使用示例二维码，实际项目中应替换为真实支付二维码 */}
+            {/* 使用XorPay生成支付二维码 */}
             <img
               src={paymentType === 'vip' ? "https://via.placeholder.com/200x200?text=VIP支付二维码" : "https://via.placeholder.com/200x200?text=文章支付二维码"}
               alt={paymentType === 'vip' ? "VIP支付二维码" : "文章支付二维码"}
@@ -470,24 +470,37 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
                               {selectedNode.img_url?.map((item, i) => (
                                 item && typeof item === 'string' && (
                                   <SwiperSlide key={i}>
-                                    <img
-                                          src={imageFilePath + (item || '/error0.png')}
-                                          className="carousel-image"
-                                          alt={`知识点配图${i + 1}`}
-                                          loading="lazy"
-                                          onClick={() => {
-                                            setCurrentImageIndex(i);
-                                            setFullscreenImageVisible(true);
-                                          }}
-                                          onError={(e) => {
-                                            e.target.onerror = null; // 防止循环错误
-                                            e.target.style.display = 'none';
-                                            // 可以在这里添加一个占位符图片或文本
-                                            const placeholderText = document.createElement('p');
-                                            placeholderText.textContent = '图片加载失败';
-                                            if (e.target.parentNode) e.target.parentNode.appendChild(placeholderText);
-                                          }}
-                                        />
+                                    <div className="image-container">
+                                      <img
+                                            src={imageFilePath + (item || '/error0.png')}
+                                            className="carousel-image"
+                                            alt={`知识点配图${i + 1}`}
+                                            loading="lazy"
+                                            onClick={() => {
+                                              setCurrentImageIndex(i);
+                                              setFullscreenImageVisible(true);
+                                            }}
+                                            onError={(e) => {
+                                              e.target.onerror = null; // 防止循环错误
+                                              e.target.style.display = 'none';
+                                              // 可以在这里添加一个占位符图片或文本
+                                              const placeholderText = document.createElement('p');
+                                              placeholderText.textContent = '图片加载失败';
+                                              if (e.target.parentNode) e.target.parentNode.appendChild(placeholderText);
+                                            }}
+                                          />
+                                      {selectedNode.is_premium && !userIsPremium && (
+                                        <div className="vip-overlay">
+                                          该内容为VIP专属，仅对VIP用户开放全部内容
+                                          <button 
+                                            className="upgrade-btn-detail"
+                                            onClick={upgradeToPremium}
+                                          >
+                                            立即升级为VIP
+                                          </button>
+                                        </div>
+                                      )}
+                                    </div>
                                   </SwiperSlide>
                                 )
                               ))}
@@ -538,7 +551,7 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
                                     <>
                                       <div dangerouslySetInnerHTML={{ __html: marked.parse(truncateText(item.text)) }} />
                                       <div className="premium-locked">
-                                        <p>该内容为VIP专属，仅对VIP用户开放全部内容，或直接付费阅读</p>
+                                        <p>该内容为VIP专属，仅对VIP用户开放全部内容</p>
                                         {userIsAuthenticated ? (
                                           // 已登录用户，显示升级按钮和支付按钮
                                           <div className="premium-actions">
@@ -550,14 +563,14 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
                                             }} aria-label="立即升级为VIP">
                                               立即升级为VIP
                                             </button>
-                                            <button className="pay-btn-detail" onClick={() => purchaseArticle(selectedNode.id)} tabIndex={0} onKeyDown={(e) => {
+                                            {/* <button className="pay-btn-detail" onClick={() => purchaseArticle(selectedNode.id)} tabIndex={0} onKeyDown={(e) => {
                                               if (e.key === 'Enter' || e.key === ' ') {
                                                 e.preventDefault();
                                                 purchaseArticle(selectedNode.id);
                                               }
                                             }} aria-label="立即付费阅读">
                                               立即付费阅读
-                                            </button>
+                                            </button> */}
                                           </div>
                                         ) : (
                                           // 未登录用户，提示登录

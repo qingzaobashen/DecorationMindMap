@@ -885,7 +885,9 @@ body {
   /* 关闭按钮固定在顶部 */
   .detail-panel .close-btn {
     position: fixed;
-    top: 10px;
+    height: 25px;
+    width: 25px;
+    top: 2px;
     right: 10px;
     z-index: 1001;
     background: rgba(255, 255, 255, 0.95);
@@ -2597,4 +2599,42 @@ body {
   .price-value {
     font-size: 2.5rem;
   }
+}
+
+/* 图片容器样式 */
+.image-container {
+  position: relative;
+  display: inline-block;
+  margin: 10px 0;
+  border-radius: 4px;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 非VIP用户的图片模糊效果 */
+.vip-blur {
+  transition: filter 0.3s ease;
+  max-width: 100%;
+  height: auto;
+}
+
+/* VIP覆盖层 */
+.vip-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  align-content: center;
+  flex-wrap: wrap;
+  color: white;
 }
