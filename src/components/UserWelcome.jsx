@@ -9,7 +9,14 @@ import { useUser } from '../context/UserContext';
 const UserWelcome = ({ isVisible, onClose }) => {
   const [lastVisit, setLastVisit] = useState('首次访问');
   const [visitCount, setVisitCount] = useState(1);
-  const { username, isPremium } = useUser();
+  const [daysLeft, setDaysLeft] = useState(0);
+  const { username, isPremium, getPremiumDaysLeft } = useUser();
+  
+  useEffect(() => {
+    if (isPremium && getPremiumDaysLeft) {
+      setDaysLeft(getPremiumDaysLeft());
+    }
+  }, [isPremium, getPremiumDaysLeft]);
   
   useEffect(() => {
     // 从本地存储获取访问记录
@@ -93,7 +100,7 @@ const UserWelcome = ({ isVisible, onClose }) => {
           <Card className="welcome-card" style={{ marginTop: '10px', backgroundColor: 'rgba(255, 215, 0, 0.05)', borderColor: '#ffd700' }}>
             <Statistic
               title="会员特权"
-              value="已激活高级功能"
+              value={`已激活高级功能 (剩余 ${daysLeft} 天)`}
               valueStyle={{ color: '#d4b106', fontSize: '16px' }}
               prefix={<CrownOutlined style={{ color: '#ffd700' }} />}
             />

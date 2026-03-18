@@ -18,13 +18,62 @@ export const UserProvider = ({ children }) => {
   const [purchasedArticles, setPurchasedArticles] = useState([]); // 用户已购买的文章列表
   const [isEmailVerified, setIsEmailVerified] = useState(false); // 邮箱验证状态
 
+  // 检查会员是否到期
+  const checkPremiumExpiration = async (user) => {
+    if (!user || !user.user_metadata?.isPremium) {
+      return false;
+    }
+    
+    const expiresAt = user.user_metadata?.premium_expires_at;
+    if (!expiresAt) {
+      return false;
+    }
+    
+    const now = new Date();
+    const expirationDate = new Date(expiresAt);
+    
+    if (now > expirationDate) {
+      // 会员已到期，更新用户状态为普通用户
+      try {
+        const { data, error } = await supabase.auth.updateUser({
+          data: {
+            isPremium: false,
+            premium_expires_at: null
+          }
+        });
+        
+        if (!error && data?.user) {
+          console.log('会员已到期，已更新为普通用户');
+          return true;
+        }
+      } catch (error) {
+        console.error('更新会员状态失败:', error);
+      }
+    }
+    
+    return false;
+  };
+
   // 从Supabase更新用户状态
   const updateUserState = (user) => {
     if (user) {
-      const isPremiumUser = user.user_metadata?.is_premium || false;
+      // 检查会员是否到期
+      checkPremiumExpiration(user).then(expired => {
+        if (expired) {
+          // 会员已到期，重新获取用户信息
+          supabase.auth.getUser().then(({ data }) => {
+            if (data?.user) {
+              updateUserState(data.user);
+            }
+          });
+        }
+      });
+      
+      const isPremiumUser = user.user_metadata?.isPremium || false;
       const userUsername = user.user_metadata?.username || user.email?.split('@')[0] || user.id;
       const userPurchasedArticles = user.user_metadata?.purchased_articles || [];
       const isEmailVerified = user.email_confirmed_at ? true : false;
+      const premiumExpiresAt = user.user_metadata?.premium_expires_at;
       
       setIsAuthenticated(true);
       setUsername(userUsername);
@@ -39,6 +88,11 @@ export const UserProvider = ({ children }) => {
       localStorage.setItem('username', userUsername);
       localStorage.setItem('purchasedArticles', JSON.stringify(userPurchasedArticles));
       localStorage.setItem('isEmailVerified', isEmailVerified ? 'true' : 'false');
+      if (premiumExpiresAt) {
+        localStorage.setItem('premiumExpiresAt', premiumExpiresAt);
+      } else {
+        localStorage.removeItem('premiumExpiresAt');
+      }
     } else {
       setIsAuthenticated(false);
       setUsername('');
@@ -51,6 +105,7 @@ export const UserProvider = ({ children }) => {
       localStorage.removeItem('username');
       localStorage.removeItem('purchasedArticles');
       localStorage.removeItem('isEmailVerified');
+      localStorage.removeItem('premiumExpiresAt');
     }
   };
 
@@ -120,6 +175,21 @@ export const UserProvider = ({ children }) => {
     };
   }, []);
 
+  // 计算会员到期天数
+  const getPremiumDaysLeft = () => {
+    const expiresAt = localStorage.getItem('premiumExpiresAt');
+    if (!expiresAt) {
+      return 0;
+    }
+    
+    const now = new Date();
+    const expirationDate = new Date(expiresAt);
+    const diffTime = expirationDate - now;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return Math.max(0, diffDays);
+  };
+
   // 登录处理 - 由于Supabase的onAuthStateChange会自动更新状态，此函数已简化
   const login = () => {
     // 登录状态由Supabase的onAuthStateChange自动处理
@@ -143,19 +213,17 @@ export const UserProvider = ({ children }) => {
   // 验证支付状态
   const validatePayment = async () => {
     try {
-      // 这里应该调用实际的支付验证API
-      // 现在模拟支付验证过程，实际项目中应替换为真实的支付验证逻辑
-      // 例如：调用后端API验证支付状态
-      // const response = await fetch('/api/verify-payment', { ... });
-      // const result = await response.json();
-      // return result.success;
+      // 导入XorPay工具
+      const { verifyPayment, generateOrderNo } = await import('../utils/xorPay');
       
-      // 模拟支付验证成功
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(true);
-        }, 1000);
-      });
+      // 生成订单号
+      const orderNo = generateOrderNo();
+      
+      // 调用XorPay验证支付状态
+      // 实际项目中，订单号应该在创建支付时保存，并在验证时使用
+      const isPaymentSuccessful = await verifyPayment(orderNo);
+      
+      return isPaymentSuccessful;
     } catch (error) {
       console.error('支付验证失败:', error);
       message.error('支付验证失败，请稍后重试');
@@ -287,8 +355,8 @@ export const UserProvider = ({ children }) => {
       // 2. 更新Supabase用户的元数据，标记为VIP用户
       const { data, error } = await supabase.auth.updateUser({
         data: { 
-          is_premium: true,
-          premium_expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString() // 默认为1年有效期
+          isPremium: true,
+          premium_expires_at: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString() // 默认为120天有效期
         }
       });
       
@@ -407,6 +475,7 @@ export const UserProvider = ({ children }) => {
     paymentType,
     currentArticleId,
     purchasedArticles,
+    getPremiumDaysLeft,
     setPaymentModalVisible,
     login,
     logout,
