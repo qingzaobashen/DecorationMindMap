@@ -6,6 +6,7 @@ import { useUser } from '../context/UserContext';
 import MindMap_SimpleMindMap from '../MindMap_SimpleMindMap';
 import MindMapSaver from './MindMapSaver';
 import { sampleData } from '../utils/sampleData';
+import supabase from '../utils/supabase';
 
 // 导入Swiper样式
 import 'swiper/css';
@@ -162,10 +163,68 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0); // 当前轮播图索引
   const mindMapInstanceRef = useRef(null);                   // 缓存思维导图实例
   const swiperInstanceRef = useRef(null);                    // 缓存Swiper实例
+  const [paymentQRCode, setPaymentQRCode] = useState(null);  // 支付二维码
+  const [paymentLoading, setPaymentLoading] = useState(false); // 支付加载状态
 
   const { isAuthenticated: userIsAuthenticated, isPremium: userIsPremium, upgradeToPremium, completeUpgradeToPremium,
      purchaseArticle, completePurchaseArticle, paymentModalVisible, closePaymentModal, 
      paymentType, hasPurchasedArticle } = useUser();
+
+  // 生成支付二维码
+  const generatePaymentQRCode = async () => {
+    try {
+      setPaymentLoading(true);
+      
+      // 导入XorPay工具
+      const { createPayment, generateOrderNo } = await import('../utils/xorPay');
+      
+      // 获取当前用户ID
+      const { data: userData } = await supabase.auth.getUser();
+      const userId = userData?.user?.id;
+      
+      if (!userId) {
+        message.error('用户未登录，请先登录');
+        return;
+      }
+      
+      // 生成订单信息
+      const orderId = generateOrderNo();
+      
+      // 构建支付参数
+      const paymentParams = {
+        name: paymentType === 'vip' ? 'VIP升级' : '单篇文章购买',
+        price: paymentType === 'vip' ? '15.00' : '3.00', // 单位：元
+        order_id: orderId,
+        user_id: userId,
+        pay_type: 'alipay' // 默认使用支付宝
+      };
+      
+      // 调用XorPay生成支付二维码
+      const paymentResult = await createPayment(paymentParams);
+      
+      if (paymentResult && paymentResult.qr) {
+        // 这里要用XorPay的URL拼接，而不是直接使用二维码字符串
+        setPaymentQRCode(`https://xorpay.com/qr?data=${paymentResult.qr}`);
+        console.log("支付二维码 qr: ", paymentQRCode);
+      } else {
+        console.error('生成支付二维码失败');
+      }
+    } catch (error) {
+      console.error('生成支付二维码失败:', error);
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
+  // 当支付模态框打开时，生成支付二维码
+  useEffect(() => {
+    if (paymentModalVisible) {
+      generatePaymentQRCode();
+    } else {
+      // 关闭模态框时清空二维码
+      setPaymentQRCode(null);
+    }
+  }, [paymentModalVisible, paymentType]);
 
   // 截断文本函数，用于付费内容的部分显示
   const truncateText = (text, maxLength = 200) => {
@@ -380,18 +439,26 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
         zIndex={2000}
       >
         <div className="payment-modal-content">
-          <p className="payment-description">请使用微信或支付宝扫描下方二维码支付</p>
+          <p className="payment-description">请使用支付宝扫描下方二维码支付</p>
           <div className="qr-code-container">
-            {/* 使用XorPay生成支付二维码 */}
-            <img
-              src={paymentType === 'vip' ? "https://via.placeholder.com/200x200?text=VIP支付二维码" : "https://via.placeholder.com/200x200?text=文章支付二维码"}
-              alt={paymentType === 'vip' ? "VIP支付二维码" : "文章支付二维码"}
-              className="qr-code"
-            />
+            {paymentLoading ? (
+              <div className="loading-spinner">加载中...</div>
+            ) : paymentQRCode ? (
+              <img
+                src={paymentQRCode}
+                alt={paymentType === 'vip' ? "VIP支付二维码" : "文章支付二维码"}
+                className="qr-code"
+              />
+            ) : (
+              <div className="error-message">生成二维码失败</div>
+            )}
           </div>
-          <p className="payment-amount">支付金额：{paymentType === 'vip' ? "¥9.00" : "¥3.00"}</p>
+          <p className="payment-amount">支付金额：{paymentType === 'vip' ? "¥15.00" : "¥3.00"}</p>
           <p className="payment-note">
             {paymentType === 'vip' ? "支付成功后，点击'支付完成'按钮完成VIP升级" : "支付成功后，点击'支付完成'按钮查看完整文章"}
+          </p>
+          <p className="payment-note">
+            {paymentType === 'vip' ? "VIP有效期限时延长至“120天”（原90天）" : ""}
           </p>
         </div>
       </Modal>

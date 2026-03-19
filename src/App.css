@@ -43,6 +43,71 @@ body {
   overflow-x: hidden;
 }
 
+/* 支付模态框样式 */
+.payment-modal-content {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.payment-description {
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #333;
+}
+
+.qr-code-container {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  position: relative;
+}
+
+.qr-code {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
+.payment-amount {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.payment-note {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* 加载动画 */
+.loading-spinner {
+  font-size: 14px;
+  color: #1890ff;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 错误消息 */
+.error-message {
+  font-size: 14px;
+  color: #ff4d4f;
+  text-align: center;
+}
+
 .main-content.expanded {
   margin-left: 70px;
   transition: margin-left var(--transition-base);
@@ -528,14 +593,14 @@ body {
 
 .detail-panel h1 {
   font-size: 1.8rem;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   color: var(--color-text-primary);
   font-weight: 700;
 }
 
 .detail-panel h2 {
   font-size: 1.4rem;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   color: var(--color-text-primary);
   font-weight: 600;
 }
@@ -718,7 +783,7 @@ body {
   flex: 2;
   min-width: 0;
   border-left: 1px solid var(--color-border);
-  padding: 30px;
+  padding: 15px;
   overflow-y: auto;
   background: var(--color-bg-primary);
 }
@@ -729,7 +794,7 @@ body {
 
 .point {
   margin-bottom: 20px;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.8;
   color: var(--color-text-secondary);
   position: relative;
@@ -874,12 +939,12 @@ body {
   
   .detail-panel h1 {
     font-size: 1.3rem;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
   }
   
   .detail-panel h2 {
     font-size: 1.2rem;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
   }
   
   /* 关闭按钮固定在顶部 */
