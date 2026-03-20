@@ -317,7 +317,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
         <div
           ref={containerRef}
           className="mindmap-canvas"
-          style={{ width: '100%', height: '100%' }}
+          style={{ transform: 'translateX(-45%)', width: '200%', height: '100%' }}
         />
       </div>
       <Modal

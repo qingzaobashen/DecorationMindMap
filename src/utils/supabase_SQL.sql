@@ -110,3 +110,72 @@ END$$;
 -- Indexes for webhook_events
 CREATE INDEX IF NOT EXISTS idx_webhook_events_provider ON public.webhook_events (provider);
 CREATE INDEX IF NOT EXISTS idx_webhook_events_next_retry_at ON public.webhook_events (next_retry_at);
+
+-- feedbacks 表：存储用户反馈
+CREATE TABLE IF NOT EXISTS public.feedbacks (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  user_email text,
+  feedback_type text NOT NULL,
+  content text NOT NULL,
+  contact text,
+  status text NOT NULL DEFAULT 'pending',
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+-- 添加 status CHECK 约束
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'feedbacks_status_check'
+  ) THEN
+    ALTER TABLE public.feedbacks
+      ADD CONSTRAINT feedbacks_status_check CHECK (status IN ('pending','reviewed','resolved','closed'));
+  END IF;
+END$$;
+
+-- 触发器：自动更新 updated_at
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'set_timestamp_feedbacks') THEN
+    CREATE TRIGGER set_timestamp_feedbacks
+      BEFORE UPDATE ON public.feedbacks
+      FOR EACH ROW
+      EXECUTE FUNCTION public.trigger_set_timestamp();
+  END IF;
+END$$;
+
+-- 索引：用于常见查询
+CREATE INDEX IF NOT EXISTS idx_feedbacks_user_id ON public.feedbacks (user_id);
+CREATE INDEX IF NOT EXISTS idx_feedbacks_status ON public.feedbacks (status);
+CREATE INDEX IF NOT EXISTS idx_feedbacks_feedback_type ON public.feedbacks (feedback_type);
+CREATE INDEX IF NOT EXISTS idx_feedbacks_created_at ON public.feedbacks (created_at DESC);
+
+-- 配置feedback表的RLS策略
+ALTER TABLE public.feedbacks ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Authenticated users can select their feedbacks"
+ON public.feedbacks
+FOR SELECT
+TO authenticated
+USING (user_id = (SELECT auth.uid()));
+
+CREATE POLICY "Authenticated users can insert their feedbacks"
+ON public.feedbacks
+FOR INSERT
+TO authenticated
+WITH CHECK (user_id = (SELECT auth.uid()));
+
+CREATE POLICY "Authenticated users can update their feedbacks"
+ON public.feedbacks
+FOR UPDATE
+TO authenticated
+USING (user_id = (SELECT auth.uid()))
+WITH CHECK (user_id = (SELECT auth.uid()));
+
+CREATE POLICY "Authenticated users can delete their feedbacks"
+ON public.feedbacks
+FOR DELETE
+TO authenticated
+USING (user_id = (SELECT auth.uid()));

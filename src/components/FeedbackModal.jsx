@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
 import { Modal, Form, Input, Select, Button, message } from 'antd';
-
+import axios from 'axios';
+import supabase from '../utils/supabase';
 
 const { TextArea } = Input;
 const { Option } = Select;
+
+/**
+ * 反馈配置
+ */
+const FEEDBACK_CONFIG = {
+  edgeFunctionUrl: 'https://uwgvflkueracnwgwdwpe.supabase.co/functions/v1/feedback'
+};
 
 /**
  * 用户反馈模态框组件
@@ -20,26 +28,46 @@ const FeedbackModal = ({ visible, onClose }) => {
     console.log('收集到的反馈信息:', values);
 
     try {
-      // TODO: 替换为你的实际后端API端点
-      // const response = await axios.post('http://localhost:5000/api/feedback', values);
-      // message.success('反馈已成功提交，感谢您的宝贵意见！');
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) {
+        throw new Error('无法获取 session: ' + sessionError.message);
+      }
+      const accessToken = session?.access_token;
+      if (!accessToken) {
+        throw new Error('用户未登录，请先登录后再提交反馈');
+      }
 
-      // ---- 临时模拟提交 ----
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      // 假设的后端响应处理
-      // if (response.data.success) {
-      //   message.success('反馈已成功提交，感谢您的宝贵意见！');
-      // } else {
-      //   message.error(response.data.message || '提交失败，请稍后再试。');
-      // }
-      message.success('（模拟）反馈已成功提交，感谢您的宝贵意见！');
-      // ---- 模拟结束 ----
+      const response = await axios.post(
+        FEEDBACK_CONFIG.edgeFunctionUrl,
+        {
+          feedbackType: values.feedbackType,
+          content: values.content,
+          contact: values.contact
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`
+          }
+        }
+      );
 
-      form.resetFields();
-      onClose();
+      console.log('反馈提交响应:', response.data);
+
+      if (response.data.success) {
+        window.confirm('反馈已成功提交，感谢您的宝贵意见！');
+        form.resetFields();
+        onClose();
+      } else {
+        window.confirm(response.data.message || '提交失败，请稍后再试。');
+      }
     } catch (error) {
       console.error('提交反馈失败:', error);
-      message.error('提交反馈失败，请检查网络或稍后再试。');
+      if (error.response?.status === 401) {
+        console.error('用户未登录或登录已过期，请重新登录');
+      } else {
+        console.error('提交反馈失败，请检查网络或稍后再试。');
+      }
     } finally {
       setLoading(false);
     }
