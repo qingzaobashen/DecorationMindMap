@@ -224,7 +224,7 @@ const generateSign = (params) => {
   let priceNum = Number(price);
   // 按照指定顺序拼接参数
   const signString = `${name}${pay_type}${priceNum}${order_id}${notify_url}${appSecret}`;
-  console.log("signString: ", signString);
+  
   // 计算MD5并转换为小写
   return md5(signString);
 };
@@ -283,7 +283,7 @@ export const createPayment = async (params) => {
     //"more": "{\"user_id\":\"277bc832-abc5-4add-ad35-09ef521d360e\"}"
     //}
     //curl时，参数为：pay_type=alipay&name=VIP升级&order_uid=ORDER_1773825841154_7334&order_id=ORDER_1773825841154_7699&price=12&sign=339D2B7818735EF8B17CE903EB98616C&notify_url=https://uwgvflkueracnwgwdwpe.supabase.co/functions/v1/xorpay-webhook
-    console.log("formData: ", Object.fromEntries(formData));
+    //console.log("formData: ", Object.fromEntries(formData));
 
     // 获取当前用户 token（supabase-js）,用于向EdgeFunction请求时的鉴权
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
@@ -306,11 +306,10 @@ export const createPayment = async (params) => {
         }
       });
 
-    console.log('API响应:', response.data);
+    console.log('创建订单API响应:', response.data);
 
     // 提取并存储 aoid（XorPay 平台返回的订单号）
     const aoid = response.data.aoid;
-    console.log('XorPay平台订单号:', aoid);
 
     if (response.data.status === "ok") {
       // 返回支付信息和 aoid
@@ -365,7 +364,7 @@ export const verifyPayment = async (aoid) => {
         }
 
         const data = await res.json();
-        console.log('order status: ', data);
+        console.log('order verify status: ', data);
         if (data.status === 'payed' || data.status === 'success') {
           return true;
         } else {

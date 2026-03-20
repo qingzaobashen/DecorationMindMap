@@ -468,9 +468,9 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
       <div className={`mainMap`}>
         <header className="view-header">
           <h2>装修流程思维导图</h2>
-          {viewType === 'simplemindmap' && mindData && !loading && (
+          {/* {viewType === 'simplemindmap' && mindData && !loading && (
             <MindMapSaver mindMapInstance={mindMapInstanceRef.current} />
-          )}
+          )} 暂时屏蔽保存思维导图的功能*/}
         </header>
         <main className={`mindmap-wrapper mindWrapper-size`}>
           {currentViewComponent}

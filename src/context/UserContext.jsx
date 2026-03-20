@@ -45,6 +45,7 @@ export const UserProvider = ({ children }) => {
         
         if (!error && data?.user) {
           console.log('会员已到期，已更新为普通用户');
+          window.confirm("VIP会员已到期，已更新为普通用户");
           return true;
         }
       } catch (error) {

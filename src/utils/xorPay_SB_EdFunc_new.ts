@@ -72,9 +72,9 @@ function parseAmount(rawAmount) {
   return Math.round(n * 100);
 }
 
-function buildRowFromPayload(payload) {
-  console.info('buildRowFromPayload payload:', payload);
-
+function buildRowFromPayload(params :URLSearchParams) {
+  console.info('buildRowFromPayload params:', params);
+  const payload = Object.fromEntries(params.entries());
   const provider = 'xorpay';
   const providerChargeId = payload.order_id || payload.id || payload.charge_id || payload.chargeId || null;
   const status = normalizeStatus(payload.status || payload.state);
@@ -190,6 +190,7 @@ Deno.serve(async (req) => {
     const contentType = req.headers.get('content-type') || '';
     const bodyText = await req.text();
     console.info('bodyText:', bodyText, typeof bodyText);
+    console.info('contentType:', contentType);
     // parse form
     let params = new URLSearchParams();
     if (contentType.includes('application/x-www-form-urlencoded')) {
@@ -203,6 +204,7 @@ Deno.serve(async (req) => {
     }
 
     const providedSign = (params.get('sign') || '').toLowerCase();
+    console.info('params providedSign:', providedSign);
     if (!providedSign) return new Response(JSON.stringify({ error: 'missing sign' }), { status: 400 });
 
     // signature string order: aoid + order_id + pay_price + pay_time + app secret 顺序拼接后 MD5
@@ -213,26 +215,26 @@ Deno.serve(async (req) => {
     const signingString = build('aoid') + build('order_id') + build('pay_price') + build('pay_time') + secret;
 
     const hash = createHash('md5').update(signingString, 'utf8').digest('hex').toLowerCase();
-
+    console.info('signingString:', signingString, hash, providedSign);
     // timing-safe compare
     const ok = timingSafeEqual(hash, providedSign);
     if (!ok) {
       //console.error('sign not ok:',signingString, hash, providedSign);
-      return new Response(JSON.stringify({ error: 'invalid signature' }), { status: 401 });
+      return new Response(JSON.stringify({ error: 'invalid signature' }), { status: 402 });
     }
     console.info('sign ok:', hash, providedSign);
     // Process payload: example insert into payments table via REST using service role
     // For brevity we just return success. In production, upsert into Supabase DB using SUPABASE_SERVICE_ROLE_KEY.
     
-    let payload;
-    try {
-      payload = JSON.parse(bodyText);
-    } catch (e) {
-      return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
-    }
+    // let payload;
+    // try {
+    //   payload = JSON.parse(bodyText);
+    // } catch (e) {
+    //   return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    // }
 
     // Build body for upsert via REST: use POST with upsert via Prefer: resolution=merge-duplicates
-    const row = buildRowFromPayload(payload);
+    const row = buildRowFromPayload(params);
 
     // Process known events if you want (example)
     // Background upsert
