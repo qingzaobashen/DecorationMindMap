@@ -5,13 +5,13 @@
 
 import axios from 'axios';
 import supabase from '../utils/supabase';
-import { message } from 'antd';
 
 // XorPay配置
 const XORPAY_PROXY_CONFIG = {
   appId: '702889', // 替换为你的XorPay AppId
   appSecret: import.meta.env.VITE_XORPAY_APP_SECRET, // 你的XorPay AppSecret
-  supaEdgFuncUrl: 'https://uwgvflkueracnwgwdwpe.supabase.co/functions/v1/proxy_for_xorpay', // Edge Function 转发请求XorPay的地址
+  supaEdgFuncUrl: 'https://uwgvflkueracnwgwdwpe.supabase.co/functions/v1/proxy_for_xorpay', // Edge Function 转发请求XorPay支付二维码的地址
+  supaEdgFuncOrderUrl: 'https://uwgvflkueracnwgwdwpe.supabase.co/functions/v1/rapid-processor', // Edge Function 转发请求XorPay订单状态的地址
 };
 
 
@@ -299,7 +299,8 @@ export const createPayment = async (params) => {
     const response = await axios.post(
       functionUrl,
       formData.toString(),
-      {headers: {
+      {
+        headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           Authorization: `Bearer ${accessToken}`
         }
@@ -307,8 +308,16 @@ export const createPayment = async (params) => {
 
     console.log('API响应:', response.data);
 
+    // 提取并存储 aoid（XorPay 平台返回的订单号）
+    const aoid = response.data.aoid;
+    console.log('XorPay平台订单号:', aoid);
+
     if (response.data.status === "ok") {
-      return response.data.info;
+      // 返回支付信息和 aoid
+      return {
+        ...response.data.info,
+        aoid
+      };
     } else {
       throw new Error(response.data.status || '生成支付二维码失败');
     }
@@ -319,22 +328,56 @@ export const createPayment = async (params) => {
 };
 
 /**
- * 验证支付状态
- * @param {string} out_trade_no - 订单号
+ * 验证支付状态：根据aoid查询订单orpay平台订单状态
+ * @param {string} aoid - XorPay平台订单号
  * @returns {Promise<boolean>} 支付是否成功
  */
-export const verifyPayment = async (out_trade_no) => {
+export const verifyPayment = async (aoid) => {
   try {
-    // 实际项目中应该调用后端API验证支付状态
-    // 这里简化处理，模拟验证
-    // 真实场景应该调用XorPay的查询订单API
+    const { data: userData } = await supabase.auth.getUser();
+    if (userData?.user) {
+      //const isPremiumUser = userData.user.user_metadata?.isPremium || false;
+      //console.log('verifyPayment isPremiumUser: ', isPremiumUser);
+      // 这里根据aoid查询订单orpay平台订单状态，判断是否成功
+      // 也可以在payments表中查询是否有记录的provider字段=aoid，即说明已经支付成功并写入了payments表了；
+      const fnUrl = `${XORPAY_PROXY_CONFIG.supaEdgFuncOrderUrl}?aoid=${encodeURIComponent(aoid)}`;
+      // 获取当前用户 token（supabase-js）,用于向EdgeFunction请求时的鉴权
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) {
+        throw new Error('无法获取 session: ' + sessionError.message);
+      }
+      const accessToken = session?.access_token;
+      if (!accessToken) {
+        throw new Error('用户未登录或没有 access_token');
+      }
+      try {
+        const res = await fetch(fnUrl, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            // 需要转发用户 token 或 API key 时：
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        if (!res.ok) {
+          console.error('XorPay error', data);
+          return false;
+        }
 
-    // 模拟支付成功
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, 1000);
-    });
+        const data = await res.json();
+        console.log('order status: ', data);
+        if (data.status === 'payed' || data.status === 'success') {
+          return true;
+        } else {
+          return false;
+        }
+      } catch (err) {
+        console.error('Network or parsing error', err);
+        return false;
+      }
+    } else {
+      return false;
+    }
   } catch (error) {
     console.error('验证支付状态失败:', error);
     return false;

@@ -169,7 +169,7 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
   const { isAuthenticated: userIsAuthenticated, isPremium: userIsPremium, upgradeToPremium, completeUpgradeToPremium,
      purchaseArticle, completePurchaseArticle, paymentModalVisible, closePaymentModal, 
      paymentType, hasPurchasedArticle } = useUser();
-
+  const { setAoid } = useUser();  // 获取用户的当前订单号和设置订单号的函数
   // 生成支付二维码
   const generatePaymentQRCode = async () => {
     try {
@@ -201,11 +201,13 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
       
       // 调用XorPay生成支付二维码
       const paymentResult = await createPayment(paymentParams);
+      // 临时存储当前订单号
+      setAoid(paymentResult.aoid);
       
       if (paymentResult && paymentResult.qr) {
         // 这里要用XorPay的URL拼接，而不是直接使用二维码字符串
         setPaymentQRCode(`https://xorpay.com/qr?data=${paymentResult.qr}`);
-        console.log("支付二维码 qr: ", paymentQRCode);
+        
       } else {
         console.error('生成支付二维码失败');
       }

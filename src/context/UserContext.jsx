@@ -17,6 +17,7 @@ export const UserProvider = ({ children }) => {
   const [currentArticleId, setCurrentArticleId] = useState(null); // 当前正在付费的文章ID
   const [purchasedArticles, setPurchasedArticles] = useState([]); // 用户已购买的文章列表
   const [isEmailVerified, setIsEmailVerified] = useState(false); // 邮箱验证状态
+  const [currentAoid, setCurrentAoid] = useState(null); // XorPay平台返回的订单号
 
   // 检查会员是否到期
   const checkPremiumExpiration = async (user) => {
@@ -214,15 +215,17 @@ export const UserProvider = ({ children }) => {
   const validatePayment = async () => {
     try {
       // 导入XorPay工具
-      const { verifyPayment, generateOrderNo } = await import('../utils/xorPay');
+      const { verifyPayment } = await import('../utils/xorPay');
       
-      // 生成订单号
-      const orderNo = generateOrderNo();
+      // 检查是否有存储的XorPay平台订单号
+      if (!currentAoid) {
+        console.error('没有找到XorPay平台订单号');
+        message.error('支付信息不完整，请重新发起支付');
+        return false;
+      }
       
       // 调用XorPay验证支付状态
-      // 实际项目中，订单号应该在创建支付时保存，并在验证时使用
-      const isPaymentSuccessful = await verifyPayment(orderNo);
-      
+      const isPaymentSuccessful = await verifyPayment(currentAoid);
       return isPaymentSuccessful;
     } catch (error) {
       console.error('支付验证失败:', error);
@@ -268,9 +271,16 @@ export const UserProvider = ({ children }) => {
   // 关闭支付模态框
   const closePaymentModal = () => {
     setPaymentModalVisible(false);
-    // 重置支付类型和当前文章ID
+    // 重置支付类型、当前文章ID和XorPay订单号
     setPaymentType(null);
     setCurrentArticleId(null);
+    setCurrentAoid(null);
+  };
+  
+  // 设置XorPay平台订单号
+  const setAoid = (aoid) => {
+    setCurrentAoid(aoid);
+    console.log('已存储XorPay平台订单号:', aoid);
   };
   
   // 完成单篇文章购买 - 支付成功后调用
@@ -280,7 +290,8 @@ export const UserProvider = ({ children }) => {
       const isPaymentSuccessful = await validatePayment();
       
       if (!isPaymentSuccessful) {
-        message.error('支付验证失败，请检查支付状态');
+        console.log('支付验证失败');
+        window.confirm("支付验证失败，请检查支付状态");
         return false;
       }
       
@@ -348,7 +359,8 @@ export const UserProvider = ({ children }) => {
       const isPaymentSuccessful = await validatePayment();
       
       if (!isPaymentSuccessful) {
-        message.error('支付验证失败，请检查支付状态');
+        console.log('支付验证失败');
+        window.confirm("支付验证失败，请检查支付状态");
         return false;
       }
       
@@ -369,7 +381,7 @@ export const UserProvider = ({ children }) => {
       // 3. 使用updateUserState统一更新状态，确保用户名等信息一致性
       updateUserState(data?.user);
       
-      message.success('恭喜！您已成功升级为VIP用户');
+      window.confirm('恭喜！您已成功升级为VIP用户');
       return true;
     } catch (error) {
       console.error('升级VIP用户失败:', error);
@@ -475,8 +487,10 @@ export const UserProvider = ({ children }) => {
     paymentType,
     currentArticleId,
     purchasedArticles,
+    currentAoid,
     getPremiumDaysLeft,
     setPaymentModalVisible,
+    setAoid,
     login,
     logout,
     upgradeToPremium,
