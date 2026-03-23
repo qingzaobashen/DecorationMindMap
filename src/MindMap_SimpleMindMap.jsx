@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import MindMap from 'simple-mind-map';
 import 'simple-mind-map/dist/simpleMindMap.esm.css';
 import { LockOutlined } from '@ant-design/icons';
-import { Button, message, Modal } from 'antd';
+import { Button, Modal } from 'antd';
 import { useUser } from './context/UserContext';
 import { convertMarkdownToMindMap, convertObjectToMindMap } from './utils/mindmapUtils';
 import { customNoteContentShowPlugin } from './utils/mindmapPlugins';
@@ -10,7 +10,7 @@ import { customNoteContentShowPlugin } from './utils/mindmapPlugins';
 const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
   const containerRef = useRef(null);
   const mindMapRef = useRef(null);
-  const { isPremium, username } = useUser(); // 获取VIP状态和用户信息
+  const { isPremium, username, upgradeToPremium } = useUser(); // 获取VIP状态、用户信息和升级方法
   const [showUpgradeModal, setShowUpgradeModal] = useState(false); // 控制升级弹窗
   
   // 存储触摸事件处理函数的引用，以便在清理函数中使用
@@ -329,9 +329,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
             取消
           </Button>,
           <Button key="upgrade" type="primary" onClick={() => {
-            // 这里可以调用 UserContext 中的 upgradeToPremium 方法，或导航到升级页面
-            // 例如: history.push('/upgrade');
-            message.info('请联系管理员或前往充值页面升级为VIP用户。');
+            upgradeToPremium();
             setShowUpgradeModal(false);
           }}>
             立即升级
