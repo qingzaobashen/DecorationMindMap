@@ -132,7 +132,7 @@ function buildMindMapStructure(flatData) {
       });
     }
   });
-  console.log("buildMindMapStructure(): ", root);
+  //console.log("buildMindMapStructure(): ", root);
   return root ? {
     name: root.name,
     details: root.details,
@@ -186,7 +186,6 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
       const userId = userData?.user?.id;
       
       if (!userId) {
-        message.error('用户未登录，请先登录');
         return;
       }
       

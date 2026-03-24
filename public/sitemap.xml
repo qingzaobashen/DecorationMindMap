@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- 首页 -->
   <url>
-    <loc>https://yourdomain.com/</loc>
+    <loc>https://qingzao.com/</loc>
     <lastmod>2026-03-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -10,7 +10,7 @@
 
   <!-- 社区页面 -->
   <url>
-    <loc>https://yourdomain.com/forum</loc>
+    <loc>https://qingzao.com/forum</loc>
     <lastmod>2026-03-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
@@ -22,7 +22,7 @@
   <!-- 示例：文档页面（需要根据实际文档动态生成） -->
   <!--
   <url>
-    <loc>https://yourdomain.com/docs/README</loc>
+    <loc>https://qingzao.com/docs/README</loc>
     <lastmod>2026-03-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -32,7 +32,7 @@
   <!-- 示例：帖子页面（需要根据实际帖子动态生成） -->
   <!--
   <url>
-    <loc>https://yourdomain.com/forum/post/123</loc>
+    <loc>https://qingzao.com/forum/post/123</loc>
     <lastmod>2026-03-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>

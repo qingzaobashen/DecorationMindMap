@@ -73,7 +73,7 @@
 ## 🔧 需要手动配置的内容
 
 ### 1. **域名配置**
-在以下文件中替换 `https://yourdomain.com` 为您的实际域名：
+在以下文件中替换 `https://qingzao.com` 为您的实际域名：
 - [index.html](file:///d:\workT\wx_smallPrograms\Decorations\DecorationMindMap_github/index.html)
 - [public/robots.txt](file:///d:\workT\wx_smallPrograms\Decorations\DecorationMindMap_github/public/robots.txt)
 - [public/sitemap.xml](file:///d:\workT\wx_smallPrograms\Decorations\DecorationMindMap_github/public/sitemap.xml)
@@ -149,7 +149,7 @@
 ## 📝 检查清单
 
 部署前请确认：
-- [ ] 替换所有 `yourdomain.com` 为实际域名
+- [ ] 替换所有 `qingzao.com` 为实际域名
 - [ ] 上传 Open Graph 分享图片
 - [ ] 配置服务器支持 BrowserRouter
 - [ ] 提交 sitemap 到 Google Search Console

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 /**
  * Schema 结构化数据组件 - 为搜索引擎提供结构化数据
@@ -33,11 +33,11 @@ const Schema = ({ type, data }) => {
 export const WebSiteSchema = () => {
   const data = {
     name: '装修知识导图',
-    url: 'https://yourdomain.com',
+    url: 'https://qingzao.com',
     description: '装修知识导图提供全面的装修知识库，包括装修流程、材料选购、施工标准等专业内容。通过思维导图可视化展示装修全流程，助您轻松完成装修之旅。',
     potentialAction: {
       '@type': 'SearchAction',
-      target: 'https://yourdomain.com/search?q={search_term_string}',
+      target: 'https://qingzao.com/search?q={search_term_string}',
       'query-input': 'required name=search_term_string'
     },
     publisher: {
@@ -45,7 +45,7 @@ export const WebSiteSchema = () => {
       name: '装修知识导图',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://yourdomain.com/logo.png'
+        url: 'https://qingzao.com/logo.png'
       }
     }
   };
@@ -86,7 +86,7 @@ export const ArticleSchema = ({
       name: '装修知识导图',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://yourdomain.com/logo.png'
+        url: 'https://qingzao.com/logo.png'
       }
     },
     datePublished: datePublished,
@@ -124,8 +124,8 @@ export const BreadcrumbSchema = ({ items }) => {
 export const OrganizationSchema = () => {
   const data = {
     name: '装修知识导图',
-    url: 'https://yourdomain.com',
-    logo: 'https://yourdomain.com/logo.png',
+    url: 'https://qingzao.com',
+    logo: 'https://qingzao.com/logo.png',
     description: '专业的装修知识库与思维导图工具，提供全面的装修知识、材料选购指南、施工标准等专业内容。',
     sameAs: [
       'https://github.com/yourusername/DecorationMindMap',
@@ -134,7 +134,7 @@ export const OrganizationSchema = () => {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
-      email: 'contact@yourdomain.com'
+      email: 'contact@qingzao.com'
     }
   };
 
