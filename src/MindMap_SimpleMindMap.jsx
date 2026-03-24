@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import MindMap from 'simple-mind-map';
 import 'simple-mind-map/dist/simpleMindMap.esm.css';
+import './MindMap_SimpleMindMap.css';
 import { LockOutlined } from '@ant-design/icons';
 import { Button, Modal } from 'antd';
 import { useUser } from './context/UserContext';
@@ -88,7 +89,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
         useLeftKeySelectionRightKeyDrag: false,
 
       });
-
+      mindMap.view.setScale(0.65);
       mindMapRef.current = mindMap;
 
       // 传递 mindMap 实例给父组件
@@ -317,7 +318,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
         <div
           ref={containerRef}
           className="mindmap-canvas"
-          style={{ transform: 'translateX(-45%)', width: '200%', height: '100%' }}
+          // style={{ transform: 'translateX(-47%) translateY(0%)', width: '200%', height: '167%' }}
         />
       </div>
       <Modal

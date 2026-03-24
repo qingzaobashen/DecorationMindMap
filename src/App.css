@@ -582,13 +582,17 @@ body {
 
 .detail-panel h3 {
   margin: 0;
-  padding: 8px 7px;
+  padding: 8px 5px;
   color: var(--color-text-primary);
   font-size: 1.3rem;
   font-weight: 700;
   text-align: left;
   border-bottom: 1px solid var(--color-border);
   background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-primary) 100%);
+}
+
+.detail-panel h4 {
+  padding: 3px 5px;
 }
 
 .detail-panel h1 {
@@ -798,7 +802,7 @@ body {
   line-height: 1.8;
   color: var(--color-text-secondary);
   position: relative;
-  padding-left: 20px;
+  padding-left: 10px;
 }
 
 .point::before {
@@ -963,7 +967,7 @@ body {
   .detail-panel h3 {
     font-size: 1.1rem;
     margin-bottom: 2px;
-    padding: 5px;
+    padding: 5px 13px;
   }
   
   /* 内容滚动区域 - 允许整体滚动 */
@@ -1061,7 +1065,7 @@ body {
     border-left: none;
     border-top: 1px solid var(--color-border);
     padding-left: 0;
-    padding: 20px;
+    padding: 3px;
     margin-top: 0;
     overflow-y: visible;
     background: var(--color-bg-primary);

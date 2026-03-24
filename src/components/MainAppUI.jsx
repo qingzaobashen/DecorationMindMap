@@ -93,7 +93,8 @@ function buildMindMapStructure(flatData) {
         children: [],
         parent_id: item.parent_id,
         node_id: item.node_id,
-        is_premium: item.is_premium
+        is_premium: item.is_premium,
+        is_expand: item.is_expand === "1"
       });
     } else {
       // 这里是防止原始数据里有重复的node_id，若有，则合并详情和图片列表
@@ -126,11 +127,12 @@ function buildMindMapStructure(flatData) {
         attachment_name: item.attachment_name,
         children: item.children,
         node_id: item.node_id,
-        is_premium: item.is_premium
+        is_premium: item.is_premium,
+        is_expand: item.is_expand
       });
     }
   });
-  // console.log("buildMindMapStructure(): ", root);
+  console.log("buildMindMapStructure(): ", root);
   return root ? {
     name: root.name,
     details: root.details,
@@ -442,7 +444,7 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
       
       {/* 支付二维码弹窗 */}
       <Modal
-        title={paymentType === 'vip' ? "扫码支付 - VIP升级" : "扫码支付 - 单篇文章"}
+        title={paymentType === 'vip' ? "扫码支付（支付宝） - VIP升级" : "扫码支付（支付宝） - 单篇文章"}
         open={paymentModalVisible}
         onCancel={closePaymentModal}
         footer={[

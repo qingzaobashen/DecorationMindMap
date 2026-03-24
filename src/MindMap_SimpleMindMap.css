@@ -15,3 +15,15 @@
 .custom-note-panel img {
     max-width: 100%;
 }
+
+.mindmap-canvas {
+    transform: translateX(-38%) translateY(-1%);
+    width: 200%;
+    height: 167%;
+}
+
+@media (max-width: 768px) {
+    .mindmap-canvas {
+        transform: translateX(-41%) translateY(-7%);
+    }
+}

@@ -138,12 +138,14 @@ export const convertObjectToMindMap = (obj) => {
                 is_premium: node.is_premium || false,
                 // 解析图片URL
                 // 将字符串格式的数组解析为真正的数组
-                img_url: Array.isArray(node.img_url) ? node.img_url : (node.img_url ? JSON.parse(node.img_url.replace(/'/g, '"')) : [])
+                img_url: Array.isArray(node.img_url) ? node.img_url : (node.img_url ? JSON.parse(node.img_url.replace(/'/g, '"')) : []),
+                // 使用原始数据中的 is_expand 字段控制节点展开/收起状态
+                expand: node.is_expand || false
             },
             children: (node.children || []).map(mapNode)
         };
     };
-    // console.log("convertObjectToMindMap() obj:", obj);
+    console.log("convertObjectToMindMap() obj:", (obj.children || []).map(mapNode));
     // 创建根节点
     return {
         data: {
@@ -153,7 +155,9 @@ export const convertObjectToMindMap = (obj) => {
             details: obj.details,
             img_url: obj.img_url,
             attachmentUrl: '',
-            attachmentName: ''
+            attachmentName: '',
+            // 根节点默认展开，也可以使用 obj.is_expand
+            expand: obj.is_expand !== undefined ? obj.is_expand : true
         },
         children: (obj.children || []).map(mapNode)
     };
