@@ -1,15 +1,15 @@
 // 从react库中导入useState钩子
 import { useState, useEffect, lazy, Suspense } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 
 import './App.css';
 import { Modal, Button, Spin } from 'antd';
 
-// 从UserContext导入useUser
 import { useUser } from './context/UserContext';
 
-// 导入组件
 import WelcomePage from './components/WelcomePage';
+import SEO from './components/SEO';
+import { WebSiteSchema, OrganizationSchema, ArticleSchema } from './components/Schema';
 import { FaFileAlt, FaProjectDiagram, FaCommentDots } from 'react-icons/fa';
 import Layout from './components/layout/Layout';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -24,7 +24,8 @@ const MainAppUI = lazy(() => import('./components/MainAppUI'));
 const MainAppUIWrapperForDocs = lazy(() => import('./components/MainAppUIWrapperForDocs'));
 
 export default function App() {
-  const navigate = useNavigate(); // React Router's navigate hook
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [loginVisible, setLoginVisible] = useState(false);
   const { isAuthenticated, isPremium, logout, loading, isEmailVerified, sendEmailVerification } = useUser();
@@ -35,6 +36,65 @@ export default function App() {
 
   const handleOpenFeedbackModal = () => setFeedbackModalVisible(true);
   const handleCloseFeedbackModal = () => setFeedbackModalVisible(false);
+
+  // 根据路由动态生成 SEO 元数据
+  const getSEOProps = () => {
+    const baseUrl = 'https://yourdomain.com';
+    const currentUrl = `${baseUrl}${location.pathname}`;
+
+    switch (location.pathname) {
+      case '/':
+        return {
+          title: '装修知识导图 - 专业的装修知识库与思维导图工具',
+          description: '装修知识导图提供全面的装修知识库，包括装修流程、材料选购、施工标准等专业内容。通过思维导图可视化展示装修全流程，助您轻松完成装修之旅。',
+          keywords: '装修知识,装修流程,材料选购,施工标准,装修指南,装修思维导图,装修预算,装修验收',
+          url: currentUrl,
+          type: 'website'
+        };
+      case '/forum':
+        return {
+          title: '装修社区 - 分享装修经验与心得',
+          description: '加入装修知识导图社区，与其他装修爱好者分享装修经验、交流心得、获取专业建议。',
+          keywords: '装修社区,装修经验,装修心得,装修交流,装修论坛',
+          url: currentUrl,
+          type: 'website'
+        };
+      case '/docs/README':
+        return {
+          title: '装修文档 - 装修知识导图',
+          description: '查看详细的装修文档，包括装修流程、材料选购指南、施工标准等专业知识。',
+          keywords: '装修文档,装修指南,装修流程,材料选购,施工标准',
+          url: currentUrl,
+          type: 'article'
+        };
+      default:
+        if (location.pathname.startsWith('/forum/post/')) {
+          return {
+            title: '装修帖子详情 - 装修知识导图',
+            description: '查看装修社区中的详细帖子内容，获取更多装修经验和建议。',
+            keywords: '装修帖子,装修经验,装修建议',
+            url: currentUrl,
+            type: 'article'
+          };
+        }
+        if (location.pathname.startsWith('/docs/')) {
+          return {
+            title: '装修知识文档 - 装修知识导图',
+            description: '查看装修相关的专业知识文档，提升您的装修技能。',
+            keywords: '装修知识,装修文档,装修指南',
+            url: currentUrl,
+            type: 'article'
+          };
+        }
+        return {
+          title: '装修知识导图 - 专业的装修知识库与思维导图工具',
+          description: '装修知识导图提供全面的装修知识库，包括装修流程、材料选购、施工标准等专业内容。',
+          keywords: '装修知识,装修流程,材料选购,施工标准,装修指南',
+          url: currentUrl,
+          type: 'website'
+        };
+    }
+  };
 
   const navigationItems = [
     {
@@ -88,6 +148,9 @@ export default function App() {
 
   return (
     <div className="app-container">
+      <SEO {...getSEOProps()} />
+      <WebSiteSchema />
+      <OrganizationSchema />
       <ErrorBoundary>
         <Suspense fallback={
           <div className="loading-overlay">

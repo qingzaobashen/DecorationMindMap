@@ -1,0 +1,24 @@
+# robots.txt - 装修知识导图
+# 指导搜索引擎爬虫如何抓取网站
+
+User-agent: *
+Allow: /
+
+# 允许搜索引擎访问静态资源
+Allow: /assets/
+Allow: /backend_data/
+
+# 禁止访问管理或敏感目录（如果有）
+Disallow: /admin/
+Disallow: /api/
+Disallow: /private/
+
+# 禁止访问临时文件和缓存
+Disallow: /tmp/
+Disallow: /cache/
+
+# Sitemap 位置
+Sitemap: https://yourdomain.com/sitemap.xml
+
+# 爬取延迟（可选，根据服务器性能调整）
+Crawl-delay: 1
