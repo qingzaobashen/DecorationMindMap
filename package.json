@@ -8,7 +8,9 @@
     "build": "vite build",
     "build:cloudflare": "vite build --config vite.config.cloudflare.js",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate-sitemap": "node scripts/generate-sitemap.js",
+    "generate-sitemap:supabase": "node scripts/generate-sitemap-supabase.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.86.0",

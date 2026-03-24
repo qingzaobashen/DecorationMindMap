@@ -493,7 +493,7 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
             {paymentType === 'vip' ? "支付成功后，点击'支付完成'按钮完成VIP升级" : "支付成功后，点击'支付完成'按钮查看完整文章"}
           </p>
           <p className="payment-note">
-            {paymentType === 'vip' ? "VIP有效期限时延长至“120天”（原90天）" : ""}
+            {paymentType === 'vip' ? "VIP有效期限时延长至“120天”（原90天）（暂不支持退款）" : ""}
           </p>
         </div>
       </Modal>

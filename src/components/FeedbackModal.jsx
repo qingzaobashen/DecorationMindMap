@@ -116,7 +116,7 @@ const FeedbackModal = ({ visible, onClose }) => {
         <Form.Item
           name="contact"
           label="联系方式 (可选)"
-          tooltip="如果您希望我们与您联系，请留下您的邮箱或电话。"
+          tooltip="如果您希望我们与您联系，请留下您的邮箱或电话，或者添加客服微信：yuchen_580"
         >
           <Input placeholder="邮箱或电话号码" />
         </Form.Item>

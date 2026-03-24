@@ -16,6 +16,33 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- 文档页面 -->
+  <url>
+    <loc>https://qingzao.com/docs/README</loc>
+    <lastmod>2026-03-24</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qingzao.com/docs/design-overview</loc>
+    <lastmod>2026-03-24</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://qingzao.com/docs/construction-guide</loc>
+    <lastmod>2026-03-24</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://qingzao.com/docs/material-selection</loc>
+    <lastmod>2026-03-24</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://qingzao.com/docs/budget-planning</loc>
+    <lastmod>2026-03-24</lastmod>
+    <priority>0.7</priority>
+  </url>
   <!-- 注意：动态路由（如 /docs/:docName 和 /forum/post/:postId）需要通过后端生成 -->
   <!-- 建议使用 sitemap 生成工具或编写脚本动态生成这些 URL -->
 

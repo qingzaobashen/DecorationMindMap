@@ -6,15 +6,130 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <!-- SEO Meta Tags -->
-    <title>页面未找到 - 装修知识导图</title>
-    <meta name="description" content="抱歉，您访问的页面不存在。请返回装修知识导图首页查看更多装修知识。" />
-    <meta name="robots" content="noindex, follow" />
+    <title>装修知识导图 - 专业的装修知识库与思维导图工具</title>
+    <meta name="description" content="装修知识导图提供全面的装修知识库，包括装修流程、材料选购、施工标准等专业内容。通过思维导图可视化展示装修全流程，助您轻松完成装修之旅。" />
+    <meta name="keywords" content="装修知识,装修导图,装修流程,材料选购,施工标准,装修指南,装修思维导图,装修预算,装修验收" />
+    <meta name="author" content="装修知识导图" />
+    <meta name="robots" content="index, follow" />
     
     <!-- Canonical URL -->
     <link rel="canonical" href="https://qingzao.com/" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://qingzao.com/" />
+    <meta property="og:title" content="装修知识导图 - 专业的装修知识库与思维导图工具" />
+    <meta property="og:description" content="装修知识导图提供全面的装修知识库，包括装修流程、材料选购、施工标准等专业内容。通过思维导图可视化展示装修全流程，助您轻松完成装修之旅。" />
+    <meta property="og:image" content="https://qingzao.com/og-image.jpg" />
+    <meta property="og:locale" content="zh_CN" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://qingzao.com/" />
+    <meta name="twitter:title" content="装修知识导图 - 专业的装修知识库与思维导图工具" />
+    <meta name="twitter:description" content="装修知识导图提供全面的装修知识库，包括装修流程、材料选购、施工标准等专业内容。通过思维导图可视化展示装修全流程，助您轻松完成装修之旅。" />
+    <meta name="twitter:image" content="https://qingzao.com/og-image.jpg" />
+    
+    <!-- Additional SEO Tags -->
+    <meta name="theme-color" content="#1890ff" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+          'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      #root {
+        width: 100%;
+        height: 100vh;
+      }
+      .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-size: 18px;
+        color: #333;
+      }
+      .loading-spinner {
+        border: 4px solid #f3f3f3f;
+        border-top: 4px solid #1890ff;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin-right: 16px;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        <span>正在加载...</span>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      /**
+       * GitHub Pages SPA 路由支持方案
+       * 
+       * GitHub Pages 不支持服务器端路由重写，因此使用客户端重定向
+       * 当用户刷新页面或直接访问深层路由时，GitHub Pages 会显示此 404.html
+       * 然后通过 JavaScript 将用户重定向到正确的路由
+       */
+      
+      (function() {
+        // 等待 React 应用加载完成
+        const checkAppLoaded = setInterval(function() {
+          const root = document.getElementById('root');
+          
+          // 检查 React 应用是否已经加载（不再显示加载动画）
+          if (root && !root.querySelector('.loading')) {
+            clearInterval(checkAppLoaded);
+            return;
+          }
+          
+          // 获取当前页面的路径
+          const path = window.location.pathname;
+          
+          // 获取查询参数和哈希
+          const search = window.location.search;
+          const hash = window.location.hash;
+          
+          // GitHub Pages 仓库名称配置
+          // 如果您的仓库名称不是 'DecorationMindMap'，请修改此处
+          const repoName = '/DecorationMindMap';
+          
+          // 构建完整 URL
+          let redirectUrl = path + search + hash;
+          
+          // 如果路径以仓库名称开头，不需要再次添加
+          if (path.startsWith(repoName)) {
+            redirectUrl = path + search + hash;
+          } else {
+            // 否则，添加仓库名称
+            redirectUrl = repoName + path + search + hash;
+          }
+          
+          // 使用 history.replaceState 而不是 location.replace
+          // 这样可以避免在浏览器历史记录中留下 404 页面的记录
+          window.history.replaceState({}, '', redirectUrl);
+          
+          // 重新加载页面以触发 React Router
+          window.location.reload();
+        }, 100);
+      })();
+    </script>
   </body>
 </html>

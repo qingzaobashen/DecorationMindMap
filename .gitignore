@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 .wrangler
 .dev.vars*
+DYNAMIC_SITEMAP_GUIDE.md
+GITHUB_PAGES_SPA_GUIDE.md
