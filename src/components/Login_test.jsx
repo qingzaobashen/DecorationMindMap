@@ -85,7 +85,7 @@ export default function Login({ onSuccess }) {
 
       // 实际API调用
       const apiUrl = `http://localhost:${PORT}/api/auth${endpoint}`;
-      console.log("请求地址: ", apiUrl);
+      //console.log("请求地址: ", apiUrl);
       try {
         var { data } = await axios.post(apiUrl, {
           username,

@@ -5,7 +5,7 @@ const attachmentRegex = '/\\[([^\\]]+)\\]\\(attachment:([^\\s")]+)(?:\\s\\"([^\\
 // 将 Markdown 格式转换为思维导图数据结构
 export const convertMarkdownToMindMap = (markdown) => {
     if (typeof markdown !== 'string' || !markdown.trim()) return null;
-    console.log("convertMarkdownToMindMap() markdown:", typeof (markdown));
+    //console.log("convertMarkdownToMindMap() markdown:", typeof (markdown));
     const lines = markdown.split('\n');
     const rootNode = {
         data: { text: '装修流程' },

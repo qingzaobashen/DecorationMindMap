@@ -312,7 +312,7 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
     setAuthError(null);
 
     try {
-      console.log("注册尝试:", { email, username });
+      //console.log("注册尝试:", { email, username });
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -331,7 +331,7 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
       // 注册成功，调用成功回调
       if (data.user) {
         onSuccess?.(data.user);
-        console.log("注册成功:", data.user);
+        //console.log("注册成功:", data.user);
         message.success('注册成功，验证邮件已发送，请检查邮箱后登录');
         setIsRegister(false); // 切换回登录模式
         // 清空表单
@@ -367,7 +367,7 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
     setAuthError(null);
 
     try {
-      console.log("登录尝试:", { email, rememberMe });
+      //console.log("登录尝试:", { email, rememberMe });
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -382,16 +382,16 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
       if (error) {
         throw error;
       }
-      // 取消VIP的代码测试
-      const { datas, errors } = await supabase.auth.updateUser({
-              data: { 
-                isPremium: false,
-                premium_expires_at: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString() // 默认为1天有效期
-              }
-            });
+      // 取消VIP的测试代码
+      //const { datas, errors } = await supabase.auth.updateUser({
+      //        data: { 
+      //          isPremium: false,
+      //          premium_expires_at: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString() // 默认为1天有效期
+      //        }
+      //      });
       // 登录成功，调用成功回调
       if (data.session) {
-        console.log("登录成功:", data);
+        //console.log("登录成功:", data);
         // UserContext会自动通过onAuthStateChange监听登录状态
         onSuccess?.(data.user);
         message.success('登录成功');
@@ -424,7 +424,7 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
     setAuthError(null);
 
     try {
-      console.log("密码重置尝试:", { email });
+      //console.log("密码重置尝试:", { email });
       const success = await sendPasswordResetEmail(email);
       
       if (success) {

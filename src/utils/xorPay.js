@@ -306,7 +306,7 @@ export const createPayment = async (params) => {
         }
       });
 
-    console.log('创建订单API响应:', response.data);
+    //console.log('创建订单API响应:', response.data);
 
     // 提取并存储 aoid（XorPay 平台返回的订单号）
     const aoid = response.data.aoid;
@@ -364,7 +364,7 @@ export const verifyPayment = async (aoid) => {
         }
 
         const data = await res.json();
-        console.log('order verify status: ', data);
+        //console.log('order verify status: ', data);
         if (data.status === 'payed' || data.status === 'success') {
           return true;
         } else {

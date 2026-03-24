@@ -19,7 +19,7 @@ export default function LoginBySupabase({ onSuccess }) {
     useEffect(() => {
         // Check if we have token_hash in URL (magic link callback)
         const params = new URLSearchParams(window.location.search);
-        console.log("window.location.search", window.location.search);
+        //console.log("window.location.search", window.location.search);
         const token_hash = params.get("token_hash");
         const type = params.get("type");
 

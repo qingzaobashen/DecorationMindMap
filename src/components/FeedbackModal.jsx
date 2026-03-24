@@ -25,7 +25,7 @@ const FeedbackModal = ({ visible, onClose }) => {
 
   const handleSubmit = async (values) => {
     setLoading(true);
-    console.log('收集到的反馈信息:', values);
+    //console.log('收集到的反馈信息:', values);
 
     try {
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
@@ -52,7 +52,7 @@ const FeedbackModal = ({ visible, onClose }) => {
         }
       );
 
-      console.log('反馈提交响应:', response.data);
+      //console.log('反馈提交响应:', response.data);
 
       if (response.data.success) {
         window.confirm('反馈已成功提交，感谢您的宝贵意见！');

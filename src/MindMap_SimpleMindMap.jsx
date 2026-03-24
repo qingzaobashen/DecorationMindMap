@@ -23,7 +23,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
   const handleDownloadClick = useCallback((nodeData) => {
     if (isPremium) {
       if (nodeData.data.attachmentUrl) {
-        console.log(`开始下载 ${nodeData.data.attachmentName}`);
+        //console.log(`开始下载 ${nodeData.data.attachmentName}`);
         // 实际下载文件，可以创建一个a标签点击，或者 window.open
         const link = document.createElement('a');
         link.href = nodeData.data.attachmentUrl;
@@ -269,7 +269,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
           // 2、处理节点备注点击
           const isNoteClick = e.target.closest('.smm-node-note');
           if (isNoteClick) {
-            console.log("mindMap.on('node_click') isNoteClick:", node);
+            //console.log("mindMap.on('node_click') isNoteClick:", node);
             onNodeClick(node.nodeData);
             if (mindMap.plugins && mindMap.plugins.customNoteContentShow != undefined) {
               mindMap.plugins.customNoteContentShow.hide();

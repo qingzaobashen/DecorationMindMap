@@ -82,7 +82,7 @@ const WelcomePage = ({ showLogin }) => {
           装修思维导图系统
         </Title>
         <Paragraph className="welcome-subtitle">
-          思维导图式装修知识树，一站式掌握家装要领
+          思维导图式装修知识树，一图搞定装修全流程！
         </Paragraph>
         <div className="hero-features">
           <div className="hero-feature">
@@ -206,7 +206,6 @@ const WelcomePage = ({ showLogin }) => {
                       <span className="preview-item">材料选购指南</span>
                       <span className="preview-item">施工工艺标准</span>
                       <span className="preview-item">预算控制技巧</span>
-                      <span className="preview-item">验收检查清单</span>
                     </div>
                   </div>
                 </div>
@@ -229,13 +228,13 @@ const WelcomePage = ({ showLogin }) => {
             </Paragraph>
           </div>
           <Card className="premium-card" bordered={false}>
-            <Row gutter={[24, 24]}>
-              <Col xs={24} md={8}>
+            <Row gutter={[24, 16]}>
+              {/* <Col xs={24} md={8}>
                 <div className="premium-feature-card">
                   <div className="premium-feature-icon">
                     <CrownOutlined />
                   </div>
-                  <h4>思维导图自定义编辑与储存</h4>
+                  <h4>思维导图更多装修VIP内容</h4>
                   <p>创建个性化的装修思维导图，随时保存和编辑，打造专属知识库</p>
                   <ul className="feature-list">
                     <li>支持多层级节点编辑</li>
@@ -243,32 +242,31 @@ const WelcomePage = ({ showLogin }) => {
                     <li>导出多种格式</li>
                   </ul>
                 </div>
-              </Col>
-              <Col xs={24} md={8}>
+              </Col> */}
+              <Col xs={24} md={12}>
                 <div className="premium-feature-card">
                   <div className="premium-feature-icon">
                     <CrownOutlined />
                   </div>
-                  <h4>更多装修知识文档访问权限</h4>
-                  <p>访问完整的装修知识库，获取专业指导，成为装修专家</p>
+                  <h4>思维导图更多装修VIP内容</h4>
+                  <p>访问完整的装修知识库，获取专业教程，成为装修专家</p>
                   <ul className="feature-list">
-                    <li>100+专业文档</li>
-                    <li>视频教程库</li>
-                    <li>专家问答</li>
+                    <li>专业知识文档</li>
+                    <li>随身装修知识库</li>
                   </ul>
                 </div>
               </Col>
-              <Col xs={24} md={8}>
+              <Col xs={24} md={12}>
                 <div className="premium-feature-card">
                   <div className="premium-feature-icon">
                     <CrownOutlined />
                   </div>
-                  <h4>装修相关文档与表格任意下载</h4>
-                  <p>下载各类装修表格、清单和模板，提高装修效率</p>
+                  <h4>装修相关文档与表格下载</h4>
+                  <p>下载20+装修表格、清单和模板，提高装修效率</p>
                   <ul className="feature-list">
                     <li>预算表格模板</li>
-                    <li>施工进度表</li>
-                    <li>验收检查清单</li>
+                    <li>施工流程表</li>
+                    <li>商家调研表</li>
                   </ul>
                 </div>
               </Col>
@@ -277,7 +275,7 @@ const WelcomePage = ({ showLogin }) => {
               <div className="premium-price">
                 <span className="price-label">VIP会员</span>
                 <span className="price-value">¥15.00</span>
-                <span className="price-unit">/120天</span>
+                <span className="price-unit">/120天(限时)</span>
               </div>
               <div className="premium-features-summary">
                 <span className="summary-item">✓ 全面</span>

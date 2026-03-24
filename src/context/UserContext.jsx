@@ -163,7 +163,7 @@ export const UserProvider = ({ children }) => {
     
     // 监听Supabase认证状态变化
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('认证状态变化:', event, session);
+      //console.log('认证状态变化:', event, session);
       // 增强认证状态验证
       if (event === 'SIGNED_OUT' || !session?.user) {
         updateUserState(null);
@@ -281,7 +281,7 @@ export const UserProvider = ({ children }) => {
   // 设置XorPay平台订单号
   const setAoid = (aoid) => {
     setCurrentAoid(aoid);
-    console.log('已存储XorPay平台订单号:', aoid);
+    //console.log('已存储XorPay平台订单号:', aoid);
   };
   
   // 完成单篇文章购买 - 支付成功后调用
@@ -332,7 +332,7 @@ export const UserProvider = ({ children }) => {
         throw error;
       }
       
-      console.log('文章购买成功响应:', data);
+      //console.log('文章购买成功响应:', data);
       
       // 5. 更新本地状态
       updateUserState(data?.user);
@@ -377,7 +377,7 @@ export const UserProvider = ({ children }) => {
         throw error;
       }
       
-      console.log('Supabase用户更新响应:', data);
+      //console.log('Supabase用户更新响应:', data);
       
       // 3. 使用updateUserState统一更新状态，确保用户名等信息一致性
       updateUserState(data?.user);
@@ -413,7 +413,7 @@ export const UserProvider = ({ children }) => {
     try {
       // 实际项目中应该调用API保存数据
       // 模拟API调用
-      console.log(`保存用户${type}数据:`, data);
+      //console.log(`保存用户${type}数据:`, data);
       
       // 保存到localStorage模拟数据持久化
       localStorage.setItem(`user_${type}_data`, JSON.stringify(data));

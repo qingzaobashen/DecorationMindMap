@@ -34,7 +34,7 @@ const parseCSV = () => {
         csvText = decoder.decode(arrayBuffer);
       } catch (error) {
         // 如果GBK解码失败，回退到UTF-8编码
-        console.log('GBK解码失败，尝试使用UTF-8编码:', error);
+        console.error('GBK解码失败，尝试使用UTF-8编码:', error);
         const decoder = new TextDecoder('utf-8');
         csvText = decoder.decode(arrayBuffer);
       }
@@ -155,6 +155,7 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
 {
   const [selectedNode, setSelectedNode] = useState(null);  // 当前选择的叶节点
   const [panelVisible, setPanelVisible] = useState(false); // 弹出窗是否可见
+  const [isClosingByPopState, setIsClosingByPopState] = useState(false); // 是否通过popstate事件关闭
   const [mindData, setMindData] = useState(null);          // 思维导图的数据
   const [loading, setLoading] = useState(true);            // 是否正在加载中，初始为true
   const [viewType] = useState('simplemindmap'); // 导图的显示类型，默认simplemindmap
@@ -241,6 +242,35 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
     mindMapInstanceRef.current = instance;
   }, []);
 
+  // 监听浏览器返回事件，处理手机端返回手势和返回键
+  useEffect(() => {
+    const handlePopState = (event) => {
+      if (panelVisible) {
+        event.preventDefault();
+        setIsClosingByPopState(true);
+        setPanelVisible(false);
+      }
+    };
+
+    if (panelVisible) {
+      window.addEventListener('popstate', handlePopState);
+    }
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [panelVisible]);
+
+  // 关闭详情面板的函数
+  const closeDetailPanel = useCallback(() => {
+    setPanelVisible(false);
+    // 只有在非popstate关闭时才调用history.back()
+    if (!isClosingByPopState) {
+      window.history.back();
+    }
+    setIsClosingByPopState(false);
+  }, [isClosingByPopState]);
+
   // 处理节点点击事件的回调函数，传给MindMap_SimpleMindMap子组件，让它点击节点时调用
   // 主要是拿到点击节点的数据，然后弹出详情页
   const memoizedHandleNodeClick = useCallback((nodeData, nodeInstance, clickDetails) => {
@@ -255,11 +285,13 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
     const is_premium = nodeData.is_premium || nodeData.data?.is_premium || false;
     // 获取节点的唯一标识，优先使用node_id，其次使用name作为回退
     const nodeId = nodeData.node_id || nodeData.data?.node_id || nodeName;
-    console.log("is_premium: ", is_premium);
+    //console.log("is_premium: ", is_premium);
     setSelectedNode({ name: nodeName, details, img_url: img_url, is_premium, id: nodeId });
     setPanelVisible(true);
+    // 添加历史记录条目，以便用户可以通过返回手势或返回键关闭详情页
+    window.history.pushState({ panelVisible: true }, '', window.location.href);
     if (clickDetails && clickDetails.type === 'attachment_icon_click') {
-      console.log('MainAppUI: Attachment icon click received:', clickDetails.attachment);
+      //console.log('MainAppUI: Attachment icon click received:', clickDetails.attachment);
     }
   }, [setSelectedNode, setPanelVisible]);
 
@@ -430,7 +462,7 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
             if (success) {
               closePaymentModal();
               // 关闭节点详情面板，以便重新加载内容
-              setPanelVisible(false);
+              closeDetailPanel();
             }
           }}>
             支付已完成
@@ -476,12 +508,12 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
           {currentViewComponent}
         </main>
         {panelVisible && (
-          <div className="panel-mask" onClick={() => setPanelVisible(false)}>
+          <div className="panel-mask" onClick={closeDetailPanel}>
             <div className="detail-panel" onClick={(e) => e.stopPropagation()} aria-modal="true" role="dialog" aria-labelledby="node-detail-title">
-              <button className="close-btn" onClick={() => setPanelVisible(false)} aria-label="关闭详情面板" tabIndex={0} onKeyDown={(e) => {
+              <button className="close-btn" onClick={closeDetailPanel} aria-label="关闭详情面板" tabIndex={0} onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
                   e.preventDefault();
-                  setPanelVisible(false);
+                  closeDetailPanel();
                 }
               }}>×</button>
               {selectedNode ? (
