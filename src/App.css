@@ -591,9 +591,6 @@ body {
   background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-primary) 100%);
 }
 
-.detail-panel h4 {
-  padding: 3px 5px;
-}
 
 .detail-panel h1 {
   font-size: 1.8rem;
@@ -614,6 +611,11 @@ body {
   margin-bottom: 5px;
   color: var(--color-text-primary);
   font-weight: 600;
+}
+
+.detail-panel h4 {
+  padding: 3px 5px;
+  font-size: 1rem;
 }
 
 .detail-panel table {
@@ -949,6 +951,14 @@ body {
   .detail-panel h2 {
     font-size: 1.2rem;
     margin-bottom: 10px;
+  }
+
+  .detail-panel h3 {
+    font-size: 1.1rem;
+  }
+
+  .detail-panel h4 {
+    font-size: 1rem;
   }
   
   /* 关闭按钮固定在顶部 */
