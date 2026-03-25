@@ -76,7 +76,7 @@ export const UserProvider = ({ children }) => {
       const userPurchasedArticles = user.user_metadata?.purchased_articles || [];
       const isEmailVerified = user.email_confirmed_at ? true : false;
       const premiumExpiresAt = user.user_metadata?.premium_expires_at;
-      
+      //console.log("user.user_metadata:", user.user_metadata);
       setIsAuthenticated(true);
       setUsername(userUsername);
       setIsPremium(isPremiumUser);
@@ -265,6 +265,7 @@ export const UserProvider = ({ children }) => {
     if (isPremium) {
       return true;
     }
+    //console.log("purchasedArticles:", purchasedArticles);
     // 检查是否在已购买列表中
     return purchasedArticles.includes(articleId);
   };
