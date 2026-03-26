@@ -11,7 +11,9 @@
     "preview": "vite preview",
     "generate-sitemap": "node scripts/generate-sitemap.js",
     "generate-sitemap:supabase": "node scripts/generate-sitemap-supabase.js",
-    "verify-deployment": "node scripts/verify-deployment.js"
+    "generate-sitemap:docs": "node scripts/generate-docs-sitemap.js",
+    "verify-deployment": "node scripts/verify-deployment.js",
+    "verify-baidu": "node scripts/verify-baidu.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.86.0",

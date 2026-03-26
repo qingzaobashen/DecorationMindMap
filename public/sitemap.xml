@@ -1,68 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- 首页 -->
+  <!-- 静态页面 -->
+
   <url>
     <loc>https://qingzao.com/</loc>
-    <lastmod>2026-03-24</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <lastmod>2026-03-26</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1</priority>
   </url>
-
-  <!-- 社区页面 -->
   <url>
     <loc>https://qingzao.com/forum</loc>
-    <lastmod>2026-03-24</lastmod>
+    <lastmod>2026-03-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
-
+  
   <!-- 文档页面 -->
+
   <url>
-    <loc>https://qingzao.com/docs/README</loc>
-    <lastmod>2026-03-24</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://qingzao.com/docs/design-overview</loc>
-    <lastmod>2026-03-24</lastmod>
+    <loc>https://qingzao.com/docs/budget-planning</loc>
+    <lastmod>2025-05-22</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://qingzao.com/docs/construction-guide</loc>
-    <lastmod>2026-03-24</lastmod>
+    <lastmod>2025-05-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://qingzao.com/docs/design-overview</loc>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://qingzao.com/docs/material-selection</loc>
-    <lastmod>2026-03-24</lastmod>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
-  <url>
-    <loc>https://qingzao.com/docs/budget-planning</loc>
-    <lastmod>2026-03-24</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <!-- 注意：动态路由（如 /docs/:docName 和 /forum/post/:postId）需要通过后端生成 -->
-  <!-- 建议使用 sitemap 生成工具或编写脚本动态生成这些 URL -->
-
-  <!-- 示例：文档页面（需要根据实际文档动态生成） -->
-  <!--
   <url>
     <loc>https://qingzao.com/docs/README</loc>
-    <lastmod>2026-03-24</lastmod>
-    <changefreq>monthly</changefreq>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
-  -->
-
-  <!-- 示例：帖子页面（需要根据实际帖子动态生成） -->
-  <!--
-  <url>
-    <loc>https://qingzao.com/forum/post/123</loc>
-    <lastmod>2026-03-24</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  -->
 </urlset>

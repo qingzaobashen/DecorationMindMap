@@ -12,6 +12,7 @@ import SEO from './components/SEO';
 import { WebSiteSchema, OrganizationSchema, ArticleSchema } from './components/Schema';
 import { FaFileAlt, FaProjectDiagram, FaCommentDots } from 'react-icons/fa';
 import Layout from './components/layout/Layout';
+import DocsLayout from './components/DocsLayout';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // 懒加载组件
@@ -21,7 +22,6 @@ const CommunityPage = lazy(() => import('./components/Community/CommunityPage'))
 const PostDetailPage = lazy(() => import('./components/Community/PostDetailPage'));
 const NotFoundPage = lazy(() => import('./components/NotFoundPage'));
 const MainAppUI = lazy(() => import('./components/MainAppUI'));
-const MainAppUIWrapperForDocs = lazy(() => import('./components/MainAppUIWrapperForDocs'));
 
 export default function App() {
   const navigate = useNavigate();
@@ -159,6 +159,11 @@ export default function App() {
           </div>
         }>
           <Routes>
+            {/* 文档页面 - 使用 DocsLayout，显示侧边栏 */}
+            <Route path="/docs/:docName" element={
+              <DocsLayout />
+            } />
+            
             {/* 根Route，未登录前是欢迎页，登录后是侧边栏组件 */}
             <Route path="/" element={
               isAuthenticated ? (
@@ -177,12 +182,8 @@ export default function App() {
                 logout={logout} showLogin={showLoginModal} />} />
               <Route path="/forum" element={<CommunityPage />} />
               <Route path="/forum/post/:postId" element={<PostDetailPage />} />
-              {/* Example route for DocsViewer if you want to navigate to specific docs */}
-              <Route path="/docs/:docName" element={
-                <MainAppUIWrapperForDocs />
-              } />
-              <Route path="*" element={<NotFoundPage />} /> {/* 捕获所有未匹配的路由并显示404页面 */}
             </Route>
+            <Route path="*" element={<NotFoundPage />} /> {/* 捕获所有未匹配的路由并显示404页面 */}
           </Routes>
 
           <Modal
