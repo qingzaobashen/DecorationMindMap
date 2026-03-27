@@ -124,7 +124,7 @@ function DocsLayout() {
         if (isAuthenticated) {
           handleOpenFeedbackModal();
         }else{
-          navigate('/');
+          setLoginVisible(true);
         }
       }
     }

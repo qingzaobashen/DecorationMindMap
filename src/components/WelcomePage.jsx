@@ -291,7 +291,10 @@ const WelcomePage = ({ showLogin }) => {
       <footer className="welcome-footer">
         <Divider />
         <Paragraph className="footer-text">
-          © 2026 装修思维导图系统 - 让装修更简单
+          © 2026 装修思维导图系统 - 让装修更简单！
+        </Paragraph>
+        <Paragraph className="footer-text-low">
+          版权所有：@青枣
         </Paragraph>
       </footer>
     </div>

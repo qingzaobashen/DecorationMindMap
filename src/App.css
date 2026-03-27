@@ -471,6 +471,12 @@ body {
   line-height: 1.5;
 }
 
+.footer-text-low {
+  font-size: 11px;
+}
+
+
+
 .sidebar.collapsed .sidebar-footer {
   display: none;
 }
