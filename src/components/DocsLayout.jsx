@@ -58,8 +58,9 @@ function DocsLayout() {
   // 处理退出登录
   const handleLogout = async () => {
     await logout();
+    navigate('/');// 暂时先导航到首页，等处理好了未登录状态的文档页面加载问题后再改回来
     // 退出登录后刷新页面
-    window.location.reload();
+    //window.location.reload();
   };
 
   // Ensure docName always has .md, and handle cases where it might be undefined
