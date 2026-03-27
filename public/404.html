@@ -2,7 +2,7 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="./vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="./logo2.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <!-- SEO Meta Tags -->
@@ -52,6 +52,7 @@
       }
       .loading {
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         height: 100vh;
@@ -59,27 +60,19 @@
         color: #333;
       }
       .loading-spinner {
-        border: 4px solid #f3f3f3f;
+        border: 4px solid #f3f3f3;
         border-top: 4px solid #1890ff;
         border-radius: 50%;
         width: 40px;
         height: 40px;
         animation: spin 1s linear infinite;
-        margin-right: 16px;
+        margin-bottom: 16px;
       }
       @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
     </style>
-  </head>
-  <body>
-    <div id="root">
-      <div class="loading">
-        <div class="loading-spinner"></div>
-        <span>正在加载...</span>
-      </div>
-    </div>
     <script>
       /**
        * GitHub Pages SPA 路由支持方案
@@ -87,26 +80,33 @@
        * GitHub Pages 不支持服务器端路由重写，因此使用客户端重定向
        * 当用户刷新页面或直接访问深层路由时，GitHub Pages 会显示此 404.html
        * 然后通过 JavaScript 将用户重定向到正确的路由
+       * * 原理：
+       * 1. 当用户直接访问 /docs/README 这样的路由时
+       * 2. GitHub Pages 会返回 404.html（本文件）
+       * 3. 本脚本将当前路径保存到 sessionStorage
+       * 4. 然后重定向到根路径 /
+       * 5. 根路径的 index.html 加载后，从 sessionStorage 读取保存的路径
+       * 6. 使用 React Router 导航到正确的路由
        */
-      
       (function() {
-        // 获取当前页面的路径
+        // 获取当前页面的完整路径（包括查询参数和哈希）
         const path = window.location.pathname;
-        
-        // 获取查询参数和哈希
         const search = window.location.search;
         const hash = window.location.hash;
         
-        // 构建完整 URL
-        const redirectUrl = path + search + hash;
+        // 保存当前路径到 sessionStorage
+        sessionStorage.setItem('spa-redirect-path', path + search + hash);
         
-        // 使用 history.replaceState 而不是 location.replace
-        // 这样可以避免在浏览器历史记录中留下 404 页面的记录
-        window.history.replaceState({}, '', redirectUrl);
-        
-        // 重新加载页面以触发 React Router
-        window.location.reload();
+        // 重定向到根路径
+        // 使用 replace 而不是 href，避免在浏览器历史中留下 404 记录
+        window.location.replace('/');
       })();
-      </script>
+    </script>
+  </head>
+  <body>
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      <div>正在跳转...</div>
+    </div>
   </body>
 </html>

@@ -130,6 +130,18 @@ export default function App() {
     }
   }, [isAuthenticated, isEmailVerified]);
 
+  // Effect for handling GitHub Pages SPA redirect
+  useEffect(() => {
+    // 检查是否有从 404.html 保存的重定向路径
+    const redirectPath = sessionStorage.getItem('spa-redirect-path');
+    if (redirectPath) {
+      // 清除保存的路径
+      sessionStorage.removeItem('spa-redirect-path');
+      // 导航到保存的路径
+      navigate(redirectPath, { replace: true });
+    }
+  }, [navigate]);
+
   const showLoginModal = () => setLoginVisible(true);
   const handleLoginSuccess = () => {
     setLoginVisible(false);
