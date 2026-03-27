@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && npm run generate-static-docs",
     "build:cloudflare": "vite build --config vite.config.cloudflare.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "generate-sitemap": "node scripts/generate-sitemap.js",
     "generate-sitemap:supabase": "node scripts/generate-sitemap-supabase.js",
     "generate-sitemap:docs": "node scripts/generate-docs-sitemap.js",
+    "generate-static-docs": "node scripts/generate-static-docs.js",
     "verify-deployment": "node scripts/verify-deployment.js",
     "verify-baidu": "node scripts/verify-baidu.js"
   },
