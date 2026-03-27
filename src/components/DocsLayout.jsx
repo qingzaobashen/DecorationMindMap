@@ -65,8 +65,8 @@ function DocsLayout() {
   // Ensure docName always has .md, and handle cases where it might be undefined
   const docName = rawDocNameFromParams || 'README';
 
-  // Construct path for fetching
-  const finalDocPath = `${import.meta.env.BASE_URL}docs/${docName}`;
+  // Construct path for fetching - 使用相对路径
+  const finalDocPath = `/docs/${docName}`;
 
   // 处理文档导航
   const handleDocNavigate = (newPath) => {

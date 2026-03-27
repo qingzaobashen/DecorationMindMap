@@ -80,7 +80,6 @@
         <span>正在加载...</span>
       </div>
     </div>
-    <script type="module" src="/src/main.jsx"></script>
     <script>
       /**
        * GitHub Pages SPA 路由支持方案
@@ -91,46 +90,23 @@
        */
       
       (function() {
-        // 等待 React 应用加载完成
-        const checkAppLoaded = setInterval(function() {
-          const root = document.getElementById('root');
-          
-          // 检查 React 应用是否已经加载（不再显示加载动画）
-          if (root && !root.querySelector('.loading')) {
-            clearInterval(checkAppLoaded);
-            return;
-          }
-          
-          // 获取当前页面的路径
-          const path = window.location.pathname;
-          
-          // 获取查询参数和哈希
-          const search = window.location.search;
-          const hash = window.location.hash;
-          
-          // GitHub Pages 仓库名称配置
-          // 如果您的仓库名称不是 'DecorationMindMap'，请修改此处，但这里github似乎不需要加仓库名
-          const repoName = '';
-          
-          // 构建完整 URL
-          let redirectUrl = path + search + hash;
-          
-          // 如果路径以仓库名称开头，不需要再次添加
-          if (path.startsWith(repoName)) {
-            redirectUrl = path + search + hash;
-          } else {
-            // 否则，添加仓库名称
-            redirectUrl = repoName + path + search + hash;
-          }
-          
-          // 使用 history.replaceState 而不是 location.replace
-          // 这样可以避免在浏览器历史记录中留下 404 页面的记录
-          window.history.replaceState({}, '', redirectUrl);
-          
-          // 重新加载页面以触发 React Router
-          window.location.reload();
-        }, 100);
+        // 获取当前页面的路径
+        const path = window.location.pathname;
+        
+        // 获取查询参数和哈希
+        const search = window.location.search;
+        const hash = window.location.hash;
+        
+        // 构建完整 URL
+        const redirectUrl = path + search + hash;
+        
+        // 使用 history.replaceState 而不是 location.replace
+        // 这样可以避免在浏览器历史记录中留下 404 页面的记录
+        window.history.replaceState({}, '', redirectUrl);
+        
+        // 重新加载页面以触发 React Router
+        window.location.reload();
       })();
-    </script>
+      </script>
   </body>
 </html>
