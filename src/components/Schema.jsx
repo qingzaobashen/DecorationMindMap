@@ -33,11 +33,11 @@ const Schema = ({ type, data }) => {
 export const WebSiteSchema = () => {
   const data = {
     name: '装修知识导图',
-    url: 'https://qingzao.com',
+    url: 'https://www.qingzao.site',
     description: '装修知识导图提供全面的装修知识库，包括装修流程、材料选购、施工标准等专业内容。通过思维导图可视化展示装修全流程，助您轻松完成装修之旅。',
     potentialAction: {
       '@type': 'SearchAction',
-      target: 'https://qingzao.com/search?q={search_term_string}',
+      target: 'https://www.qingzao.site/search?q={search_term_string}',
       'query-input': 'required name=search_term_string'
     },
     publisher: {
@@ -45,7 +45,7 @@ export const WebSiteSchema = () => {
       name: '装修知识导图',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://qingzao.com/logo.png'
+        url: 'https://www.qingzao.site/logo.png'
       }
     }
   };
@@ -86,7 +86,7 @@ export const ArticleSchema = ({
       name: '装修知识导图',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://qingzao.com/logo.png'
+        url: 'https://www.qingzao.site/logo.png'
       }
     },
     datePublished: datePublished,
@@ -124,8 +124,8 @@ export const BreadcrumbSchema = ({ items }) => {
 export const OrganizationSchema = () => {
   const data = {
     name: '装修知识导图',
-    url: 'https://qingzao.com',
-    logo: 'https://qingzao.com/logo.png',
+    url: 'https://www.qingzao.site',
+    logo: 'https://www.qingzao.site/logo.png',
     description: '专业的装修知识库与思维导图工具，提供全面的装修知识、材料选购指南、施工标准等专业内容。',
     sameAs: [
       'https://github.com/yourusername/DecorationMindMap',
@@ -134,7 +134,7 @@ export const OrganizationSchema = () => {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
-      email: 'contact@qingzao.com'
+      email: 'contact@www.qingzao.site'
     }
   };
 

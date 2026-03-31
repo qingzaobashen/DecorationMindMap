@@ -13,7 +13,7 @@
 ```nginx
 server {
     listen 80;
-    server_name qingzao.com www.qingzao.com;
+    server_name www.qingzao.site www.www.qingzao.site;
 
     root /var/www/qingzao/dist;
     index index.html;
@@ -404,9 +404,9 @@ http://localhost:3000/docs/README
 
 ```bash
 # 测试各个路由
-curl -I https://qingzao.com/
-curl -I https://qingzao.com/forum
-curl -I https://qingzao.com/docs/README
+curl -I https://www.qingzao.site/
+curl -I https://www.qingzao.site/forum
+curl -I https://www.qingzao.site/docs/README
 
 # 检查是否返回 200 状态码
 ```
@@ -476,4 +476,4 @@ curl -I https://qingzao.com/docs/README
 
 **文档版本**：1.0
 **更新日期**：2026-03-24
-**适用项目**：装修知识导图 (qingzao.com)
+**适用项目**：装修知识导图 (www.qingzao.site)

@@ -20,7 +20,7 @@ const path = require('path');
  */
 const CONFIG = {
   // 网站基础 URL
-  baseUrl: process.env.SITE_URL || 'https://qingzao.com',
+  baseUrl: process.env.SITE_URL || 'https://www.qingzao.site',
   
   // sitemap 文件输出路径
   outputPath: path.join(__dirname, '../public/sitemap.xml'),

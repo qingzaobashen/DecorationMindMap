@@ -18,7 +18,7 @@ Disallow: /tmp/
 Disallow: /cache/
 
 # Sitemap 位置
-Sitemap: https://qingzao.com/sitemap.xml
+Sitemap: https://www.qingzao.site/sitemap.xml
 
 # 爬取延迟（可选，根据服务器性能调整）
 Crawl-delay: 1
