@@ -7,10 +7,8 @@ import { useUser } from '../context/UserContext';
  * 用户欢迎组件 - 显示欢迎信息和用户统计数据
  */
 const UserWelcome = ({ isVisible, onClose }) => {
-  const [lastVisit, setLastVisit] = useState('首次访问');
-  const [visitCount, setVisitCount] = useState(1);
   const [daysLeft, setDaysLeft] = useState(0);
-  const { username, isPremium, getPremiumDaysLeft } = useUser();
+  const { username, isPremium, getPremiumDaysLeft, getVisitCount, getLastVisit } = useUser();
   
   useEffect(() => {
     if (isPremium && getPremiumDaysLeft) {
@@ -18,30 +16,16 @@ const UserWelcome = ({ isVisible, onClose }) => {
     }
   }, [isPremium, getPremiumDaysLeft]);
   
+  // 获取访问次数和上次访问时间
+  const visitCount = getVisitCount();
+  const lastVisitTime = getLastVisit();
+  const lastVisit = lastVisitTime ? new Date(lastVisitTime).toLocaleString() : '首次访问';
+  
+  // 4秒后自动关闭通知
   useEffect(() => {
-    // 从本地存储获取访问记录
-    const lastVisitTime = localStorage.getItem('lastVisit');
-    const nowtime = new Date().toISOString();
-    const deltaTime = new Date(nowtime) - new Date(lastVisitTime);
-    if (lastVisitTime && Math.abs(deltaTime) > 5000) {  // 因为要进入这里两次，所以这里要判断是否得到的时间真的是上次登录时间
-      const count = parseInt(localStorage.getItem('visitCount')) || 0;
-      
-      if (lastVisitTime) {
-        const formatDate = new Date(lastVisitTime).toLocaleString();
-        setLastVisit(formatDate);
-      }
-
-      // 更新访问次数
-      setVisitCount(count + 1);
-      localStorage.setItem('visitCount', (count + 1).toString());
-
-      // 记录本次访问时间
-      localStorage.setItem('lastVisit', new Date().toISOString());
-    }
-    // 3秒后自动关闭通知
     const timer = setTimeout(() => {
       if (onClose) onClose();
-    }, 3000);
+    }, 4000);
     
     return () => clearTimeout(timer);
   }, []);

@@ -18,6 +18,8 @@ export const UserProvider = ({ children }) => {
   const [purchasedArticles, setPurchasedArticles] = useState([]); // 用户已购买的文章列表
   const [isEmailVerified, setIsEmailVerified] = useState(false); // 邮箱验证状态
   const [currentAoid, setCurrentAoid] = useState(null); // XorPay平台返回的订单号
+  const [visitCount, setVisitCount] = useState(0); // 访问次数
+  const [lastVisit, setLastVisit] = useState(null); // 上次访问时间
 
   // 检查会员是否到期
   const checkPremiumExpiration = async (user) => {
@@ -76,13 +78,21 @@ export const UserProvider = ({ children }) => {
       const userPurchasedArticles = user.user_metadata?.purchased_articles || [];
       const isEmailVerified = user.email_confirmed_at ? true : false;
       const premiumExpiresAt = user.user_metadata?.premium_expires_at;
+      const userVisitCount = user.user_metadata?.visit_count || 0;
+      const userLastVisit = user.user_metadata?.last_visit || null;
       //console.log("user.user_metadata:", user.user_metadata);
       setIsAuthenticated(true);
       setUsername(userUsername);
       setIsPremium(isPremiumUser);
       setPurchasedArticles(userPurchasedArticles);
       setIsEmailVerified(isEmailVerified);
-      
+      setVisitCount(userVisitCount);
+      const now = new Date();
+      // 如果获取到的上次登录时间与现在超过了5秒，才记录下来，不然会重复刷新这个时间
+      if (!userLastVisit || (now - new Date(userLastVisit) > 5000)) {
+        console.log("userLastVisit:", userLastVisit);
+        setLastVisit(userLastVisit);
+      }
       // 保存用户状态到本地存储，用于快速恢复
       // 只存储非敏感信息
       localStorage.setItem('isAuthenticated', 'true');
@@ -108,6 +118,8 @@ export const UserProvider = ({ children }) => {
       localStorage.removeItem('purchasedArticles');
       localStorage.removeItem('isEmailVerified');
       localStorage.removeItem('premiumExpiresAt');
+      setVisitCount(0);
+      setLastVisit(null);
     }
   };
 
@@ -176,6 +188,56 @@ export const UserProvider = ({ children }) => {
       authListener?.subscription.unsubscribe();
     };
   }, []);
+  
+  // 更新访问记录
+  useEffect(() => {
+    const updateVisitRecord = async () => {
+      if (!isAuthenticated || !username) {
+        return;
+      }
+      
+      try {
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        
+        if (userError || !userData?.user) {
+          console.error('获取用户信息失败:', userError);
+          return;
+        }
+        
+        const user = userData.user;
+        const currentLastVisit = user.user_metadata?.last_visit;
+        const currentVisitCount = user.user_metadata?.visit_count || 0;
+        const now = new Date();
+        
+        // 如果没有上次访问记录，或者距离上次访问超过5秒，则更新记录
+        if (!currentLastVisit || (now - new Date(currentLastVisit) > 5000)) {
+          const updatedVisitCount = currentVisitCount + 1;
+          const updatedMetadata = {
+            ...user.user_metadata,
+            visit_count: updatedVisitCount,
+            last_visit: now.toISOString()
+          };
+          console.log("updatedMetadata:", updatedMetadata);
+          const { error } = await supabase.auth.updateUser({
+            data: updatedMetadata
+          });
+          
+          if (error) {
+            console.error('更新访问记录失败:', error);
+            return;
+          }
+          
+          setVisitCount(updatedVisitCount);
+          //setLastVisit(now.toISOString());
+          console.log('访问记录已更新:', { visitCount: updatedVisitCount, lastVisit: now.toISOString() });
+        }
+      } catch (error) {
+        console.error('更新访问记录失败:', error);
+      }
+    };
+    
+    updateVisitRecord();
+  }, [isAuthenticated, username]);
 
   // 计算会员到期天数
   const getPremiumDaysLeft = () => {
@@ -190,6 +252,16 @@ export const UserProvider = ({ children }) => {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
     return Math.max(0, diffDays);
+  };
+  
+  // 获取访问次数
+  const getVisitCount = () => {
+    return visitCount;
+  };
+  
+  // 获取上次访问时间
+  const getLastVisit = () => {
+    return lastVisit;
   };
 
   // 登录处理 - 由于Supabase的onAuthStateChange会自动更新状态，此函数已简化
@@ -490,7 +562,11 @@ export const UserProvider = ({ children }) => {
     currentArticleId,
     purchasedArticles,
     currentAoid,
+    visitCount,
+    lastVisit,
     getPremiumDaysLeft,
+    getVisitCount,
+    getLastVisit,
     setPaymentModalVisible,
     setAoid,
     login,
