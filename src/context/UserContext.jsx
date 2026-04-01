@@ -90,7 +90,7 @@ export const UserProvider = ({ children }) => {
       const now = new Date();
       // 如果获取到的上次登录时间与现在超过了5秒，才记录下来，不然会重复刷新这个时间
       if (!userLastVisit || (now - new Date(userLastVisit) > 5000)) {
-        console.log("userLastVisit:", userLastVisit);
+        //console.log("userLastVisit:", userLastVisit);
         setLastVisit(userLastVisit);
       }
       // 保存用户状态到本地存储，用于快速恢复
@@ -217,7 +217,7 @@ export const UserProvider = ({ children }) => {
             visit_count: updatedVisitCount,
             last_visit: now.toISOString()
           };
-          console.log("updatedMetadata:", updatedMetadata);
+          //console.log("updatedMetadata:", updatedMetadata);
           const { error } = await supabase.auth.updateUser({
             data: updatedMetadata
           });
@@ -229,7 +229,7 @@ export const UserProvider = ({ children }) => {
           
           setVisitCount(updatedVisitCount);
           //setLastVisit(now.toISOString());
-          console.log('访问记录已更新:', { visitCount: updatedVisitCount, lastVisit: now.toISOString() });
+          //console.log('访问记录已更新:', { visitCount: updatedVisitCount, lastVisit: now.toISOString() });
         }
       } catch (error) {
         console.error('更新访问记录失败:', error);
