@@ -271,7 +271,7 @@ export const createPayment = async (params) => {
     formData.append('notify_url', notify_url);
     formData.append('more', `{"user_id":"${user_id}"}`);
     formData.append('sign', sign);
-    formData.append('expire', 600); // 让二维码10分钟过期
+    formData.append('expire', 3600); // 让二维码60分钟过期
     //{
     //"name": "VIP升级",
     //"notify_url": "https://uwgvflkueracnwgwdwpe.supabase.co/functions/v1/xorpay-webhook",
