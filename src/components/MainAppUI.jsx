@@ -16,10 +16,10 @@ import 'swiper/css/pagination';
 
 const PORT = 5000;
 // 使用import.meta.env.BASE_URL来动态获取base路径，确保在不同部署环境下都能正确访问资源
-const csvFilePath = `${import.meta.env.BASE_URL}backend_data/nodes_details_data.csv`;
+const csvFilePath = `${import.meta.env.BASE_URL}backend_data/nodes_details_data_0405.csv`;
 
 // CSV文件在 Supabase 存储桶中的路径
-const CSV_STORAGE_PATH = 'backend_data/nodes_details_data.csv';
+const CSV_STORAGE_PATH = 'backend_data/nodes_details_data_0405.csv';
 // 图片存储桶中的根路径
 const IMAGE_STORAGE_PATH = 'backend_data/images/';
 // Supabase 存储桶中的图片 URL 前缀
