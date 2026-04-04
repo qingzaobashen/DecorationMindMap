@@ -15,32 +15,40 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 const PORT = 5000;
+// 使用import.meta.env.BASE_URL来动态获取base路径，确保在不同部署环境下都能正确访问资源
+const csvFilePath = `${import.meta.env.BASE_URL}backend_data/nodes_details_data.csv`;
+
 // CSV文件在 Supabase 存储桶中的路径
 const CSV_STORAGE_PATH = 'backend_data/nodes_details_data.csv';
 // 图片存储桶中的根路径
 const IMAGE_STORAGE_PATH = 'backend_data/images/';
 // Supabase 存储桶中的图片 URL 前缀
-const supabaseImageUrl = getFileUrl(IMAGE_STORAGE_PATH).replace(IMAGE_STORAGE_PATH, '');
-
+const supabaseImageUrl = getFileUrl(IMAGE_STORAGE_PATH);//.replace(IMAGE_STORAGE_PATH, '');
+console.log("supabaseImageUrl:", supabaseImageUrl);
 // 浏览器端解析CSV文件的函数（使用Papa Parse库）
 const parseCSV = async () => {
   try {
     // 从 Supabase 下载 CSV 文件
     const blob = await downloadFile(CSV_STORAGE_PATH);
+
+    // 从本地文件系统读取CSV文件--用于快速调试
+    //const response = await fetch(csvFilePath);
+    //const blob = await response.blob();
+    // 将 Blob 转换为 ArrayBuffer，以便手动处理编码
+    const arrayBuffer = await blob.arrayBuffer();
     
-    // 将 Blob 转换为文本
-    let csvText = await blob.text();
     // 尝试使用GBK编码解码CSV文件（Windows系统常见编码）
-      
-      try {
-        const decoder = new TextDecoder('gbk');
-        csvText = decoder.decode(csvText);
-      } catch (error) {
-        // 如果GBK解码失败，回退到UTF-8编码
-        console.error('GBK解码失败，尝试使用UTF-8编码:', error);
-        const decoder = new TextDecoder('utf-8');
-        csvText = decoder.decode(csvText);
-      }
+    let csvText;
+    try {
+      const decoder = new TextDecoder('gbk');
+      csvText = decoder.decode(arrayBuffer);
+    } catch (error) {
+      // 如果GBK解码失败，回退到UTF-8编码
+      console.error('GBK解码失败，尝试使用UTF-8编码:', error);
+      const decoder = new TextDecoder('utf-8');
+      csvText = decoder.decode(arrayBuffer);
+    }
+    
     // 使用Papa Parse解析CSV文本
     return new Promise((resolve, reject) => {
       import('papaparse').then(({ default: Papa }) => {

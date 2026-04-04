@@ -15,6 +15,11 @@ import Layout from './components/layout/Layout';
 import DocsLayout from './components/DocsLayout';
 import ErrorBoundary from './components/ErrorBoundary';
 
+//import { uploadDirectory } from './utils/uploadToSupabase.js';
+//
+//// 上传所有文件
+//await uploadDirectory();
+
 // 懒加载组件
 const LoginBySupabaseUsername = lazy(() => import('./components/LoginByUserName_supabase'));
 const FeedbackModal = lazy(() => import('./components/FeedbackModal'));

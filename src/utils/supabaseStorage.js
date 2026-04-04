@@ -1,4 +1,4 @@
-import supabase from './supabase';
+import supabase from './supabase.js';
 
 /**
  * Supabase 存储工具
@@ -21,7 +21,7 @@ export const initStorage = async () => {
       console.error('获取存储桶列表失败:', listError);
       return false;
     }
-    
+    console.log('当前存储桶列表:', buckets, listError);
     // 检查是否已存在目标存储桶
     const bucketExists = buckets.some(b => b.name === BUCKET_NAME);
     

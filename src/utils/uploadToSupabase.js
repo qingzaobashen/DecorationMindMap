@@ -1,4 +1,4 @@
-import { uploadFile, initStorage } from './supabaseStorage';
+import { uploadFile, initStorage } from './supabaseStorage.js';
 
 /**
  * 批量上传本地文件到 Supabase 存储
