@@ -7,6 +7,7 @@ import MindMap_SimpleMindMap from '../MindMap_SimpleMindMap';
 import MindMapSaver from './MindMapSaver';
 import { sampleData } from '../utils/sampleData';
 import supabase from '../utils/supabase';
+import { downloadFile, getFileUrl } from '../utils/supabaseStorage';
 
 // 导入Swiper样式
 import 'swiper/css';
@@ -14,56 +15,60 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 const PORT = 5000;
-// CSV文件路径（基于public目录）
-// 使用import.meta.env.BASE_URL来动态获取base路径，确保在不同部署环境下都能正确访问资源
-const csvFilePath = `${import.meta.env.BASE_URL}backend_data/nodes_details_data.csv`;
-const imageFilePath = `${import.meta.env.BASE_URL}backend_data/images/`;
+// CSV文件在 Supabase 存储桶中的路径
+const CSV_STORAGE_PATH = 'backend_data/nodes_details_data.csv';
+// 图片存储桶中的根路径
+const IMAGE_STORAGE_PATH = 'backend_data/images/';
+// Supabase 存储桶中的图片 URL 前缀
+const supabaseImageUrl = getFileUrl(IMAGE_STORAGE_PATH).replace(IMAGE_STORAGE_PATH, '');
 
 // 浏览器端解析CSV文件的函数（使用Papa Parse库）
-const parseCSV = () => {
-  return fetch(csvFilePath)
-    .then(response => {
-      if (!response.ok) throw new Error(`Fetch file ${csvFilePath} error! status: ${response.status}`);
-      return response.arrayBuffer(); // 获取原始二进制数据
-    })
-    .then(arrayBuffer => {
-      // 尝试使用GBK编码解码CSV文件（Windows系统常见编码）
-      let csvText;
+const parseCSV = async () => {
+  try {
+    // 从 Supabase 下载 CSV 文件
+    const blob = await downloadFile(CSV_STORAGE_PATH);
+    
+    // 将 Blob 转换为文本
+    let csvText = await blob.text();
+    // 尝试使用GBK编码解码CSV文件（Windows系统常见编码）
+      
       try {
         const decoder = new TextDecoder('gbk');
-        csvText = decoder.decode(arrayBuffer);
+        csvText = decoder.decode(csvText);
       } catch (error) {
         // 如果GBK解码失败，回退到UTF-8编码
         console.error('GBK解码失败，尝试使用UTF-8编码:', error);
         const decoder = new TextDecoder('utf-8');
-        csvText = decoder.decode(arrayBuffer);
+        csvText = decoder.decode(csvText);
       }
-      
-      // 使用Papa Parse解析CSV文本
-      return new Promise((resolve, reject) => {
-        import('papaparse').then(({ default: Papa }) => {
-          Papa.parse(csvText, {
-            header: true, // 使用第一行作为表头
-            skipEmptyLines: true, // 跳过空行
-            complete: (results) => {
-              // 转换数值类型的字段
-              const formattedResults = results.data.map(item => ({
-                ...item,
-                id: parseInt(item.id),
-                node_id: parseInt(item.node_id),
-                parent_id: item.parent_id ? parseInt(item.parent_id) : null,
-                create_user_id: parseInt(item.create_user_id),
-                parent_mindMap_id: parseInt(item.parent_mindMap_id)
-              }));
-              resolve(formattedResults);
-            },
-            error: (error) => {
-              reject(error);
-            }
-          });
+    // 使用Papa Parse解析CSV文本
+    return new Promise((resolve, reject) => {
+      import('papaparse').then(({ default: Papa }) => {
+        Papa.parse(csvText, {
+          header: true, // 使用第一行作为表头
+          skipEmptyLines: true, // 跳过空行
+          complete: (results) => {
+            // 转换数值类型的字段
+            const formattedResults = results.data.map(item => ({
+              ...item,
+              id: parseInt(item.id),
+              node_id: parseInt(item.node_id),
+              parent_id: item.parent_id ? parseInt(item.parent_id) : null,
+              create_user_id: parseInt(item.create_user_id),
+              parent_mindMap_id: parseInt(item.parent_mindMap_id)
+            }));
+            resolve(formattedResults);
+          },
+          error: (error) => {
+            reject(error);
+          }
         });
       });
     });
+  } catch (error) {
+    console.error('下载 CSV 文件失败:', error);
+    throw error;
+  }
 };
 
 /**
@@ -427,7 +432,7 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
             
             {/* 图片 */}
             <img
-              src={imageFilePath + (selectedNode.img_url[currentImageIndex] || '/error0.png')}
+              src={supabaseImageUrl + (selectedNode.img_url[currentImageIndex] || '/error0.png')}
               className="fullscreen-image"
               alt={`全屏查看图片${currentImageIndex + 1}`}
               loading="lazy"
@@ -574,7 +579,7 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
                                   <SwiperSlide key={i}>
                                     <div className="image-container">
                                       <img
-                                            src={imageFilePath + (item || '/error0.png')}
+                                            src={supabaseImageUrl + (item || '/error0.png')}
                                             className="carousel-image"
                                             alt={`知识点配图${i + 1}`}
                                             loading="lazy"
