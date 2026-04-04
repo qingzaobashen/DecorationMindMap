@@ -7,6 +7,7 @@
 点击下方链接查看文档内容：
 
 *   [设计阶段概览](/docs/design-overview.md)
+*   [设计细节参考](/docs/design-detail.md)
 *   [施工阶段指引](/docs/construction-guide.md)
 *   [材料选择要点](/docs/material-selection.md)
 *   [装修预算规划](/docs/budget-planning.md)
