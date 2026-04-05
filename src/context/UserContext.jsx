@@ -133,7 +133,7 @@ export const UserProvider = ({ children }) => {
       if (sessionError || !sessionData?.session) {
         const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
         if (refreshError || !refreshData?.session) {
-          window.confirm('无法恢复会话，可能是新的访问，请重新登录');
+          console.log('无法恢复会话，可能是新的访问，请重新登录');
         }
       }
       
