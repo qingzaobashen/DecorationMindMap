@@ -1,4 +1,4 @@
-# 装修知识思维导图系统 - 装修全流程活地图
+# 装修知识思维导图系统 - 一图搞定装修全流程
 
 欢迎来到装修知识导图系统！在这里，您可以找到关于装修各个阶段的详细指南和建议。
 
@@ -6,11 +6,12 @@
 
 点击下方链接查看文档内容：
 
-*   [设计阶段概览](/docs/design-overview.md)
-*   [设计细节参考](/docs/design-detail.md)
-*   [施工阶段指引](/docs/construction-guide.md)
-*   [材料选择要点](/docs/material-selection.md)
+*   [装修公司挑选](/docs/company-selection.md)
+*   [装修设计步骤](/docs/design-overview.md)
+*   [100+设计细节参考](/docs/design-detail.md)
 *   [装修预算规划](/docs/budget-planning.md)
+*   [材料选择要点](/docs/material-selection.md)
+*   [施工阶段指引](/docs/construction-guide.md)
 *   持续更新中。。。
 
 ---
@@ -37,7 +38,7 @@
 
 ### 二、这是什么：一张真正"能看懂"的装修全景图
 
-**装修知识导图**（www.qingzao.site）是一款将装修全流程可视化为思维导图的专业工具。
+**装修知识导图**(`www.qingzao.site`)，是一款将装修全流程可视化为思维导图的专业工具。
 
 它不是又一篇万字长文，也不是零散的视频合集。打开页面，你会看到一棵从"装修总流程"生长出来的知识树——准备阶段、暖通门窗阶段、硬装施工阶段、软装阶段，每个节点都能展开，每个环节都有详解。
 

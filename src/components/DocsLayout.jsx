@@ -150,7 +150,7 @@ function DocsLayout() {
         <main className="mindmap-wrapper mindWrapper-size docs-view-active">
           {/* 显示文档标题 */}
           <header className="view-header">
-            <h2>文档中心: {docName.replace('.md', '')}</h2>
+            <h2>文档中心</h2>
           </header>
           
           {/* 文档查看器 */}
