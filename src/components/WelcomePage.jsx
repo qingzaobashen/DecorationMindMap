@@ -74,62 +74,13 @@ const WelcomePage = ({ showLogin }) => {
 
       {/* 顶部英雄区域 */}
       <div className={`hero-section ${mounted ? 'mounted' : ''}`}>
-        {/* 思维导图背景装饰 */}
+        {/* 思维导图背景图片 */}
         <div className="mindmap-bg-decoration">
-          <svg viewBox="0 0 800 600" className="mindmap-bg-svg">
-            {/* 中心节点 */}
-            <circle cx="400" cy="300" r="50" fill="#1890ff" opacity="0.8"/>
-            <text x="400" y="305" textAnchor="middle" fill="white" fontSize="12">装修</text>
-            {/* 一级分支 */}
-            <circle cx="250" cy="150" r="35" fill="#52c41a" opacity="0.7"/>
-            <text x="250" y="155" textAnchor="middle" fill="white" fontSize="10">设计</text>
-            <line x1="365" y1="265" x2="285" y2="175" stroke="#1890ff" strokeWidth="2" opacity="0.5"/>
-
-            <circle cx="550" cy="150" r="35" fill="#fa8c16" opacity="0.7"/>
-            <text x="550" y="155" textAnchor="middle" fill="white" fontSize="10">预算</text>
-            <line x1="435" y1="265" x2="515" y2="175" stroke="#1890ff" strokeWidth="2" opacity="0.5"/>
-
-            <circle cx="250" cy="450" r="35" fill="#f5222d" opacity="0.7"/>
-            <text x="250" y="455" textAnchor="middle" fill="white" fontSize="10">施工</text>
-            <line x1="365" y1="335" x2="285" y2="425" stroke="#1890ff" strokeWidth="2" opacity="0.5"/>
-
-            <circle cx="550" cy="450" r="35" fill="#722ed1" opacity="0.7"/>
-            <text x="550" y="455" textAnchor="middle" fill="white" fontSize="10">验收</text>
-            <line x1="435" y1="335" x2="515" y2="425" stroke="#1890ff" strokeWidth="2" opacity="0.5"/>
-
-            {/* 二级分支 */}
-            <circle cx="120" cy="100" r="25" fill="#13c2c2" opacity="0.6"/>
-            <text x="120" y="105" textAnchor="middle" fill="white" fontSize="8">方案</text>
-            <line x1="225" y1="135" x2="145" y2="115" stroke="#52c41a" strokeWidth="1.5" opacity="0.4"/>
-
-            <circle cx="380" cy="80" r="25" fill="#13c2c2" opacity="0.6"/>
-            <text x="380" y="85" textAnchor="middle" fill="white" fontSize="8">风格</text>
-            <line x1="270" y1="130" x2="355" y2="95" stroke="#52c41a" strokeWidth="1.5" opacity="0.4"/>
-
-            <circle cx="680" cy="100" r="25" fill="#13c2c2" opacity="0.6"/>
-            <text x="680" y="105" textAnchor="middle" fill="white" fontSize="8">主材</text>
-            <line x1="535" y1="135" x2="655" y2="115" stroke="#fa8c16" strokeWidth="1.5" opacity="0.4"/>
-
-            <circle cx="680" cy="200" r="25" fill="#13c2c2" opacity="0.6"/>
-            <text x="680" y="205" textAnchor="middle" fill="white" fontSize="8">人工</text>
-            <line x1="555" y1="165" x2="655" y2="185" stroke="#fa8c16" strokeWidth="1.5" opacity="0.4"/>
-
-            <circle cx="120" cy="500" r="25" fill="#13c2c2" opacity="0.6"/>
-            <text x="120" y="505" textAnchor="middle" fill="white" fontSize="8">水电</text>
-            <line x1="225" y1="465" x2="145" y2="485" stroke="#f5222d" strokeWidth="1.5" opacity="0.4"/>
-
-            <circle cx="380" cy="520" r="25" fill="#13c2c2" opacity="0.6"/>
-            <text x="380" y="525" textAnchor="middle" fill="white" fontSize="8">泥木</text>
-            <line x1="270" y1="470" x2="355" y2="505" stroke="#f5222d" strokeWidth="1.5" opacity="0.4"/>
-
-            <circle cx="680" cy="500" r="25" fill="#13c2c2" opacity="0.6"/>
-            <text x="680" y="505" textAnchor="middle" fill="white" fontSize="8">软装</text>
-            <line x1="555" y1="465" x2="655" y2="485" stroke="#722ed1" strokeWidth="1.5" opacity="0.4"/>
-
-            <circle cx="680" cy="400" r="25" fill="#13c2c2" opacity="0.6"/>
-            <text x="680" y="405" textAnchor="middle" fill="white" fontSize="8">保洁</text>
-            <line x1="555" y1="435" x2="655" y2="415" stroke="#722ed1" strokeWidth="1.5" opacity="0.4"/>
-          </svg>
+          <img
+            src="/导图截图.png"
+            alt="装修思维导图预览"
+            className="mindmap-bg-image"
+          />
         </div>
         <div className="hero-badge">
           <ThunderboltOutlined />

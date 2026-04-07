@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import MindMap from 'simple-mind-map';
+import Themes from 'simple-mind-map-plugin-themes'
 import 'simple-mind-map/dist/simpleMindMap.esm.css';
 import './MindMap_SimpleMindMap.css';
 import { LockOutlined } from '@ant-design/icons';
@@ -66,7 +67,8 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
       }
 
       //console.log('SimpleMindMap 数据:', mindMapData);
-
+      // 注册主题
+      Themes.init(MindMap);
       // 创建思维导图实例
       const mindMap = new MindMap({
         el: containerRef.current,
@@ -77,14 +79,16 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
         contextMenu: true,
         toolBar: true,
         nodeMenu: true,
-        theme: {
-          cssVar: {
-            '--main-color': '#4a89dc',
-            '--main-bgcolor': '#f5f6fa',
-            '--color': '#333',
-            '--bgcolor': '#fff',
-          }
-        },
+        //layout: 'mindMap',
+        theme: 'classic5',
+        //theme: {
+        //  cssVar: {
+        //    '--main-color': '#4a89dc',
+        //    '--main-bgcolor': '#f5f6fa',
+        //    '--color': '#333',
+        //    '--bgcolor': '#fff',
+        //  }
+        //},
         isDisableDrag: false,
         useLeftKeySelectionRightKeyDrag: false,
 
