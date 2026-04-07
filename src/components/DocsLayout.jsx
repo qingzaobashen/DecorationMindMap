@@ -41,23 +41,23 @@ function DocsLayout() {
   const currentUrl = `${baseUrl}/docs/${docName}`;
 
   const docTitles = {
-    'README': '文档中心',
-    'budget-planning': '装修预算规划指南',
-    'company-selection': '装修公司挑选指南',
-    'construction-guide': '装修施工标准指南',
-    'design-overview': '装修设计概述',
-    'design-detail': '装修设计详解',
-    'material-selection': '装修材料选购指南'
+    'README': '装修知识思维导图文档中心 - 全面的装修知识库',
+    'budget-planning': '装修预算规划指南 - 如何制定合理预算控制装修费用',
+    'company-selection': '装修公司挑选指南 - 选择靠谱装修公司的标准与建议',
+    'construction-guide': '装修施工标准指南 - 水电泥木油施工规范',
+    'design-overview': '装修设计概述 - 室内设计流程与空间规划要点',
+    'design-detail': '装修设计详解 - 6大空间，100+设计细节',
+    'material-selection': '装修材料选购指南 - 瓷砖地板门窗橱柜材料选择攻略'
   };
 
   const docDescriptions = {
-    'README': '装修知识思维导图文档中心，提供全面的装修知识库。',
-    'budget-planning': '详细介绍如何制定装修预算，控制装修开支，避免装修超支。',
-    'company-selection': '全面指导如何选择靠谱的装修公司，避免装修陷阱，包含选择装修公司的标准和建议。',
-    'construction-guide': '装修施工标准指南，包含水电、泥瓦、木工、油工等各工序标准。',
-    'design-overview': '装修设计概述，帮助您了解装修设计的基本流程和要点。',
-    'design-detail': '装修设计详解，深入探讨室内设计细节与空间规划。',
-    'material-selection': '装修材料选购指南，教您如何挑选瓷砖、地板、门窗等材料。'
+    'README': '装修知识思维导图文档中心，提供全面的装修知识库，包括装修流程、预算规划、公司选择、材料选购等专业知识。',
+    'budget-planning': '详细介绍如何制定装修预算，控制装修开支，避免装修超支。从装修档次确定、项目清单到市场询价，教您科学规划每一分钱。',
+    'company-selection': '全面指导如何选择靠谱的装修公司，包含装修公司资质验证、口碑调查、工地参观、合同审核等选择装修公司的完整指南。',
+    'construction-guide': '装修施工标准指南，详细介绍水电改造、泥瓦工程、木工制作、油工涂刷等各工序的施工标准、验收规范和注意事项。',
+    'design-overview': '装修设计概述，帮助您了解装修设计的基本流程、空间规划要点、与设计师沟通技巧，以及如何确定合适的装修风格。',
+    'design-detail': '装修设计详解，深入探讨户型改造、收纳设计、灯光规划、色彩搭配等室内设计细节，助您打造理想的居住空间。',
+    'material-selection': '装修材料选购指南，教您如何挑选瓷砖、地板、门窗、橱柜、卫浴等主材，包含材料品牌推荐、选购技巧和验收要点。'
   };
 
   const docKeywords = {
