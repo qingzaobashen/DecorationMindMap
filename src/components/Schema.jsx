@@ -141,4 +141,52 @@ export const OrganizationSchema = () => {
   return <Schema type="Organization" data={data} />;
 };
 
+/**
+ * FAQ 结构化数据 - 用于常见问题页面
+ * @param {Object} props - 组件属性
+ * @param {Array} props.questions - 问题数组，每项包含question和answer
+ */
+export const FAQSchema = ({ questions = [] }) => {
+  const data = {
+    '@type': 'FAQPage',
+    mainEntity: questions.map((q) => ({
+      '@type': 'Question',
+      name: q.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: q.answer
+      }
+    }))
+  };
+
+  return <Schema type="FAQPage" data={data} />;
+};
+
+/**
+ * HowTo 结构化数据 - 用于装修步骤指南
+ * @param {Object} props - 组件属性
+ * @param {string} props.name - 指南名称
+ * @param {string} props.description - 指南描述
+ * @param {Array} props.steps - 步骤数组，每项包含name和text
+ * @param {string} props.totalTime - 总耗时（如"P1D"表示1天）
+ */
+export const HowToSchema = ({ name, description, steps = [], totalTime }) => {
+  const data = {
+    '@type': 'HowTo',
+    name: name,
+    description: description,
+    step: steps.map((step) => ({
+      '@type': 'HowToStep',
+      name: step.name,
+      text: step.text,
+      url: step.url
+    })),
+    ...(totalTime && { totalTime: totalTime })
+  };
+
+  return <Schema type="HowTo" data={data} />;
+};
+
+export { RENOVATION_FAQS, RENOVATION_HOW_TOS } from '../constants/seoConstants';
+
 export default Schema;
