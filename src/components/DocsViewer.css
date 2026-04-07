@@ -45,7 +45,7 @@
 .docs-viewer-container ul,
 .docs-viewer-container ol {
   margin-bottom: 16px;
-  padding-left: 30px;
+  padding-left: 3px;
 }
 
 .docs-viewer-container li > p {
