@@ -2210,6 +2210,24 @@ body {
   transform: translateY(0);
 }
 
+/* 思维导图背景装饰 */
+.mindmap-bg-decoration {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 800px;
+  opacity: 0.15;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.mindmap-bg-svg {
+  width: 100%;
+  height: auto;
+}
+
 .hero-badge {
   display: inline-flex;
   align-items: center;
