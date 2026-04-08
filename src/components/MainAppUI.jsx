@@ -168,10 +168,11 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
   const swiperInstanceRef = useRef(null);                    // 缓存Swiper实例
   const [paymentQRCode, setPaymentQRCode] = useState(null);  // 支付二维码
   const [paymentLoading, setPaymentLoading] = useState(false); // 支付加载状态
+  const [paymentPolling, setPaymentPolling] = useState(false); // 是否正在轮询支付状态
 
   const { isAuthenticated: userIsAuthenticated, isPremium: userIsPremium, upgradeToPremium, completeUpgradeToPremium,
-     purchaseArticle, completePurchaseArticle, paymentModalVisible, closePaymentModal, 
-     paymentType, hasPurchasedArticle } = useUser();
+     purchaseArticle, completePurchaseArticle, paymentModalVisible, closePaymentModal,
+     paymentType, hasPurchasedArticle, currentAoid } = useUser();
   const { setAoid } = useUser();  // 获取用户的当前订单号和设置订单号的函数
   // 生成支付二维码
   const generatePaymentQRCode = async () => {
@@ -224,11 +225,44 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
   useEffect(() => {
     if (paymentModalVisible) {
       generatePaymentQRCode();
+      setPaymentPolling(true); // 开始轮询
     } else {
       // 关闭模态框时清空二维码
       setPaymentQRCode(null);
+      setPaymentPolling(false); // 停止轮询
     }
   }, [paymentModalVisible, paymentType]);
+
+  // 轮询检测支付状态
+  useEffect(() => {
+    if (!paymentPolling || !paymentModalVisible) return;
+    const pollPaymentStatus = async () => {
+      const { verifyPayment } = await import('../utils/xorPay');
+      const success = await verifyPayment(currentAoid);
+      if (success) {
+        setPaymentPolling(false);
+        if (paymentType === 'vip') {
+          const upgradeSuccess = await completeUpgradeToPremium();
+          if (upgradeSuccess) {
+            console.log('VIP升级成功！');
+            window.location.reload(); // 刷新页面
+            closePaymentModal();
+          }
+        } else if (paymentType === 'article') {
+          const purchaseSuccess = await completePurchaseArticle();
+          if (purchaseSuccess) {
+            console.log('文章购买成功！');
+            closePaymentModal();
+            window.location.reload();
+          }
+        }
+      }
+    };
+
+    // 每3秒轮询一次
+    const interval = setInterval(pollPaymentStatus, 3000);
+    return () => clearInterval(interval);
+  }, [paymentPolling, paymentModalVisible, paymentType, currentAoid, completeUpgradeToPremium, completePurchaseArticle]);
 
   // 截断文本函数，用于付费内容的部分显示
   const truncateText = (text, maxLength = 200) => {
