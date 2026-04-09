@@ -122,4 +122,65 @@
   padding: 40px;
   font-size: 1.2em;
   color: #888;
+}
+
+/* 深色模式样式 */
+[data-theme="dark"] .docs-viewer-container {
+  background-color: var(--color-bg-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .docs-viewer-container h1,
+[data-theme="dark"] .docs-viewer-container h2,
+[data-theme="dark"] .docs-viewer-container h3,
+[data-theme="dark"] .docs-viewer-container h4,
+[data-theme="dark"] .docs-viewer-container h5,
+[data-theme="dark"] .docs-viewer-container h6 {
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .docs-viewer-container h1,
+[data-theme="dark"] .docs-viewer-container h2 {
+  border-bottom-color: var(--color-border);
+}
+
+[data-theme="dark"] .docs-viewer-container p {
+  color: var(--color-text-secondary);
+}
+
+[data-theme="dark"] .docs-viewer-container code {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .docs-viewer-container pre {
+  background-color: var(--color-bg-secondary);
+}
+
+[data-theme="dark"] .docs-viewer-container blockquote {
+  color: var(--color-text-secondary);
+  border-left-color: var(--color-primary);
+}
+
+[data-theme="dark"] .docs-viewer-container th,
+[data-theme="dark"] .docs-viewer-container td {
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .docs-viewer-container th {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .docs-viewer-container td {
+  color: var(--color-text-secondary);
+}
+
+[data-theme="dark"] .docs-viewer-container img {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .docs-viewer-loading,
+[data-theme="dark"] .docs-viewer-error {
+  color: var(--color-text-tertiary);
 } 

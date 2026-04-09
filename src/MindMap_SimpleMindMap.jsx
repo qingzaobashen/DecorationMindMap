@@ -6,13 +6,15 @@ import './MindMap_SimpleMindMap.css';
 import { LockOutlined } from '@ant-design/icons';
 import { Button, Modal } from 'antd';
 import { useUser } from './context/UserContext';
+import { useTheme } from './context/ThemeContext';
 import { convertMarkdownToMindMap, convertObjectToMindMap } from './utils/mindmapUtils';
 import { customNoteContentShowPlugin } from './utils/mindmapPlugins';
 
 const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
   const containerRef = useRef(null);
   const mindMapRef = useRef(null);
-  const { isPremium, username, upgradeToPremium } = useUser(); // 获取VIP状态、用户信息和升级方法
+  const { isPremium, username, upgradeToPremium } = useUser(); // 获取 VIP 状态、用户信息和升级方法
+  const { isDarkMode } = useTheme(); // 获取当前主题模式
   const [showUpgradeModal, setShowUpgradeModal] = useState(false); // 控制升级弹窗
   
   // 存储触摸事件处理函数的引用，以便在清理函数中使用
@@ -40,6 +42,14 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
       setShowUpgradeModal(true);
     }
   }, [isPremium]);
+
+  // 监听主题变化并切换思维导图主题
+  useEffect(() => {
+    if (mindMapRef.current) {
+      const newTheme = isDarkMode ? 'dark7' : 'classic5';
+      mindMapRef.current.setTheme(newTheme);
+    }
+  }, [isDarkMode]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -80,7 +90,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
         toolBar: true,
         nodeMenu: true,
         //layout: 'mindMap',
-        theme: 'classic5',
+        theme: isDarkMode ? 'dark7' : 'classic5',
         //theme: {
         //  cssVar: {
         //    '--main-color': '#4a89dc',

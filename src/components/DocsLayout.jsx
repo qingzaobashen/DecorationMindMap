@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Modal, Spin, Breadcrumb } from 'antd';
 import Sidebar from './Sidebar';
 import DocsViewer from './DocsViewer';
+import ThemeToggle from './ThemeToggle';
 import { FaFileAlt, FaProjectDiagram, FaCommentDots } from 'react-icons/fa';
 import FeedbackModal from './FeedbackModal';
 import { useUser } from '../context/UserContext';
@@ -198,6 +199,16 @@ function DocsLayout() {
             onToggleCollapse={handleToggleCollapse}
           />
         </aside>
+
+        {/* 主题切换按钮 */}
+        <div className="theme-toggle-container" style={{
+          position: 'fixed',
+          top: isMobile ? '2px' : '15px',
+          right: isMobile ? '5px' : '20px',
+          zIndex: 1001,
+        }}>
+          <ThemeToggle size="medium" />
+        </div>
 
         {/* 文档内容 */}
         <div className={`main-content ${isSidebarCollapsed && !isMobile ? 'expanded' : ''}`}>

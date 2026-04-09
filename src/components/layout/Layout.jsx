@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../Sidebar';
 import UserWelcome from '../UserWelcome';
+import ThemeToggle from '../ThemeToggle';
 
 /**
  * 带侧边栏的布局组件
@@ -34,7 +35,7 @@ const Layout = ({
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -53,6 +54,16 @@ const Layout = ({
           onClose={onCloseWelcomeNotification}
         />
       )}
+
+      {/* 主题切换按钮 - 移动端友好 */}
+      <div className="theme-toggle-container" style={{
+        position: 'fixed',
+        top: isMobile ? '2px' : '15px',
+        right: isMobile ? '5px' : '20px',
+        zIndex: 1001,
+      }}>
+        <ThemeToggle size="medium" />
+      </div>
 
       {/* 侧边栏 */}
       <aside className="sidebar-container">
