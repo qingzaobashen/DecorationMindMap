@@ -13,8 +13,8 @@ import { Helmet } from 'react-helmet-async';
  * @param {boolean} props.noIndex - 是否禁止索引
  */
 const SEO = ({
-  title = '装修知识导图 - 专业的装修知识库与思维导图工具',
-  description = '装修知识导图提供全面的装修知识库，包括装修流程、材料选购、施工标准等专业内容。通过思维导图可视化展示装修全流程，助您轻松完成装修之旅。',
+  title = '装修知识思维导图 - 专业的装修知识库与思维导图工具',
+  description = '本系统通过思维导图形式，可视化展示装修全流程，提供全面的装修知识库，包括装修流程、装修公司挑选、材料选购、施工标准等专业内容，助您轻松完成装修之旅。',
   keywords = '装修知识,装修流程,材料选购,施工标准,装修指南,装修思维导图,装修预算,装修验收',
   image = 'https://www.qingzao.site/og-image.jpg',
   url = 'https://www.qingzao.site/',

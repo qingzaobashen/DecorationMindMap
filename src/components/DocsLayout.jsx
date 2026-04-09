@@ -1,11 +1,14 @@
-import React, { useState, lazy, Suspense } from 'react';
-import { Outlet, useNavigate, useParams } from 'react-router-dom';
-import { Modal, Spin } from 'antd';
+import React, { useState, lazy, Suspense, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Modal, Spin, Breadcrumb } from 'antd';
 import Sidebar from './Sidebar';
 import DocsViewer from './DocsViewer';
+import ThemeToggle from './ThemeToggle';
 import { FaFileAlt, FaProjectDiagram, FaCommentDots } from 'react-icons/fa';
 import FeedbackModal from './FeedbackModal';
 import { useUser } from '../context/UserContext';
+import { ArticleSchema, BreadcrumbSchema } from './Schema';
+import { Helmet } from 'react-helmet-async';
 
 // 懒加载登录组件
 const LoginBySupabaseUsername = lazy(() => import('./LoginByUserName_supabase'));
@@ -24,16 +27,67 @@ function DocsLayout() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
   const [loginVisible, setLoginVisible] = useState(false);
-  
-  // 监听窗口大小变化
-  useState(() => {
+
+  useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  const docName = rawDocNameFromParams || 'README';
+  const finalDocPath = `/docs/${docName}`;
+  const baseUrl = 'https://www.qingzao.site';
+  const currentUrl = `${baseUrl}/docs/${docName}`;
+
+  const docTitles = {
+    'README': '装修知识思维导图文档中心 - 全面的装修知识库',
+    'budget-planning': '装修预算规划指南 - 如何制定合理预算控制装修费用',
+    'company-selection': '装修公司挑选指南 - 选择靠谱装修公司的标准与建议',
+    'construction-guide': '装修施工标准指南 - 水电泥木油施工规范',
+    'design-overview': '装修设计概述 - 室内设计流程与空间规划要点',
+    'design-detail': '装修设计详解 - 6大空间，100+设计细节',
+    'material-selection': '装修材料选购指南 - 瓷砖地板门窗橱柜材料选择攻略'
+  };
+
+  const docDescriptions = {
+    'README': '装修知识思维导图文档中心，提供全面的装修知识库，包括装修流程、预算规划、公司选择、材料选购等专业知识。',
+    'budget-planning': '详细介绍如何制定装修预算，控制装修开支，避免装修超支。从装修档次确定、项目清单到市场询价，教您科学规划每一分钱。',
+    'company-selection': '全面指导如何选择靠谱的装修公司，包含装修公司资质验证、口碑调查、工地参观、合同审核等选择装修公司的完整指南。',
+    'construction-guide': '装修施工标准指南，详细介绍水电改造、泥瓦工程、木工制作、油工涂刷等各工序的施工标准、验收规范和注意事项。',
+    'design-overview': '装修设计概述，帮助您了解装修设计的基本流程、空间规划要点、与设计师沟通技巧，以及如何确定合适的装修风格。',
+    'design-detail': '装修设计详解，深入探讨户型改造、收纳设计、灯光规划、色彩搭配等室内设计细节，助您打造理想的居住空间。',
+    'material-selection': '装修材料选购指南，教您如何挑选瓷砖、地板、门窗、橱柜、卫浴等主材，包含材料品牌推荐、选购技巧和验收要点。'
+  };
+
+  const docKeywords = {
+    'README': '装修知识,装修导图,装修文档,家装,家居',
+    'budget-planning': '装修预算,预算规划,装修费用,装修报价,预算控制',
+    'company-selection': '装修公司,公司选择,装修挑选,装修招标,装修合同',
+    'construction-guide': '装修施工,施工标准,水电改造,泥瓦工程,木工,油工',
+    'design-overview': '装修设计,设计方案,室内设计,空间规划',
+    'design-detail': '装修设计,设计细节,空间规划,室内布局',
+    'material-selection': '装修材料,材料选购,瓷砖,地板,门窗,橱柜'
+  };
+
+  const currentTitle = docTitles[docName] || `${docName} - 装修知识导图`;
+  const currentDescription = docDescriptions[docName] || `${docName}相关装修知识，帮助您轻松完成装修。`;
+  const currentKeywords = docKeywords[docName] || `装修,${docName},装修知识,装修导图`;
+
+  const breadcrumbItems = [
+    { name: '首页', url: `${baseUrl}/` },
+    { name: '文档中心', url: `${baseUrl}/docs/README` },
+    { name: docTitles[docName] || docName, url: currentUrl }
+  ];
+
+  const breadcrumbSchemaItems = [
+    { name: '首页', url: `${baseUrl}/` },
+    { name: '文档中心', url: `${baseUrl}/docs/README` },
+    { name: docTitles[docName] || docName, url: currentUrl }
+  ];
+
+  const today = new Date().toISOString().split('T')[0];
 
   // 处理侧边栏折叠状态切换
   const handleToggleCollapse = () => {
@@ -63,11 +117,6 @@ function DocsLayout() {
     //window.location.reload();
   };
 
-  // Ensure docName always has .md, and handle cases where it might be undefined
-  const docName = rawDocNameFromParams || 'README';
-
-  // Construct path for fetching - 使用相对路径
-  const finalDocPath = `/docs/${docName}`;
 
   // 处理文档导航
   const handleDocNavigate = (newPath) => {
@@ -77,25 +126,6 @@ function DocsLayout() {
       navigate(`/docs${newPath}`);
     } else {
       navigate(`/docs/${newPath}`);
-    }
-  };
-
-  // 处理侧边栏导航项点击
-  const handleNavItemClick = (item) => {
-    switch (item.id) {
-      case 'document':
-        // 文档按钮 - 已经在文档页面，不操作
-        break;
-      case 'simplemindmap':
-        // 思维视图按钮 - 导航到首页
-        navigate('/');
-        break;
-      case 'feedback':
-        // 意见反馈按钮 - 显示反馈模态框
-        handleOpenFeedbackModal();
-        break;
-      default:
-        break;
     }
   };
 
@@ -132,56 +162,97 @@ function DocsLayout() {
   ];
 
   return (
-    <div className="app-layout">
-      {/* 侧边栏 */}
-      <aside className="sidebar-container">
-        <Sidebar
-          items={navigationItems}
-          onLogin={isAuthenticated ? handleLogout : handleOpenLoginModal}
-          isAuthenticated={isAuthenticated}
-          isPremium={isPremium}
-          isCollapsed={isSidebarCollapsed}
-          onToggleCollapse={handleToggleCollapse}
-        />
-      </aside>
+    <>
+      <Helmet>
+        <title>{currentTitle}</title>
+        <meta name="description" content={currentDescription} />
+        <meta name="keywords" content={currentKeywords} />
+        <link rel="canonical" href={currentUrl} />
+        <meta property="og:title" content={currentTitle} />
+        <meta property="og:description" content={currentDescription} />
+        <meta property="og:url" content={currentUrl} />
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={currentTitle} />
+        <meta name="twitter:description" content={currentDescription} />
+      </Helmet>
 
-      {/* 文档内容 */}
-      <div className={`main-content ${isSidebarCollapsed && !isMobile ? 'expanded' : ''}`}>
-        <main className="mindmap-wrapper mindWrapper-size docs-view-active">
-          {/* 显示文档标题 */}
-          <header className="view-header">
-            <h2>文档中心: {docName.replace('.md', '')}</h2>
-          </header>
-          
-          {/* 文档查看器 */}
-          <DocsViewer docPath={finalDocPath} onNavigate={handleDocNavigate} />
-        </main>
+      <ArticleSchema
+        title={currentTitle}
+        description={currentDescription}
+        url={currentUrl}
+        datePublished="2025-01-01"
+        dateModified={today}
+      />
+
+      <BreadcrumbSchema items={breadcrumbSchemaItems} />
+
+      <div className="app-layout">
+        {/* 侧边栏 */}
+        <aside className="sidebar-container">
+          <Sidebar
+            items={navigationItems}
+            onLogin={isAuthenticated ? handleLogout : handleOpenLoginModal}
+            isAuthenticated={isAuthenticated}
+            isPremium={isPremium}
+            isCollapsed={isSidebarCollapsed}
+            onToggleCollapse={handleToggleCollapse}
+          />
+        </aside>
+
+        {/* 主题切换按钮 */}
+        <div className="theme-toggle-container" style={{
+          position: 'fixed',
+          top: isMobile ? '2px' : '15px',
+          right: isMobile ? '5px' : '20px',
+          zIndex: 1001,
+        }}>
+          <ThemeToggle size="medium" />
+        </div>
+
+        {/* 文档内容 */}
+        <div className={`main-content ${isSidebarCollapsed && !isMobile ? 'expanded' : ''}`}>
+          <main className="mindmap-wrapper mindWrapper-size docs-view-active">
+            <Breadcrumb
+              className="docs-breadcrumb"
+              items={breadcrumbItems.map((item, index) => ({
+                key: index,
+                title: index < breadcrumbItems.length - 1 ? (
+                  <a onClick={() => navigate(item.url.replace(baseUrl, ''))}>{item.name}</a>
+                ) : item.name
+              }))}
+            />
+            <header className="view-header">
+              <h2>{docTitles[docName] || '文档中心'}</h2>
+            </header>
+
+            <DocsViewer docPath={finalDocPath} onNavigate={handleDocNavigate} />
+          </main>
+        </div>
+
+        <FeedbackModal visible={feedbackModalVisible} onClose={handleCloseFeedbackModal} />
+
+        <Modal
+          title=""
+          open={loginVisible}
+          footer={null}
+          onCancel={handleCloseLoginModal}
+          maskClosable={false}
+          destroyOnHidden={true}
+          width={360}
+          style={{ borderRadius: '16px' }}
+          wrapClassName="login-modal"
+        >
+          <Suspense fallback={
+            <div style={{ padding: '40px', textAlign: 'center' }}>
+              <Spin size="small" tip="加载登录组件..." />
+            </div>
+          }>
+            <LoginBySupabaseUsername onSuccess={handleLoginSuccess} />
+          </Suspense>
+        </Modal>
       </div>
-      
-      {/* 反馈模态框 */}
-      <FeedbackModal visible={feedbackModalVisible} onClose={handleCloseFeedbackModal} />
-
-      {/* 登录模态框 */}
-      <Modal
-        title=""
-        open={loginVisible}
-        footer={null}
-        onCancel={handleCloseLoginModal}
-        maskClosable={false}
-        destroyOnHidden={true}
-        width={360}
-        style={{ borderRadius: '16px' }}
-        wrapClassName="login-modal"
-      >
-        <Suspense fallback={
-          <div style={{ padding: '40px', textAlign: 'center' }}>
-            <Spin size="small" tip="加载登录组件..." />
-          </div>
-        }>
-          <LoginBySupabaseUsername onSuccess={handleLoginSuccess} />
-        </Suspense>
-      </Modal>
-    </div>
+    </>
   );
 }
 

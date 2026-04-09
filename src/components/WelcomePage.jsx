@@ -9,6 +9,7 @@ import { Button, Card, Row, Col, Typography, Divider, Space, message } from 'ant
 import { UserOutlined, FileTextOutlined, GlobalOutlined, CrownOutlined, InfoCircleOutlined, ArrowRightOutlined, ThunderboltOutlined, SafetyOutlined, RocketOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
+import ThemeToggle from './ThemeToggle';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -72,8 +73,26 @@ const WelcomePage = ({ showLogin }) => {
         <div className="decoration-circle circle-3"></div>
       </div>
 
+      {/* 主题切换按钮 - 移动端友好 */}
+      <div className="theme-toggle-welcome" style={{
+        position: 'fixed',
+        top: '15px',
+        right: '20px',
+        zIndex: 1001,
+      }}>
+        <ThemeToggle size="medium" />
+      </div>
+
       {/* 顶部英雄区域 */}
       <div className={`hero-section ${mounted ? 'mounted' : ''}`}>
+        {/* 思维导图背景图片 */}
+        <div className="mindmap-bg-decoration">
+          <img
+            src="/导图截图.png"
+            alt="装修思维导图预览"
+            className="mindmap-bg-image"
+          />
+        </div>
         <div className="hero-badge">
           <ThunderboltOutlined />
           <span>全新升级 v2.0</span>

@@ -3,9 +3,10 @@ import { useState, useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 
 import './App.css';
-import { Modal, Button, Spin } from 'antd';
+import { Modal, Button, Spin, message } from 'antd';
 
 import { useUser } from './context/UserContext';
+import supabase from './utils/supabase';
 
 import WelcomePage from './components/WelcomePage';
 import SEO from './components/SEO';
@@ -22,6 +23,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 
 // 懒加载组件
 const LoginBySupabaseUsername = lazy(() => import('./components/LoginByUserName_supabase'));
+const PasswordResetForm = lazy(() => import('./components/PasswordResetForm'));
 const FeedbackModal = lazy(() => import('./components/FeedbackModal'));
 const CommunityPage = lazy(() => import('./components/Community/CommunityPage'));
 const PostDetailPage = lazy(() => import('./components/Community/PostDetailPage'));
@@ -33,6 +35,7 @@ export default function App() {
   const location = useLocation();
 
   const [loginVisible, setLoginVisible] = useState(false);
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
   const { isAuthenticated, isPremium, logout, loading, isEmailVerified, sendEmailVerification } = useUser();
 
   const [showWelcome, setShowWelcome] = useState(false);
@@ -135,6 +138,52 @@ export default function App() {
     }
   }, [isAuthenticated, isEmailVerified]);
 
+  // Effect for handling password reset redirect
+  useEffect(() => {
+    // Supabase 密码重置链接使用 hash fragment，包含 type=recovery
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    if (hashParams.get('type') === 'recovery') {
+      // 手动从 hash 中解析 token 并设置 session
+      const initRecoverySession = async () => {
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
+        
+        if (accessToken && refreshToken) {
+          // 手动设置 session
+          const { error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken
+          });
+          
+          if (error) {
+            console.error('设置会话失败:', error);
+            message.error('密码重置链接已过期，请重新请求');
+            return;
+          }
+          
+          setShowPasswordReset(true);
+        } else if (accessToken) {
+          // 只有 access_token 的情况
+          const { error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: ''
+          });
+          
+          if (error) {
+            console.error('设置会话失败:', error);
+            message.error('密码重置链接已过期，请重新请求');
+            return;
+          }
+          
+          setShowPasswordReset(true);
+        } else {
+          message.error('密码重置链接无效，请重新请求');
+        }
+      };
+      initRecoverySession();
+    }
+  }, []);
+
   // Effect for handling GitHub Pages SPA redirect
   useEffect(() => {
     // 检查是否有从 404.html 保存的重定向路径
@@ -220,6 +269,24 @@ export default function App() {
               </div>
             }>
               <LoginBySupabaseUsername onSuccess={handleLoginSuccess} />
+            </Suspense>
+          </Modal>
+          <Modal
+            title="已为您自动登录，请设置新密码"
+            open={showPasswordReset}
+            onCancel={() => setShowPasswordReset(false)}
+            footer={null}
+            maskClosable={false}
+            destroyOnHidden={true}
+            width={420}
+            style={{ borderRadius: '16px' }}
+          >
+            <Suspense fallback={
+              <div style={{ padding: '40px', textAlign: 'center' }}>
+                <Spin size="small" tip="加载中..." />
+              </div>
+            }>
+              <PasswordResetForm onSuccess={() => setShowPasswordReset(false)} />
             </Suspense>
           </Modal>
           <Modal

@@ -126,6 +126,29 @@ export const UserProvider = ({ children }) => {
   // 初始化 - 检查用户登录状态和VIP状态
   useEffect(() => {
     const checkAuth = async () => {
+      // 尝试获取 session（处理密码重置等通过 URL hash 传递 token 的场景）
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      
+      // 如果获取 session 失败或没有 session，尝试刷新
+      if (sessionError || !sessionData?.session) {
+        const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+        if (refreshError || !refreshData?.session) {
+          console.log('无法恢复会话，可能是新的访问，请重新登录');
+        }
+      }
+      
+      // 检查是否是密码重置场景（URL hash 中有 type=recovery）
+      // 注：这段逻辑检查不出来是否是密码重置场景，得改
+      const isPasswordResetFlow = window.location.hash.includes('type=recovery');
+      //console.log("isPasswordResetFlow: ", isPasswordResetFlow);
+      //console.log("window.location.hash: ", window.location.hash);
+      const isExpired = window.location.hash.includes('error_code=otp_expired');
+      // 如果是密码重置流程，跳过 getUser() 调用，等待 App.jsx 处理
+      if (isPasswordResetFlow || isExpired) {
+        setLoading(false);
+        return;
+      }
+        
       try {
         // 首先从本地存储快速恢复状态，提升用户体验
         const isPremiumUser = localStorage.getItem('isPremium') === 'true';
@@ -142,6 +165,7 @@ export const UserProvider = ({ children }) => {
           setPurchasedArticles(userPurchasedArticles);
           setIsEmailVerified(isEmailVerifiedUser);
         }
+        
         
         // 然后尝试从Supabase获取最新的用户信息，确保状态同步
         const { data, error } = await supabase.auth.getUser();
@@ -522,8 +546,14 @@ export const UserProvider = ({ children }) => {
   // 发送密码重置邮件
   const sendPasswordResetEmail = async (email) => {
     try {
+      // 根据当前域名判断开发/生产环境
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const redirectUrl = isLocalhost 
+        ? `${window.location.origin}`
+        : 'https://www.qingzao.site';
+      
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin
+        redirectTo: redirectUrl
       });
       
       if (error) {
@@ -536,6 +566,38 @@ export const UserProvider = ({ children }) => {
       console.error('发送密码重置邮件失败:', error);
       message.error(`发送密码重置邮件失败: ${error.message}`);
       return false;
+    }
+  };
+
+  // 更新用户密码（通过密码重置链接）
+  const updatePassword = async (newPassword) => {
+    try {
+      // 先确保有有效的 session
+      const { data: sessionData } = await supabase.auth.getSession();
+      console.log('当前 session 状态:', sessionData?.session ? '有效' : '无效');
+      
+      if (!sessionData?.session) {
+        // 尝试刷新 session
+        const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+        if (refreshError || !refreshData?.session) {
+          throw new Error('会话已过期，请重新点击邮件链接');
+        }
+      }
+      
+      const { data, error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      message.success('密码更新成功');
+      return { success: true, user: data.user };
+    } catch (error) {
+      console.error('更新密码失败:', error);
+      message.error(`更新密码失败: ${error.message}`);
+      return { success: false, error: error.message };
     }
   };
 
@@ -580,7 +642,8 @@ export const UserProvider = ({ children }) => {
     saveUserData,
     getUserData,
     sendEmailVerification,
-    sendPasswordResetEmail
+    sendPasswordResetEmail,
+    updatePassword
   };
 
   return (

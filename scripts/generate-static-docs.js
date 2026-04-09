@@ -17,6 +17,45 @@ const rootDir = path.resolve(__dirname, '..');
 const docsDir = path.join(rootDir, 'public', 'docs');
 const distDir = path.join(rootDir, 'dist');
 
+// SEO优化配置 - 更长的标题和更详细的描述
+const SEO_CONFIG = {
+  'README': {
+    title: '装修知识思维导图文档中心 - 全面的装修知识库',
+    description: '装修知识思维导图文档中心，提供全面的装修知识库，包括装修流程、预算规划、公司选择、材料选购等专业知识。通过思维导图可视化展示，助您轻松完成装修。',
+    keywords: '装修知识,装修导图,装修文档,家装,家居,装修流程,装修指南'
+  },
+  'budget-planning': {
+    title: '装修预算规划指南 - 如何制定合理预算控制装修费用',
+    description: '详细介绍如何制定装修预算，控制装修开支，避免装修超支。从装修档次确定、项目清单到市场询价，教您科学规划每一分钱，合理分配装修预算。',
+    keywords: '装修预算,预算规划,装修费用,装修报价,预算控制,装修省钱'
+  },
+  'company-selection': {
+    title: '装修公司挑选指南 - 选择靠谱装修公司的标准与建议',
+    description: '全面指导如何选择靠谱的装修公司，包含装修公司资质验证、口碑调查、工地参观、合同审核等选择装修公司的完整指南。避免装修陷阱。',
+    keywords: '装修公司,公司选择,装修挑选,装修招标,装修合同,装修公司选择'
+  },
+  'construction-guide': {
+    title: '装修施工标准指南 - 水电泥木油施工规范',
+    description: '装修施工标准指南，详细介绍水电改造、泥瓦工程、木工制作、油工涂刷等各工序的施工标准、验收规范和注意事项。专业装修施工知识。',
+    keywords: '装修施工,施工标准,水电改造,泥瓦工程,木工,油工,装修验收'
+  },
+  'design-overview': {
+    title: '装修设计概述 - 室内设计流程与空间规划要点',
+    description: '装修设计概述，帮助您了解装修设计的基本流程、空间规划要点、与设计师沟通技巧，以及如何确定合适的装修风格。打造理想家居。',
+    keywords: '装修设计,设计方案,室内设计,空间规划,装修风格,设计师'
+  },
+  'design-detail': {
+    title: '装修设计详解 - 6大空间，100+设计细节',
+    description: '装修设计详解，深入探讨户型改造、收纳设计、灯光规划、色彩搭配等室内设计细节。助您打造功能完善、美观舒适的理想居住空间。',
+    keywords: '装修设计,户型改造,收纳设计,灯光设计,色彩搭配,室内设计'
+  },
+  'material-selection': {
+    title: '装修材料选购指南 - 瓷砖地板门窗橱柜材料选择攻略',
+    description: '装修材料选购指南，教您如何挑选瓷砖、地板、门窗、橱柜、卫浴等主材，包含材料品牌推荐、选购技巧和验收要点。装修材料选购不踩坑。',
+    keywords: '装修材料,材料选购,瓷砖,地板,门窗,橱柜,卫浴,装修主材'
+  }
+};
+
 // 读取 Markdown 文件
 function readMarkdownFile(filePath) {
   try {
@@ -127,35 +166,39 @@ function markdownToHtml(markdown) {
 }
 
 // 生成 HTML 模板
-function generateHtmlTemplate(title, content, docPath) {
+function generateHtmlTemplate(title, content, docPath, keywords) {
   const canonicalUrl = `https://qingzao.site/docs/${docPath}`;
-  
+  const defaultKeywords = '装修知识,装修流程,装修指南,装修思维导图,装修预算,装修验收';
+  const keywordsStr = keywords || defaultKeywords;
+  const siteName = '装修知识思维导图';
+
   return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="baidu-site-verification" content="codeva-eSozi0Q6x9" />
-  <title>${title} - 装修知识思维导图</title>
-  <meta name="description" content="${title} - 装修知识思维导图提供全面的装修知识库，包括装修流程、材料选购、施工标准等专业内容。通过思维导图可视化展示装修全流程，助您轻松完成装修之旅。" />
-  <meta name="keywords" content="装修知识,装修流程,${title},装修指南,装修思维导图,材料选购,施工标准" />
-  <meta name="author" content="装修知识思维导图" />
+  <title>${title}</title>
+  <meta name="description" content="${content.substring(0, 200).replace(/<[^>]*>/g, '')}..." />
+  <meta name="keywords" content="${keywordsStr}" />
+  <meta name="author" content="${siteName}" />
   <meta name="robots" content="index, follow" />
-  
+
   <!-- Canonical URL -->
   <link rel="canonical" href="${canonicalUrl}" />
-  
+
   <!-- Open Graph -->
   <meta property="og:type" content="article" />
   <meta property="og:url" content="${canonicalUrl}" />
-  <meta property="og:title" content="${title} - 装修知识思维导图" />
-  <meta property="og:description" content="${title} - 装修知识思维导图提供全面的装修知识库，包括装修流程、材料选购、施工标准等专业内容。" />
+  <meta property="og:title" content="${title}" />
+  <meta property="og:description" content="${content.substring(0, 200).replace(/<[^>]*>/g, '')}..." />
   <meta property="og:locale" content="zh_CN" />
-  
+  <meta property="og:site_name" content="${siteName}" />
+
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="${title} - 装修知识思维导图" />
-  <meta name="twitter:description" content="${title} - 装修知识思维导图提供全面的装修知识库，包括装修流程、材料选购、施工标准等专业内容。" />
+  <meta name="twitter:title" content="${title}" />
+  <meta name="twitter:description" content="${content.substring(0, 200).replace(/<[^>]*>/g, '')}..." />
   
   <style>
     * {
@@ -452,28 +495,33 @@ async function generateStaticDocs() {
     
     console.log(`📝 处理: ${file}`);
     
-    // 读取 Markdown 内容
+    // 读取 Markdown 文件
     const markdown = readMarkdownFile(filePath);
     if (!markdown) continue;
-    
+
     // 提取标题（第一行 # 开头的）
     const titleMatch = markdown.match(/^# (.+)$/m);
     const title = titleMatch ? titleMatch[1] : docName;
-    
+
     // 转换为 HTML
     const htmlContent = markdownToHtml(markdown);
-    
+
+    // 使用SEO配置中的优化标题和描述（如果没有配置则使用提取的标题）
+    const seoConfig = SEO_CONFIG[docName] || {};
+    const optimizedTitle = seoConfig.title || `${title} - 装修知识思维导图`;
+    const optimizedDescription = seoConfig.description || `${title} - 装修知识思维导图提供全面的装修知识库，包括装修流程、材料选购、施工标准等专业内容。`;
+
     // 生成完整 HTML
-    const fullHtml = generateHtmlTemplate(title, htmlContent, docName);
-    
+    const fullHtml = generateHtmlTemplate(optimizedTitle, htmlContent, docName, seoConfig.keywords);
+
     // 写入文件（使用 .html 扩展名）
     const outputPath = path.join(distDocsDir, `${docName}.html`);
     fs.writeFileSync(outputPath, fullHtml, 'utf-8');
-    
-    generatedFiles.push({ name: docName, title, path: outputPath });
+
+    generatedFiles.push({ name: docName, title: optimizedTitle, path: outputPath });
     console.log(`✅ 生成: ${outputPath}\n`);
   }
-  
+
   // 为 README 生成 index.html（文档首页）
   const readmePath = path.join(docsDir, 'README.md');
   if (fs.existsSync(readmePath)) {
@@ -482,7 +530,13 @@ async function generateStaticDocs() {
     const titleMatch = markdown.match(/^# (.+)$/m);
     const title = titleMatch ? titleMatch[1] : '文档中心';
     const htmlContent = markdownToHtml(markdown);
-    const fullHtml = generateHtmlTemplate(title, htmlContent, 'README');
+
+    // 使用SEO配置
+    const seoConfig = SEO_CONFIG['README'] || {};
+    const optimizedTitle = seoConfig.title || `${title} - 装修知识思维导图`;
+    const optimizedDescription = seoConfig.description || `${title} - 装修知识思维导图提供全面的装修知识库。`;
+
+    const fullHtml = generateHtmlTemplate(optimizedTitle, htmlContent, 'README', seoConfig.keywords);
     
     // 写入 index.html
     const indexPath = path.join(distDocsDir, 'index.html');

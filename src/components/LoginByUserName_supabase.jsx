@@ -433,10 +433,11 @@ export default function LoginBySupabaseUsername({ onSuccess }) {
         // 清空表单
         setEmail("");
         setPassword("");
+        window.confirm("邮件已发送，请登录邮箱并点击链接重置密码");
       }
     } catch (error) {
       setAuthError(error.message);
-      message.error(`密码重置失败: ${error.message}`);
+      window.confirm(`密码重置失败: ${error.message}`);
       console.error("密码重置失败:", error);
     } finally {
       setLoading(false);
