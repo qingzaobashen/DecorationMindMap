@@ -183,15 +183,15 @@ export async function getMindMapNodes() {
         console.log(`[性能] ✓ 使用内存缓存，耗时：${cacheTime.toFixed(2)}ms`);
         return dataCache.mindMapNodes;
     }
-
+    // 3. 尝试读取supabase中存储的csv文件
     if (!dataCache.isFetching && !dataCache.mindMapNodes) {
-         const cacheTime = performance.now() - startTime;
-        console.log(`[性能] ✓ 使用CSV读取，耗时：${cacheTime.toFixed(2)}ms`);
         const data = await parseCSV_mindmapData();
+        const cacheTime = performance.now() - startTime;
+        console.log(`[性能] ✓ 使用CSV读取，耗时：${cacheTime.toFixed(2)}ms`);
         return data;
     }
     
-    // 3. 检查是否有进行中的请求，避免重复请求
+    // 4. 尝试读取supabase的数据库表，1）先检查是否有进行中的请求，避免重复请求
     if (dataCache.isFetching && dataCache.fetchPromises.has('mindMapNodes')) {
         console.log('[性能] 等待进行中的请求...');
         try {
@@ -204,13 +204,13 @@ export async function getMindMapNodes() {
         }
     }
     
-    // 4. 标记为正在获取
+    // 4. 尝试读取supabase的数据库表，2）标记为正在获取
     dataCache.isFetching = true;
     
     try {
         const queryStart = performance.now();
         console.log('[性能] 开始从 Supabase 查询...');
-        
+        // 4. 读取supabase的数据库表
         const { data, error } = await supabase
             .from('mindmap_nodes')
             .select('*')
