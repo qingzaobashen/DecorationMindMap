@@ -43,6 +43,15 @@ body {
   overflow-x: hidden;
 }
 
+/* VIP 节点编辑器 Modal 样式 */
+.vip-node-editor-modal {
+  top: 20px !important;
+}
+
+.vip-node-editor-modal .ant-modal-content {
+  margin-top: 0 !important;
+}
+
 /* 支付模态框样式 */
 .payment-modal-content {
   text-align: center;

@@ -2,12 +2,15 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { marked } from 'marked';
 import { Modal, Button } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
 import { useUser } from '../context/UserContext';
 import MindMap_SimpleMindMap from '../MindMap_SimpleMindMap';
 import MindMapSaver from './MindMapSaver';
+import VipNodeEditor from './VipNodeEditor';
 import { sampleData } from '../utils/sampleData';
 import supabase from '../utils/supabase';
 import { downloadFile, getFileUrl } from '../utils/supabaseStorage';
+import { getMergedMindMapData } from '../utils/mindmapData';
 
 // 导入Swiper样式
 import 'swiper/css';
@@ -107,7 +110,7 @@ function buildMindMapStructure(flatData) {
         parent_id: item.parent_id,
         node_id: item.node_id,
         is_premium: item.is_premium,
-        is_expand: item.is_expand === "1"
+        is_expand: item.is_expand
       });
     } else {
       // 这里是防止原始数据里有重复的node_id，若有，则合并详情和图片列表
@@ -178,10 +181,12 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
   const [currentImageIndex, setCurrentImageIndex] = useState(0); // 当前查看的图片索引
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0); // 当前轮播图索引
   const mindMapInstanceRef = useRef(null);                   // 缓存思维导图实例
-  const swiperInstanceRef = useRef(null);                    // 缓存Swiper实例
+  const swiperInstanceRef = useRef(null);                    // 缓存 Swiper 实例
   const [paymentQRCode, setPaymentQRCode] = useState(null);  // 支付二维码
   const [paymentLoading, setPaymentLoading] = useState(false); // 支付加载状态
   const [paymentPolling, setPaymentPolling] = useState(false); // 是否正在轮询支付状态
+  const [vipEditorVisible, setVipEditorVisible] = useState(false); // VIP 编辑器弹窗
+  const [editingNode, setEditingNode] = useState(null); // 正在编辑的节点
 
   const { isAuthenticated: userIsAuthenticated, isPremium: userIsPremium, upgradeToPremium, completeUpgradeToPremium,
      purchaseArticle, completePurchaseArticle, paymentModalVisible, closePaymentModal,
@@ -319,7 +324,7 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
     setIsClosingByPopState(false);
   }, [isClosingByPopState]);
 
-  // 处理节点点击事件的回调函数，传给MindMap_SimpleMindMap子组件，让它点击节点时调用
+  // 处理节点点击事件的回调函数，传给 MindMap_SimpleMindMap 子组件，让它点击节点时调用
   // 主要是拿到点击节点的数据，然后弹出详情页
   const memoizedHandleNodeClick = useCallback((nodeData, nodeInstance, clickDetails) => {
     const nodeName = nodeData.name || nodeData.data?.text || nodeData.text || '未命名节点';
@@ -331,10 +336,19 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
     let img_url = nodeData.img_url || nodeData.data?.img_url || [];
     // 添加节点的付费状态
     const is_premium = nodeData.is_premium || nodeData.data?.is_premium || false;
-    // 获取节点的唯一标识，优先使用node_id，其次使用name作为回退
+    // 获取节点的唯一标识，优先使用 node_id，其次使用 name 作为回退
     const nodeId = nodeData.node_id || nodeData.data?.node_id || nodeName;
+    // 获取节点完整数据用于编辑
+    const fullNodeData = {
+      ...nodeData,
+      name: nodeName,
+      details: details,
+      img_url: img_url,
+      is_premium,
+      node_id: nodeId
+    };
     //console.log("is_premium: ", is_premium);
-    setSelectedNode({ name: nodeName, details, img_url: img_url, is_premium, id: nodeId });
+    setSelectedNode({ name: nodeName, details, img_url: img_url, is_premium, id: nodeId, fullNodeData });
     setPanelVisible(true);
     // 添加历史记录条目，以便用户可以通过返回手势或返回键关闭详情页
     window.history.pushState({ panelVisible: true }, '', window.location.href);
@@ -343,45 +357,133 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
     }
   }, [setSelectedNode, setPanelVisible]);
 
+  // 打开 VIP 编辑器
+  const handleEditNode = useCallback(() => {
+    if (selectedNode?.fullNodeData) {
+      setEditingNode(selectedNode.fullNodeData);
+      setVipEditorVisible(true);
+    }
+  }, [selectedNode]);
+
+  // VIP 编辑器保存成功后的处理
+  const handleVipEditorSave = useCallback((savedData) => {
+    // 不刷新整个页面，只重新加载数据
+    setMindData(null); // 清空当前数据
+    setLoading(true);
+    
+    // 重新获取数据
+    setTimeout(async () => {
+      try {
+        const { data: userData } = await supabase.auth.getUser();
+        const userId = userData?.user?.id;
+        const nodesData = await getMergedMindMapData(userId);
+        setMindData(buildMindMapStructure(nodesData));
+        console.log('数据已更新');
+      } catch (error) {
+        console.error('重新加载数据失败:', error);
+      } finally {
+        setLoading(false);
+      }
+    }, 100);
+  }, []);
+
+  // 用于防止重复请求的标志
+  const loadingRef = useRef(false);
+  
   // Effect for fetching data based on viewType
   useEffect(() => {
     const fetchDataForView = async () => {
-      if (viewType === 'document') { // Document view is now handled by its own route
+      const effectStartTime = performance.now();
+      console.log(`\n[MainAppUI] ====== useEffect 触发，viewType: ${viewType} ======`);
+      
+      // 防止重复加载
+      if (loadingRef.current) {
+        console.log('[MainAppUI] 正在加载中，跳过本次触发');
+        return;
+      }
+      
+      if (viewType === 'document') {
+        console.log('[MainAppUI] 文档视图，跳过数据加载');
         setLoading(false);
         return;
       }
+      
+      // 只在没有数据时才加载，避免重复加载
+      if (mindData) {
+        console.log('[MainAppUI] 数据已存在，跳过加载');
+        setLoading(false);
+        return;
+      }
+      
+      console.log('[MainAppUI] 开始加载思维导图数据...');
+      loadingRef.current = true;
       setLoading(true);
-      setMindData(null);
       mindMapInstanceRef.current = null;
+      
       try {
         if (viewType === 'simplemindmap') {
           try {
-              // const response = await fetch(`http://localhost:${PORT}/api/nodes`);
-              const nodesData = await parseCSV();
-              // console.log('CSV data:', nodesData);
-              //if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-              setMindData(buildMindMapStructure(nodesData));
-            } catch (error) {
-            console.error('Server data failed (simplemindmap), using sample:', error);
-            setMindData(sampleData);
+            // 获取当前用户 ID
+            const authStart = performance.now();
+            console.log('[MainAppUI] 开始获取用户认证信息...');
+            
+            const { data: userData } = await supabase.auth.getUser();
+            const authTime = performance.now() - authStart;
+            console.log(`[MainAppUI] ✓ 用户认证信息获取完成，耗时：${authTime.toFixed(2)}ms`);
+            
+            const userId = userData?.user?.id;
+            console.log(`[MainAppUI] 用户 ID: ${userId ? userId.substring(0, 8) + '...' : '未登录'}`);
+            
+            // 从 Supabase 获取合并后的数据（基础数据 + 用户自定义数据）
+            const dataLoadStart = performance.now();
+            const nodesData = await getMergedMindMapData(userId);
+            const dataLoadTime = performance.now() - dataLoadStart;
+            console.log(`[MainAppUI] ✓ 数据获取完成，耗时：${dataLoadTime.toFixed(2)}ms`);
+            
+            // 构建思维导图结构
+            const buildStart = performance.now();
+            console.log('[MainAppUI] 开始构建思维导图结构...');
+            
+            setMindData(buildMindMapStructure(nodesData));
+            
+            const buildTime = performance.now() - buildStart;
+            console.log(`[MainAppUI] ✓ 思维导图结构构建完成，耗时：${buildTime.toFixed(2)}ms`);
+            
+            const totalTime = performance.now() - effectStartTime;
+            console.log(`[MainAppUI] ====== 数据加载完成，总耗时：${totalTime.toFixed(2)}ms ======\n`);
+          } catch (error) {
+            console.error('从 Supabase 加载数据失败，使用示例数据:', error);
+            // 如果 Supabase 加载失败，回退到 CSV 方式
+            const csvStart = performance.now();
+            console.log('[MainAppUI] 回退到 CSV 方式加载...');
+            
+            const nodesData = await parseCSV();
+            setMindData(buildMindMapStructure(nodesData));
+            
+            const csvTime = performance.now() - csvStart;
+            console.log(`[MainAppUI] CSV 方式加载完成，耗时：${csvTime.toFixed(2)}ms`);
           }
         } else {
+          console.log('[MainAppUI] 使用示例数据');
           setMindData(sampleData);
         }
       } catch (error) {
-        console.error('Data loading failed:', error);
+        console.error('数据加载失败:', error);
         setMindData(sampleData);
       } finally {
+        const totalTime = performance.now() - effectStartTime;
+        console.log(`[MainAppUI] 设置 loading 为 false，总耗时：${totalTime.toFixed(2)}ms`);
+        loadingRef.current = false; // 重置标志
         setLoading(false);
       }
     };
 
-    if (viewType !== 'docs_page') { // 'docs_page' is a placeholder for a dedicated docs route
+    if (viewType !== 'docs_page') {
       fetchDataForView();
     } else {
-      setLoading(false); // If it's a docs route, loading is handled by DocsViewer or not needed here
+      setLoading(false);
     }
-  }, [viewType, userIsAuthenticated]); // currentDocPath removed as docs view has its own route
+  }, [viewType]); // 移除 userIsAuthenticated，避免重复触发
 
   // Determine what to render based on the current route (implicitly) or viewType state
   // For this example, we assume MainAppUI is rendered for '/' and handles mindmap views
@@ -488,9 +590,20 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
         </div>
       )}
       
+      {/* VIP 节点编辑器 */}
+      <VipNodeEditor
+        nodeData={editingNode}
+        visible={vipEditorVisible}
+        onClose={() => {
+          setVipEditorVisible(false);
+          setEditingNode(null);
+        }}
+        onSave={handleVipEditorSave}
+      />
+
       {/* 支付二维码弹窗 */}
       <Modal
-        title={paymentType === 'vip' ? "扫码支付（支付宝） - VIP升级" : "扫码支付（支付宝） - 单篇文章"}
+        title={paymentType === 'vip' ? "扫码支付（支付宝） - VIP 升级" : "扫码支付（支付宝） - 单篇文章"}
         open={paymentModalVisible}
         onCancel={closePaymentModal}
         footer={[
@@ -566,7 +679,19 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
               }}>×</button>
               {selectedNode ? (
                 <>
-                  <h3 id="node-detail-title">{selectedNode.name}</h3>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', marginRight: '7%' }}>
+                    <h3 id="node-detail-title" style={{ margin: 0 }}>{selectedNode.name}</h3>
+                    {userIsPremium && (
+                      <Button
+                        type="primary"
+                        icon={<EditOutlined />}
+                        onClick={handleEditNode}
+                        size="small"
+                      >
+                        编辑节点
+                      </Button>
+                    )}
+                  </div>
                   {selectedNode.details && (
                     <div className="content-scroll">
                       <div className="split-layout">

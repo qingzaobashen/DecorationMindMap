@@ -272,7 +272,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
         if (node === null) return;
 
         const clickedIconSvg = e.target.closest('svg[cursor="pointer"]');
-        console.log("mindMap.on('node_click') clickedIconSvg:",node.nodeData);
+        // console.log("mindMap.on('node_click') clickedIconSvg:",node.nodeData);
         if (clickedIconSvg) {
           // 1、处理附件下载按钮点击
           const titleElement = clickedIconSvg.querySelector(':scope > title'); // :scope确保是直接子元素
