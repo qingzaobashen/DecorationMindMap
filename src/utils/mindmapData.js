@@ -188,6 +188,10 @@ export async function getMindMapNodes() {
         const data = await parseCSV_mindmapData();
         const cacheTime = performance.now() - startTime;
         console.log(`[性能] ✓ 使用CSV读取，耗时：${cacheTime.toFixed(2)}ms`);
+        // 更新所有缓存
+        dataCache.mindMapNodes = data || [];
+        dataCache.timestamp = Date.now();
+        saveToLocalStorage(data || []);
         return data;
     }
     
