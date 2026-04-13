@@ -2,47 +2,89 @@ import { marked } from 'marked';
 import MindMap from 'simple-mind-map';
 
 export const customNoteContentShowPlugin = {
-    // 鼠标hover时显示备注弹窗
+    // 鼠标 hover 时显示备注弹窗
     show: (content, left, top) => {
         // 1. 清理现有弹窗
         const existingPanels = document.querySelectorAll('.custom-note-panel');
         existingPanels.forEach(panel => panel.remove());
 
-        // 2. Markdown图片语法处理（将![]()转换为<img>标签）
+        // 2. Markdown 图片语法处理（将![]()转换为<img>标签）
         const processedContent = content.replace(
             /!\[([^\]]*)\]\(([^)]+)\)/g,
             '<img src="$2" alt="$1" style="max-width:300px;height:auto;margin:10px 0;"/>'
         );
 
-        // 3. 创建弹窗容器（直接在页面中创建div块）
+        // 3. 创建弹窗容器（直接在页面中创建 div 块）
         const notePanel = document.createElement('div');
         notePanel.className = 'custom-note-panel';
-        notePanel.innerHTML = marked.parse(processedContent);// 使用marked库解析Markdown
+        notePanel.innerHTML = marked.parse(processedContent);// 使用 marked 库解析 Markdown
 
         // 4. 弹窗样式配置
         Object.assign(notePanel.style, {
             position: 'fixed',
             left: `${Math.min(left + 20, window.innerWidth - 300)}px`,// 防止右侧溢出
             top: `${Math.min(top + 20, window.innerHeight - 300)}px`,// 防止底部溢出
-            background: '#fff',
             padding: '20px',
             borderRadius: '8px',
             boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-            color: 'black',
             zIndex: 9999,
             maxWidth: '400px',  // 最大宽度限制
             maxHeight: '500px', // 最大高度限制
             overflowY: 'auto',   // 支持内容滚动
-            pointerEvents: 'none' // 防止备注框拦截鼠标事件，避免与备注图标重叠时闪烁
+            pointerEvents: 'none', // 防止备注框拦截鼠标事件，避免与备注图标重叠时闪烁
+            // 使用 CSS 变量，自动适配夜间模式
+            background: 'var(--color-bg-primary)',
+            color: 'var(--color-text-primary)'
         });
 
-        // 为弹窗内的Markdown标题添加更小的字体大小样式（直接在页面中添加<style>标签）
+        // 为弹窗内的 Markdown 标题添加更小的字体大小样式（直接在页面中添加<style>标签）
         const styleSheet = document.createElement('style');
         styleSheet.textContent = `
-      .custom-note-panel h1 { font-size: 18px; margin-top: 10px; margin-bottom: 8px; }
-      .custom-note-panel h2 { font-size: 16px; margin-top: 8px; margin-bottom: 6px; }
-      .custom-note-panel h3 { font-size: 14px; margin-top: 6px; margin-bottom: 4px; }
-      .custom-note-panel h4, .custom-note-panel h5, .custom-note-panel h6 { font-size: 13px; margin-top: 5px; margin-bottom: 3px; }
+      .custom-note-panel h1 { font-size: 18px; margin-top: 10px; margin-bottom: 8px; color: var(--color-text-primary); }
+      .custom-note-panel h2 { font-size: 16px; margin-top: 8px; margin-bottom: 6px; color: var(--color-text-primary); }
+      .custom-note-panel h3 { font-size: 14px; margin-top: 6px; margin-bottom: 4px; color: var(--color-text-primary); }
+      .custom-note-panel h4, .custom-note-panel h5, .custom-note-panel h6 { font-size: 13px; margin-top: 5px; margin-bottom: 3px; color: var(--color-text-primary); }
+      .custom-note-panel p { color: var(--color-text-secondary); line-height: 1.6; }
+      .custom-note-panel ul, .custom-note-panel ol { color: var(--color-text-secondary); }
+      .custom-note-panel li { color: var(--color-text-secondary); margin-bottom: 4px; }
+      .custom-note-panel strong { color: var(--color-text-primary); }
+      .custom-note-panel em { color: var(--color-text-secondary); }
+      .custom-note-panel blockquote { 
+        border-left: 3px solid var(--color-primary); 
+        padding-left: 10px; 
+        color: var(--color-text-tertiary);
+        background: var(--color-bg-secondary);
+        padding: 8px 12px;
+        margin: 10px 0;
+        border-radius: 4px;
+      }
+      .custom-note-panel code { 
+        background: var(--color-bg-tertiary); 
+        padding: 2px 6px; 
+        border-radius: 3px;
+        color: var(--color-text-secondary);
+      }
+      .custom-note-panel pre { 
+        background: var(--color-bg-tertiary); 
+        padding: 10px; 
+        border-radius: 4px;
+        overflow-x: auto;
+      }
+      .custom-note-panel pre code { 
+        background: transparent; 
+        padding: 0;
+      }
+      .custom-note-panel hr {
+        border: none;
+        border-top: 1px solid var(--color-border);
+        margin: 15px 0;
+      }
+      .custom-note-panel img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 4px;
+        margin: 10px 0;
+      }
     `;
         notePanel.appendChild(styleSheet);
 
