@@ -24,8 +24,8 @@ const SEO = ({
   return (
     <Helmet>
       {/* 基础 Meta 标签 */}
-      <title>{title}</title>
-      <meta name="description" content={description} />
+      {/* <title>{title}</title>
+      <meta name="description" content={description} /> */}
       <meta name="keywords" content={keywords} />
       {noIndex && <meta name="robots" content="noindex, nofollow" />}
       
