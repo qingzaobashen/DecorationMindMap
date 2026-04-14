@@ -91,14 +91,6 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
         nodeMenu: true,
         //layout: 'mindMap',
         theme: isDarkMode ? 'dark7' : 'classic5',
-        //theme: {
-        //  cssVar: {
-        //    '--main-color': '#4a89dc',
-        //    '--main-bgcolor': '#f5f6fa',
-        //    '--color': '#333',
-        //    '--bgcolor': '#fff',
-        //  }
-        //},
         isDisableDrag: false,
         useLeftKeySelectionRightKeyDrag: false,
 
@@ -182,13 +174,16 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
             // 计算缩放比例变化
             const scaleRatio = currentDistance / touchState.lastDistance;
             
-            // 计算deltaY值（基于缩放比例变化，确保缩放速度合理）
+            // 跳过双指缩放距离过小的情况，确保缩放速度合理
+            if (Math.abs(scaleRatio - 1) < 0.05 )
+            {
+              return;
+            }
             // 放大时deltaY为负，缩小时为正
-            let deltaY = (1 - scaleRatio) * 50;
+            let deltaY = (1 - scaleRatio) * 1;
             
             // 限制deltaY的绝对值，防止缩放过快
-            deltaY = Math.max(-20, Math.min(20, deltaY));
-            
+            deltaY = Math.max(-0.5, Math.min(0.5, deltaY));
             // 获取双指中心点作为缩放中心
             const centerX = (touch1.clientX + touch2.clientX) / 2;
             const centerY = (touch1.clientY + touch2.clientY) / 2;
@@ -204,7 +199,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
               bubbles: true,
               cancelable: true
             });
-            
+            //mindMap.view.setScale(deltaY, centerX, centerY);
             // 使用canvasElement作为目标，确保事件能被正确处理
             const canvasElement = containerRef.current;
             if (canvasElement) {

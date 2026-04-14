@@ -134,13 +134,9 @@ body {
 
 .view-header h2 {
   margin: 0;
-  color: var(--color-text-primary);
+  color: var(--color-primary);
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-primary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .view-switcher {
@@ -1258,10 +1254,7 @@ body {
 .stat-number {
   font-size: 2rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-primary);
 }
 
 .stat-label {
@@ -1923,7 +1916,7 @@ body {
 
 .welcome-title {
   font-size: 2.5rem;
-  color: #2c3e50;
+  color: #27ae60;
   margin-bottom: 16px;
   font-weight: 600;
 }
@@ -1987,10 +1980,7 @@ body {
 }
 
 [data-theme="dark"] .view-header h2 {
-  background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-primary-light) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-primary-light);
 }
 
 [data-theme="dark"] .view-switcher {
@@ -2106,10 +2096,17 @@ body {
 }
 
 [data-theme="dark"] .welcome-title {
-  color: var(--color-text-primary);
+  color: #14b8a6 !important;
 }
 
-[data-theme="dark"] .welcome-subtitle {
+[data-theme="dark"] .section-title {
+  color: #14b8a6 !important;
+}
+[data-theme="dark"] .premium-title {
+  color: #ffd700 !important;
+}
+
+[data-theme="dark"] .section-subtitle {
   color: var(--color-text-secondary);
 }
 
@@ -2846,10 +2843,7 @@ body {
   font-weight: 800;
   line-height: 1.1;
   margin-bottom: 20px;
-  background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-primary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #27ae60;
   letter-spacing: -0.02em;
 }
 
@@ -2949,10 +2943,7 @@ body {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 15px;
-  background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-primary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #27ae60;
 }
 
 .section-subtitle {
@@ -3101,10 +3092,7 @@ body {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 15px;
-  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #ffd700;
 }
 
 .premium-subtitle {

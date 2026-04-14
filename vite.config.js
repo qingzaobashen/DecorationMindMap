@@ -21,7 +21,9 @@ export default defineConfig({
   //base: process.env.NODE_ENV === 'production' || process.env.CI ? '/DecorationMindMap/' : '/',
   build: {
     outDir: 'dist'
-  }
+  },
+
+  server: { host: '0.0.0.0' }
 
   // 以下是vite的典型配置的说明，可参考
   // // 项目根目录，默认为当前工作目录
