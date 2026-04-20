@@ -1,6 +1,16 @@
 import { marked } from 'marked';
 import MindMap from 'simple-mind-map';
 
+/**
+ * 审计图标 SVG 数据
+ * 用于在支持审计功能的节点上显示审计图标
+ */
+const AUDIT_ICON_SVG = `<svg viewBox="0 0 1024 1024" width="20" height="20" cursor="pointer">
+  <title>audit</title>
+  <path d="M512 128c-70.7 0-134.4 26.9-181.8 70.7L181.8 347.1c-8.5 8.5-8.5 21.3 0 29.9l64 64c8.5 8.5 21.3 8.5 29.9 0l85.3-85.3c70.7 47.5 149.3 70.7 229.1 70.7 212.1 0 384-171.9 384-384S724.1 0 512 0 128 171.9 128 384c0 80.8 23.2 158.4 70.7 229.1l-85.3 85.3c-8.5 8.5-8.5 21.3 0 29.9l64 64c8.5 8.5 21.3 8.5 29.9 0l148.4-148.4C485.1 641.6 512 577.9 512 512 512 299.3 299.3 128 512 128m0-64c238.1 0 432 193.9 432 432s-193.9 432-432 432-432-193.9-432-432 193.9-432 432-432z" fill="#1890ff"/>
+  <path d="M480 320a64 64 0 1 0-64-64 64.1 64.1 0 0 0 64 64m0-96a32 32 0 1 1-32 32 32 32 0 0 1 32-32m0 160a64 64 0 1 0-64-64 64.1 64.1 0 0 0 64 64m0-96a32 32 0 1 1-32 32 32 32 0 0 1 32-32m0 160a64 64 0 1 0-64-64 64.1 64.1 0 0 0 64 64m0-96a32 32 0 1 1-32 32 32 32 0 0 1 32-32" fill="#1890ff"/>
+</svg>`;
+
 export const customNoteContentShowPlugin = {
     // 鼠标 hover 时显示备注弹窗
     show: (content, left, top) => {
@@ -94,5 +104,52 @@ export const customNoteContentShowPlugin = {
     hide: () => {
         const panels = document.querySelectorAll('.custom-note-panel');
         panels.forEach(panel => panel.remove());
+    }
+};
+
+/**
+ * 渲染审计图标插件
+ * 在设置了 hasAudit: true 的节点上渲染审计图标
+ */
+export const renderAuditIconPlugin = {
+    /**
+     * 在节点渲染前添加审计图标
+     * @param {object} node - 思维导图节点
+     */
+    beforeShow(node) {
+        if (node && node.data && node.data.hasAudit) {
+            const nodeEl = node._nodeEl;
+            if (nodeEl) {
+                const iconContainer = nodeEl.querySelector('.smm-node-icon-custom');
+                if (!iconContainer) {
+                    const iconWrapper = document.createElement('span');
+                    iconWrapper.className = 'smm-node-icon-custom smm-node-audit-icon';
+                    iconWrapper.innerHTML = AUDIT_ICON_SVG;
+                    iconWrapper.style.marginLeft = '4px';
+                    iconWrapper.style.marginRight = '4px';
+                    iconWrapper.style.display = 'inline-flex';
+                    iconWrapper.style.alignItems = 'center';
+                    iconWrapper.style.verticalAlign = 'middle';
+
+                    const textEl = nodeEl.querySelector('.smm-node-text');
+                    if (textEl) {
+                        textEl.parentNode.insertBefore(iconWrapper, textEl.nextSibling);
+                    }
+                }
+            }
+        }
+    },
+
+    /**
+     * 清理审计图标
+     * @param {object} node - 思维导图节点
+     */
+    hide(node) {
+        if (node && node._nodeEl) {
+            const iconEl = node._nodeEl.querySelector('.smm-node-audit-icon');
+            if (iconEl) {
+                iconEl.remove();
+            }
+        }
     }
 };

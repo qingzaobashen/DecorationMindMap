@@ -1,0 +1,192 @@
+/**
+ * 合同审计模态框样式
+ */
+
+.contract-audit-modal-title {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+}
+
+.contract-audit-node-text {
+  font-size: 14px;
+  color: #888;
+  font-weight: normal;
+}
+
+.contract-audit-content {
+  min-height: 300px;
+}
+
+.contract-audit-upload-section {
+  margin-bottom: 20px;
+}
+
+.contract-audit-upload-tip {
+  padding: 20px 0;
+}
+
+.contract-audit-upload-tip .ant-upload-drag-icon {
+  color: #1890ff;
+  margin-bottom: 8px;
+}
+
+.contract-audit-upload-tip .ant-upload-text {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.contract-audit-upload-tip .ant-upload-hint {
+  font-size: 12px;
+  color: #999;
+}
+
+.contract-audit-image-preview {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.contract-audit-preview-img {
+  max-width: 100%;
+  max-height: 300px;
+  display: block;
+  margin: 0 auto;
+  border-radius: 8px;
+}
+
+.contract-audit-preview-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.contract-audit-image-preview:hover .contract-audit-preview-overlay {
+  opacity: 1;
+}
+
+.contract-audit-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.contract-audit-loading {
+  padding: 60px 0;
+  text-align: center;
+}
+
+.contract-audit-loading .ant-spin {
+  margin-bottom: 16px;
+}
+
+.contract-audit-result {
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 16px;
+}
+
+.contract-audit-result-error {
+  background: #fff2f0;
+}
+
+.contract-audit-issues,
+.contract-audit-suggestions {
+  margin-top: 20px;
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.contract-audit-issues h4,
+.contract-audit-suggestions h4 {
+  margin-bottom: 12px;
+  color: #333;
+  font-size: 14px;
+}
+
+.contract-audit-issues ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.contract-audit-issue-item {
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.contract-audit-issue-item.issue-high {
+  background: #fff1f0;
+  border-left: 3px solid #ff4d4f;
+}
+
+.contract-audit-issue-item.issue-medium {
+  background: #fff7e6;
+  border-left: 3px solid #faad14;
+}
+
+.contract-audit-issue-item.issue-low {
+  background: #f6ffed;
+  border-left: 3px solid #52c41a;
+}
+
+.issue-severity {
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.issue-high .issue-severity {
+  color: #ff4d4f;
+}
+
+.issue-medium .issue-severity {
+  color: #faad14;
+}
+
+.issue-low .issue-severity {
+  color: #52c41a;
+}
+
+.issue-title {
+  font-weight: 500;
+  color: #333;
+}
+
+.issue-description {
+  margin: 8px 0 0 0;
+  color: #666;
+  font-size: 13px;
+}
+
+.contract-audit-suggestions ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.contract-audit-suggestions li {
+  margin-bottom: 8px;
+  color: #666;
+}
+
+.contract-audit-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

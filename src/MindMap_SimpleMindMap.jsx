@@ -9,6 +9,8 @@ import { useUser } from './context/UserContext';
 import { useTheme } from './context/ThemeContext';
 import { convertMarkdownToMindMap, convertObjectToMindMap } from './utils/mindmapUtils';
 import { customNoteContentShowPlugin } from './utils/mindmapPlugins';
+import ContractAuditModal from './components/ContractAuditModal';
+import { hasTool } from './utils/nodeTools';
 
 const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
   const containerRef = useRef(null);
@@ -16,6 +18,8 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
   const { isPremium, username, upgradeToPremium } = useUser(); // 获取 VIP 状态、用户信息和升级方法
   const { isDarkMode } = useTheme(); // 获取当前主题模式
   const [showUpgradeModal, setShowUpgradeModal] = useState(false); // 控制升级弹窗
+  const [activeTool, setActiveTool] = useState(null); // 当前激活的工具 ID
+  const [activeToolNodeData, setActiveToolNodeData] = useState(null); // 当前激活工具的节点数据
   
   // 存储触摸事件处理函数的引用，以便在清理函数中使用
   const touchEventHandlersRef = useRef({
@@ -42,6 +46,28 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
       setShowUpgradeModal(true);
     }
   }, [isPremium]);
+
+  /**
+   * 处理工具图标点击
+   * @param {object} nodeData - 节点数据
+   * @param {string} toolId - 工具 ID
+   */
+  const handleToolClick = useCallback((nodeData, toolId) => {
+    if (!hasTool(toolId)) {
+      console.warn(`未找到工具配置: ${toolId}`);
+      return;
+    }
+    setActiveToolNodeData(nodeData);
+    setActiveTool(toolId);
+  }, []);
+
+  /**
+   * 关闭工具弹窗
+   */
+  const handleToolClose = useCallback(() => {
+    setActiveTool(null);
+    setActiveToolNodeData(null);
+  }, []);
 
   // 监听主题变化并切换思维导图主题
   useEffect(() => {
@@ -76,7 +102,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
         return;
       }
 
-      //console.log('SimpleMindMap 数据:', mindMapData);
+      // console.log('mindMap 实例数据:', mindMapData);
       // 注册主题
       Themes.init(MindMap);
       // 创建思维导图实例
@@ -259,13 +285,33 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
         handleCanvasTouchEnd
       };
 
+      // 监听数据变化事件
+      mindMap.on('data_change', () => {
+        console.log('思维导图数据变化');
+      });
+
       // mindMap.on('mousewheel', (e) => {
       //   console.log('mindMap.on(\'mousewheel\'):', e);
       // })
 
       mindMap.on('node_click', (node, e) => {
         if (node === null) return;
+        console.log("mindMap.on('node_click') e:", e);
+        // 处理工具标签点击（标签是 rect 元素）
+        const clickedTag = e.target.closest('tspan');
+        console.log("clickedTag: ", clickedTag);
+        if (clickedTag) {
+          const nodeData = node.nodeData.data;
+          // console.log("nodeData: ", nodeData);
+          // 节点数据中的 tool 字段即为工具 ID
+          if (nodeData && nodeData.tool && hasTool(nodeData.tag)) {
+            e.stopPropagation();
+            handleToolClick(node.nodeData, nodeData.tool);
+            return;
+          }
+        }
 
+        // 处理 SVG 图标点击（附件下载按钮等）
         const clickedIconSvg = e.target.closest('svg[cursor="pointer"]');
         //console.log("mindMap.on('node_click') clickedIconSvg:",node.nodeData);
         if (clickedIconSvg) {
@@ -276,7 +322,14 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
             handleDownloadClick(node.nodeData);
             return;
           }
-          // 2、处理节点备注点击
+          // 2、处理工具图标点击
+          const toolId = titleElement?.textContent;
+          if (toolId && hasTool(toolId)) {
+            e.stopPropagation();
+            handleToolClick(node.nodeData, toolId);
+            return;
+          }
+          // 3、处理节点备注点击
           const isNoteClick = e.target.closest('.smm-node-note');
           if (isNoteClick) {
             //console.log("mindMap.on('node_click') isNoteClick:", node);
@@ -287,7 +340,12 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
             return;
           }
         }
-        
+
+        // 处理没有点击图标但节点有工具配置的情况
+        if (node.nodeData.data && node.nodeData.data.tool && hasTool(node.nodeData.data.tool)) {
+          handleToolClick(node.nodeData, node.nodeData.data.tool);
+        }
+
       });
     } catch (error) {
       console.error('思维导图初始化失败:', error);
@@ -319,7 +377,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
       const existingPanels = document.querySelectorAll('.custom-note-panel');
       existingPanels.forEach(panel => panel.remove());
     };
-  }, [data, onMindMapLoad, handleDownloadClick]);
+  }, [data, onMindMapLoad, handleDownloadClick, handleToolClick, onNodeClick]);
 
   return (
     <>
@@ -349,6 +407,13 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
         <p><LockOutlined /> 此下载功能为VIP用户专享，升级后即可使用。</p>
         <p>当前用户: {username || '未登录'}</p>
       </Modal>
+      {activeTool === 'Decoration_contract_audit_tool' && (
+        <ContractAuditModal
+          visible={true}
+          onClose={handleToolClose}
+          nodeData={activeToolNodeData}
+        />
+      )}
     </>
   );
 };

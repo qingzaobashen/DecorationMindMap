@@ -1,3 +1,6 @@
+// 导入工具配置
+import { getToolConfig, getToolIconPath } from './nodeTools';
+
 // 正则表达式，用于匹配 Markdown 中的附件链接
 // 格式: [链接文本](attachment:附件URL "附件文件名")
 const attachmentRegex = '/\\[([^\\]]+)\\]\\(attachment:([^\\s")]+)(?:\\s\\"([^\\"]+)\\")?\\)/';
@@ -113,6 +116,8 @@ export const convertMarkdownToMindMap = (markdown) => {
 export const convertObjectToMindMap = (obj) => {
     if (!obj) return null;
 
+
+
     const mapNode = (node) => {
         // 限制文字长度的辅助函数
         const limitTextLength = (text, maxLength = 100) => {
@@ -123,6 +128,10 @@ export const convertObjectToMindMap = (obj) => {
             // 在最大长度处截断，并添加省略号
             return trimmedText.substring(0, maxLength) + '...';
         };
+
+        // 获取工具配置
+        const toolConfig = node.tool ? getToolConfig(node.tool) : null;
+        const iconPath = node.tool ? getToolIconPath(node.tool) : null;
 
         return {
             data: {
@@ -140,7 +149,11 @@ export const convertObjectToMindMap = (obj) => {
                 // 将字符串格式的数组解析为真正的数组
                 img_url: Array.isArray(node.img_url) ? node.img_url : (node.img_url ? JSON.parse(node.img_url.replace(/'/g, '"')) : []),
                 // 使用原始数据中的 is_expand 字段控制节点展开/收起状态
-                expand: node.is_expand || false
+                expand: node.is_expand || false,
+                // 添加工具标签和图标（simple-mind-map 原生支持）
+                // icon: iconPath, // 图标使用图片 URL
+                tag: toolConfig ? [toolConfig.name] : null,
+                tool: node.tool || null
             },
             children: (node.children || []).map(mapNode)
         };

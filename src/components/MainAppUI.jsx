@@ -79,7 +79,7 @@ function buildMindMapStructure(flatData) {
     console.error('无效的平面数据格式');
     return sampleData;
   }
-
+  // console.log("buildMindMapStructure() flatData: ", flatData);
   // 创建基础节点结构
   flatData.forEach(item => {
     if (!nodeMap.has(item.node_id)) {
@@ -94,7 +94,8 @@ function buildMindMapStructure(flatData) {
         parent_id: item.parent_id,
         node_id: item.node_id,
         is_premium: item.is_premium,
-        is_expand: item.is_expand === "1"
+        is_expand: item.is_expand === "1",
+        tool: item.tool || null // 添加工具字段
       });
     } else {
       // 这里是防止原始数据里有重复的node_id，若有，则合并详情和图片列表
@@ -128,11 +129,12 @@ function buildMindMapStructure(flatData) {
         children: item.children,
         node_id: item.node_id,
         is_premium: item.is_premium,
-        is_expand: item.is_expand
+        is_expand: item.is_expand,
+        tool: item.tool || null // 添加工具字段
       });
     }
   });
-  //console.log("buildMindMapStructure(): ", root);
+  // console.log("buildMindMapStructure(): ", root);
   return root ? {
     name: root.name,
     details: root.details,
