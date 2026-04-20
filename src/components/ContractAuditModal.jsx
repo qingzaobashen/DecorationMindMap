@@ -4,7 +4,7 @@
  */
 import React, { useState, useRef } from 'react';
 import { Modal, Upload, Button, message, Spin, Result } from 'antd';
-import { UploadOutlined, FileImageOutlined, AuditOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { UploadOutlined, AuditOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import supabase from '../utils/supabase';
 import './ContractAuditModal.css';
@@ -29,7 +29,7 @@ const ContractAuditModal = ({ visible, onClose, nodeData }) => {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [auditResult, setAuditResult] = useState(null);
-  const [imageUrl, setImageUrl] = useState(null);
+  const [imageUrls, setImageUrls] = useState([]);
   const [fileList, setFileList] = useState([]);
   const draggerRef = useRef(null);
 
@@ -37,22 +37,29 @@ const ContractAuditModal = ({ visible, onClose, nodeData }) => {
    * 处理图片上传
    */
   const handleUploadChange = async (info) => {
-    const { status, originFileObj, name } = info.file;
-    
-    if (status === 'uploading') {
-      setUploading(true);
+    // 获取原始文件对象，优先使用 originFileObj，否则使用 info.file 本身
+    const file = info.file.originFileObj || info.file;
+
+    if (!file) {
+      message.error('无法获取文件对象');
       return;
     }
 
-    if (status === 'done') {
-      const base64 = await convertFileToBase64(originFileObj);
-      setImageUrl(base64);
-      setFileList([{ ...info.file, status: 'done', url: base64 }]);
+    // 显示上传中状态
+    setUploading(true);
+
+    try {
+      const base64 = await convertFileToBase64(file);
+      // 支持多图上传，追加到数组
+      setImageUrls(prev => [...prev, base64]);
+      setFileList(prev => [...prev, { ...info.file, status: 'done', url: base64 }]);
       message.success('图片上传成功');
-    } else if (status === 'error') {
-      message.error('图片上传失败');
+    } catch (error) {
+      console.error('图片处理失败:', error);
+      message.error('图片处理失败');
+    } finally {
+      setUploading(false);
     }
-    setUploading(false);
   };
 
   /**
@@ -70,21 +77,10 @@ const ContractAuditModal = ({ visible, onClose, nodeData }) => {
   };
 
   /**
-   * 处理图片预览
-   */
-  const handlePreview = async () => {
-    if (!imageUrl) {
-      message.warning('请先上传合同图片');
-      return;
-    }
-    window.open(imageUrl, '_blank');
-  };
-
-  /**
    * 调用AI接口进行合同审计
    */
   const handleAudit = async () => {
-    if (!imageUrl) {
+    if (imageUrls.length === 0) {
       message.warning('请先上传合同图片');
       return;
     }
@@ -105,7 +101,7 @@ const ContractAuditModal = ({ visible, onClose, nodeData }) => {
       const response = await axios.post(
         CONTRACT_AUDIT_CONFIG.edgeFunctionUrl,
         {
-          imageData: imageUrl,
+          imageData: imageUrls,  // 传递多张图片数组
           nodeText: nodeData?.text || '',
           requestId: Date.now().toString()
         },
@@ -137,11 +133,23 @@ const ContractAuditModal = ({ visible, onClose, nodeData }) => {
   };
 
   /**
+   * 移除单张图片
+   */
+  const handleRemove = (index) => {
+    setImageUrls(prev => prev.filter((_, i) => i !== index));
+    setFileList(prev => prev.filter((_, i) => i !== index));
+    // 如果移除了所有图片，重置审计结果
+    if (imageUrls.length <= 1) {
+      setAuditResult(null);
+    }
+  };
+
+  /**
    * 重置组件状态
    */
   const handleReset = () => {
     setAuditResult(null);
-    setImageUrl(null);
+    setImageUrls([]);
     setFileList([]);
     setLoading(false);
     setUploading(false);
@@ -155,18 +163,9 @@ const ContractAuditModal = ({ visible, onClose, nodeData }) => {
     onClose();
   };
 
-  /**
-   * 移除已上传的图片
-   */
-  const handleRemove = () => {
-    setImageUrl(null);
-    setFileList([]);
-    setAuditResult(null);
-  };
-
   const uploadProps = {
     name: 'contractImage',
-    multiple: false,
+    multiple: true,
     showUploadList: false,
     accept: 'image/*',
     beforeUpload: () => false,
@@ -192,9 +191,9 @@ const ContractAuditModal = ({ visible, onClose, nodeData }) => {
         !auditResult || auditResult.isError ? (
           <div className="contract-audit-footer">
             <Button onClick={handleClose}>取消</Button>
-            {imageUrl && !auditResult && (
+            {imageUrls.length > 0 && !auditResult && (
               <Button type="primary" onClick={handleAudit} loading={loading}>
-                开始审计
+                开始审计 ({imageUrls.length}张)
               </Button>
             )}
           </div>
@@ -209,40 +208,50 @@ const ContractAuditModal = ({ visible, onClose, nodeData }) => {
       <div className="contract-audit-content">
         {/* 图片上传区域 */}
         <div className="contract-audit-upload-section">
-          <Dragger ref={draggerRef} {...uploadProps} disabled={loading || uploading}>
-            {imageUrl ? (
-              <div className="contract-audit-image-preview">
-                <img src={imageUrl} alt="合同预览" className="contract-audit-preview-img" />
-                <div className="contract-audit-preview-overlay">
-                  <Button size="small" onClick={(e) => { e.stopPropagation(); handlePreview(); }} icon={<FileImageOutlined />}>
-                    预览
-                  </Button>
-                  <Button 
-                    size="small" 
-                    danger 
-                    onClick={(e) => { e.stopPropagation(); handleRemove(); }} 
-                    icon={<CloseCircleOutlined />}
-                    disabled={loading}
-                  >
-                    移除
-                  </Button>
-                </div>
+          <Dragger ref={draggerRef} {...uploadProps}>
+            {imageUrls.length === 0 ? (
+              <div className="contract-audit-upload-tip">
+                <p className="ant-upload-drag-icon">
+                  <UploadOutlined />
+                </p>
+                <p className="ant-upload-text">点击或拖拽上传合同照片</p>
+                <p className="ant-upload-hint">支持 JPG、PNG 格式，可上传多张图片</p>
               </div>
             ) : (
               <div className="contract-audit-upload-tip">
                 <p className="ant-upload-drag-icon">
                   <UploadOutlined />
                 </p>
-                <p className="ant-upload-text">点击或拖拽上传合同照片</p>
-                <p className="ant-upload-hint">支持 JPG、PNG 格式，建议图片清晰可读</p>
-              </div>
-            )}
-            {(uploading) && (
-              <div className="contract-audit-loading-overlay">
-                <Spin tip="上传中..." />
+                <p className="ant-upload-text">继续添加更多图片</p>
               </div>
             )}
           </Dragger>
+
+          {/* 已上传图片预览 */}
+          {imageUrls.length > 0 && (
+            <div className="contract-audit-images-preview">
+              {imageUrls.map((url, index) => (
+                <div key={index} className="contract-audit-image-item">
+                  <img src={url} alt={`合同预览 ${index + 1}`} />
+                  <Button
+                    size="small"
+                    danger
+                    shape="circle"
+                    icon={<CloseCircleOutlined />}
+                    className="contract-audit-image-remove"
+                    onClick={(e) => { e.stopPropagation(); handleRemove(index); }}
+                    disabled={loading}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {(uploading) && (
+            <div className="contract-audit-loading-overlay">
+              <Spin tip="上传中..." />
+            </div>
+          )}
         </div>
 
         {/* 审计结果区域 */}

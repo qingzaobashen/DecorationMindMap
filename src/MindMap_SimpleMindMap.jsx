@@ -120,7 +120,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
         return;
       }
 
-      console.log('mindMap 实例数据:', mindMapData);
+      // console.log('mindMap 实例数据:', mindMapData);
       // 注册主题
       Themes.init(MindMap);
       // 创建思维导图实例
@@ -140,7 +140,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
         // 添加自定义图标列表
         iconList: getToolIconList()
       });
-      console.log("iconList: ", getToolIconList());
+      // console.log("iconList: ", getToolIconList());
       mindMap.view.setScale(0.65);
       mindMapRef.current = mindMap;
 
@@ -306,9 +306,9 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
       };
 
       // 监听数据变化事件
-      mindMap.on('data_change', () => {
-        console.log('思维导图数据变化');
-      });
+      //mindMap.on('data_change', () => {
+      //  console.log('思维导图数据变化');
+      //});
 
       // mindMap.on('mousewheel', (e) => {
       //   console.log('mindMap.on(\'mousewheel\'):', e);
