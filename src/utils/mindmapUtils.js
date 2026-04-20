@@ -1,6 +1,3 @@
-// 导入工具配置
-import { getToolConfig, getToolIconPath } from './nodeTools';
-
 // 正则表达式，用于匹配 Markdown 中的附件链接
 // 格式: [链接文本](attachment:附件URL "附件文件名")
 const attachmentRegex = '/\\[([^\\]]+)\\]\\(attachment:([^\\s")]+)(?:\\s\\"([^\\"]+)\\")?\\)/';
@@ -129,10 +126,6 @@ export const convertObjectToMindMap = (obj) => {
             return trimmedText.substring(0, maxLength) + '...';
         };
 
-        // 获取工具配置
-        const toolConfig = node.tool ? getToolConfig(node.tool) : null;
-        const iconPath = node.tool ? getToolIconPath(node.tool) : null;
-
         return {
             data: {
                 text: node.name,
@@ -150,9 +143,9 @@ export const convertObjectToMindMap = (obj) => {
                 img_url: Array.isArray(node.img_url) ? node.img_url : (node.img_url ? JSON.parse(node.img_url.replace(/'/g, '"')) : []),
                 // 使用原始数据中的 is_expand 字段控制节点展开/收起状态
                 expand: node.is_expand || false,
-                // 添加工具标签和图标（simple-mind-map 原生支持）
-                // icon: iconPath, // 图标使用图片 URL
-                tag: toolConfig ? [toolConfig.name] : null,
+                // 添加工具图标（simple-mind-map 原生支持）
+                // icon 字段是一个数组，包含要显示的图标名称
+                icon: node.tool ? ["tool_" + node.tool] : null,
                 tool: node.tool || null
             },
             children: (node.children || []).map(mapNode)

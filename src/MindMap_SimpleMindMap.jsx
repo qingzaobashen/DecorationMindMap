@@ -10,7 +10,25 @@ import { useTheme } from './context/ThemeContext';
 import { convertMarkdownToMindMap, convertObjectToMindMap } from './utils/mindmapUtils';
 import { customNoteContentShowPlugin } from './utils/mindmapPlugins';
 import ContractAuditModal from './components/ContractAuditModal';
-import { hasTool } from './utils/nodeTools';
+import { hasTool, getToolIconDataUrl } from './utils/nodeTools';
+
+/**
+ * 获取工具图标列表配置（用于 simple-mind-map 的 iconList）
+ */
+const getToolIconList = () => {
+  return [
+    {
+      name: '工具',
+      type: 'tool',
+      list: [
+        {
+          name: 'DecorationContractAuditTool',
+          icon: getToolIconDataUrl('DecorationContractAuditTool')
+        }
+      ]
+    }
+  ];
+};
 
 const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
   const containerRef = useRef(null);
@@ -102,7 +120,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
         return;
       }
 
-      // console.log('mindMap 实例数据:', mindMapData);
+      console.log('mindMap 实例数据:', mindMapData);
       // 注册主题
       Themes.init(MindMap);
       // 创建思维导图实例
@@ -119,8 +137,10 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
         theme: isDarkMode ? 'dark7' : 'classic5',
         isDisableDrag: false,
         useLeftKeySelectionRightKeyDrag: false,
-
+        // 添加自定义图标列表
+        iconList: getToolIconList()
       });
+      console.log("iconList: ", getToolIconList());
       mindMap.view.setScale(0.65);
       mindMapRef.current = mindMap;
 
@@ -296,17 +316,18 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
 
       mindMap.on('node_click', (node, e) => {
         if (node === null) return;
-        console.log("mindMap.on('node_click') e:", e);
-        // 处理工具标签点击（标签是 rect 元素）
-        const clickedTag = e.target.closest('tspan');
-        console.log("clickedTag: ", clickedTag);
-        if (clickedTag) {
-          const nodeData = node.nodeData.data;
-          // console.log("nodeData: ", nodeData);
-          // 节点数据中的 tool 字段即为工具 ID
-          if (nodeData && nodeData.tool && hasTool(nodeData.tag)) {
+
+        // 处理工具图标点击（通过检查图标元素）
+        const clickedSvg = e.target.closest('svg');
+        if (clickedSvg) {
+          // 从 title 元素获取图标名称
+          const titleElement = clickedSvg.querySelector('title');
+          const iconName = titleElement?.textContent;
+
+          // 检查是否是工具图标
+          if (iconName && hasTool(iconName)) {
             e.stopPropagation();
-            handleToolClick(node.nodeData, nodeData.tool);
+            handleToolClick(node.nodeData, iconName);
             return;
           }
         }
@@ -322,14 +343,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
             handleDownloadClick(node.nodeData);
             return;
           }
-          // 2、处理工具图标点击
-          const toolId = titleElement?.textContent;
-          if (toolId && hasTool(toolId)) {
-            e.stopPropagation();
-            handleToolClick(node.nodeData, toolId);
-            return;
-          }
-          // 3、处理节点备注点击
+          // 2、处理节点备注点击
           const isNoteClick = e.target.closest('.smm-node-note');
           if (isNoteClick) {
             //console.log("mindMap.on('node_click') isNoteClick:", node);
@@ -407,7 +421,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
         <p><LockOutlined /> 此下载功能为VIP用户专享，升级后即可使用。</p>
         <p>当前用户: {username || '未登录'}</p>
       </Modal>
-      {activeTool === 'Decoration_contract_audit_tool' && (
+      {activeTool === 'DecorationContractAuditTool' && (
         <ContractAuditModal
           visible={true}
           onClose={handleToolClose}
