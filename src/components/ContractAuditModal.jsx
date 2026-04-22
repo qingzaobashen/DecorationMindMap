@@ -15,7 +15,8 @@ const { Dragger } = Upload;
  * 合同审计配置
  */
 const CONTRACT_AUDIT_CONFIG = {
-  edgeFunctionUrl: 'https://uwgvflkueracnwgwdwpe.supabase.co/functions/v1/contract-audit'
+  edgeFunctionUrl: 'https://uwgvflkueracnwgwdwpe.supabase.co/functions/v1/contract-audit',
+  maxImageCount: 8
 };
 
 /**
@@ -37,6 +38,12 @@ const ContractAuditModal = ({ visible, onClose, nodeData }) => {
    * 处理图片上传
    */
   const handleUploadChange = async (info) => {
+    // 检查图片数量限制
+    if (imageUrls.length >= CONTRACT_AUDIT_CONFIG.maxImageCount) {
+      message.warning(`最多只能上传 ${CONTRACT_AUDIT_CONFIG.maxImageCount} 张图片`);
+      return;
+    }
+
     // 获取原始文件对象，优先使用 originFileObj，否则使用 info.file 本身
     const file = info.file.originFileObj || info.file;
 
@@ -215,7 +222,7 @@ const ContractAuditModal = ({ visible, onClose, nodeData }) => {
                   <UploadOutlined />
                 </p>
                 <p className="ant-upload-text">点击或拖拽上传合同照片</p>
-                <p className="ant-upload-hint">支持 JPG、PNG 格式，可上传多张图片</p>
+                <p className="ant-upload-hint">支持 JPG、PNG 格式，最多 {CONTRACT_AUDIT_CONFIG.maxImageCount} 张图片</p>
               </div>
             ) : (
               <div className="contract-audit-upload-tip">

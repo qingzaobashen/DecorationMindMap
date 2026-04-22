@@ -108,8 +108,17 @@ serve(async (req) => {
       imageArray = imageData.filter(img => typeof img === 'string' && img.length > 0);
     }
 
+    const MAX_IMAGE_COUNT = 8;
+
     if (imageArray.length === 0) {
       return new Response(JSON.stringify({ error: '缺少合同图片' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (imageArray.length > MAX_IMAGE_COUNT) {
+      return new Response(JSON.stringify({ error: `图片数量不能超过 ${MAX_IMAGE_COUNT} 张` }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
