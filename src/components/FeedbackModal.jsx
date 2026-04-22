@@ -107,7 +107,7 @@ const FeedbackModal = ({ visible, onClose }) => {
           label="反馈内容"
           rules={[
             { required: true, message: '请输入反馈内容！' },
-            { min: 10, message: '反馈内容至少10个字符！' },
+            { min: 3, message: '反馈内容至少3个字符！' },
           ]}
         >
           <TextArea rows={4} placeholder="请详细描述您的意见、建议或遇到的问题..." />
