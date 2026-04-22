@@ -2316,10 +2316,30 @@ body {
 
 [data-theme="dark"] .ant-input,
 [data-theme="dark"] .ant-input-affix-wrapper,
-[data-theme="dark"] .ant-select-selector {
+[data-theme="dark"] .ant-select-selector,
+[data-theme="dark"] .ant-input-textarea {
   background: var(--color-bg-secondary);
   border-color: var(--color-border);
   color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .ant-input-textarea textarea {
+  background: var(--color-bg-secondary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme="dark"] .ant-input-textarea textarea::placeholder {
+  color: var(--color-text-tertiary) !important;
+}
+
+/* 深色模式下的验证错误状态 */
+[data-theme="dark"] .ant-form-item-has-error .ant-input,
+[data-theme="dark"] .ant-form-item-has-error .ant-input-affix-wrapper,
+[data-theme="dark"] .ant-form-item-has-error .ant-input-textarea,
+[data-theme="dark"] .ant-form-item-has-error .ant-input-textarea textarea {
+  background: var(--color-bg-secondary) !important;
+  border-color: #ff4d4f !important;
+  color: var(--color-text-primary) !important;
 }
 
 [data-theme="dark"] .ant-input:hover,
