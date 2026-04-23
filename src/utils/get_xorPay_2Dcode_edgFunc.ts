@@ -1,4 +1,5 @@
 // supabase/functions/proxy_for_xorpay/index.ts
+// 转发请求到 XorPay，请求XorPay返回支付二维码
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 
 serve(async (req) => {
