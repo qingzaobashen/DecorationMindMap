@@ -6,6 +6,28 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+/**
+ * CORS 响应头
+ */
+const getCorsHeaders = () => ({
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+});
+
+/**
+ * 创建带 CORS 头的响应
+ */
+const corsResponse = (data: any, status: number = 200) => {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      'Content-Type': 'application/json',
+      ...getCorsHeaders()
+    }
+  });
+};
+
 const CONTRACT_AUDIT_PROMPT = `你是一个专业的合同审计 AI。请仔细分析上传的合同图片（共 {imageCount} 张），进行以下审计：
 
 1. **合同基本信息识别**
@@ -50,24 +72,15 @@ const CONTRACT_AUDIT_PROMPT = `你是一个专业的合同审计 AI。请仔细�
 serve(async (req) => {
   console.log('收到合同审计请求:', req.method);
 
+  // 处理 CORS 预检请求
   if (req.method === 'OPTIONS') {
-    return new Response(null, {
-      status: 204,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-      }
-    });
+    return corsResponse(null, 204);
   }
 
   try {
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: '缺少授权头' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return corsResponse({ error: '缺少授权头' }, 401);
     }
 
     const token = authHeader.replace('Bearer ', '');
@@ -82,10 +95,7 @@ serve(async (req) => {
 
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     if (userError || !user) {
-      return new Response(JSON.stringify({ error: '无效的授权令牌' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return corsResponse({ error: '无效的授权令牌' }, 401);
     }
 
     let body;
@@ -111,17 +121,11 @@ serve(async (req) => {
     const MAX_IMAGE_COUNT = 8;
 
     if (imageArray.length === 0) {
-      return new Response(JSON.stringify({ error: '缺少合同图片' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return corsResponse({ error: '缺少合同图片' }, 400);
     }
 
     if (imageArray.length > MAX_IMAGE_COUNT) {
-      return new Response(JSON.stringify({ error: `图片数量不能超过 ${MAX_IMAGE_COUNT} 张` }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return corsResponse({ error: `图片数量不能超过 ${MAX_IMAGE_COUNT} 张` }, 400);
     }
 
     console.log('审计请求数据:', {
@@ -161,12 +165,7 @@ serve(async (req) => {
         ]
       };
 
-      return new Response(JSON.stringify({
-        success: true,
-        data: mockResult
-      }), {
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return corsResponse({ success: true, data: mockResult });
     }
 
     // 构建 AI 请求内容 - 多图支持
@@ -265,21 +264,13 @@ serve(async (req) => {
       // 不影响返回结果
     }
 
-    return new Response(JSON.stringify({
-      success: true,
-      data: auditResult
-    }), {
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return corsResponse({ success: true, data: auditResult });
 
   } catch (error) {
     console.error('合同审计失败:', error);
-    return new Response(JSON.stringify({
+    return corsResponse({
       success: false,
       message: error.message || '合同审计失败，请稍后再试'
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    }, 500);
   }
 });

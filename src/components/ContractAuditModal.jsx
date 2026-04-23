@@ -15,7 +15,7 @@ const { Dragger } = Upload;
  * 合同审计配置
  */
 const CONTRACT_AUDIT_CONFIG = {
-  edgeFunctionUrl: 'https://uwgvflkueracnwgwdwpe.supabase.co/functions/v1/contract-audit',
+  edgeFunctionUrl: 'https://uwgvflkueracnwgwdwpe.supabase.co/functions/v1/contractAudit_edgFunc',
   maxImageCount: 8
 };
 
