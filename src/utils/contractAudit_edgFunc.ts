@@ -19,6 +19,13 @@ const getCorsHeaders = () => ({
  * 创建带 CORS 头的响应
  */
 const corsResponse = (data: any, status: number = 200) => {
+  // 204 No Content 不应该有 body
+  if (status === 204) {
+    return new Response(null, {
+      status: 204,
+      headers: getCorsHeaders()
+    });
+  }
   return new Response(JSON.stringify(data), {
     status,
     headers: {
