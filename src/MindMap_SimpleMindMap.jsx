@@ -75,9 +75,14 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
       console.warn(`未找到工具配置: ${toolId}`);
       return;
     }
+    // 合同审计工具需要 VIP 权限
+    if (toolId === 'DecorationContractAuditTool' && !isPremium) {
+      setShowUpgradeModal(true);
+      return;
+    }
     setActiveToolNodeData(nodeData);
     setActiveTool(toolId);
-  }, []);
+  }, [isPremium]);
 
   /**
    * 关闭工具弹窗
@@ -418,7 +423,7 @@ const MindMap_SimpleMindMap = ({ data, onNodeClick, onMindMapLoad }) => {
           </Button>,
         ]}
       >
-        <p><LockOutlined /> 此下载功能为VIP用户专享，升级后即可使用。</p>
+        <p><LockOutlined /> 此功能为VIP用户专享，升级后即可使用。</p>
         <p>当前用户: {username || '未登录'}</p>
       </Modal>
       {activeTool === 'DecorationContractAuditTool' && (
