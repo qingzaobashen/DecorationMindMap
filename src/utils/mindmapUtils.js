@@ -113,6 +113,8 @@ export const convertMarkdownToMindMap = (markdown) => {
 export const convertObjectToMindMap = (obj) => {
     if (!obj) return null;
 
+
+
     const mapNode = (node) => {
         // 限制文字长度的辅助函数
         const limitTextLength = (text, maxLength = 100) => {
@@ -140,7 +142,11 @@ export const convertObjectToMindMap = (obj) => {
                 // 将字符串格式的数组解析为真正的数组
                 img_url: Array.isArray(node.img_url) ? node.img_url : (node.img_url ? JSON.parse(node.img_url.replace(/'/g, '"')) : []),
                 // 使用原始数据中的 is_expand 字段控制节点展开/收起状态
-                expand: node.is_expand || false
+                expand: node.is_expand || false,
+                // 添加工具图标（simple-mind-map 原生支持）
+                // icon 字段是一个数组，包含要显示的图标名称
+                icon: node.tool ? ["tool_" + node.tool] : null,
+                tool: node.tool || null
             },
             children: (node.children || []).map(mapNode)
         };
