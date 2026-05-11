@@ -466,7 +466,7 @@ export const UserProvider = ({ children }) => {
       const { data, error } = await supabase.auth.updateUser({
         data: { 
           isPremium: true,
-          premium_expires_at: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString() // 默认为120天有效期
+          premium_expires_at: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString() // 默认为180天有效期
         }
       });
       

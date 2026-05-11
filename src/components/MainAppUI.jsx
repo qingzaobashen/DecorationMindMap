@@ -198,7 +198,7 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
       // 构建支付参数
       const paymentParams = {
         name: paymentType === 'vip' ? 'VIP升级' : '单篇文章购买',
-        price: paymentType === 'vip' ? '15.00' : '3.00', // 单位：元
+        price: paymentType === 'vip' ? '28.60' : '3.00', // 单位：元
         order_id: orderId,
         user_id: userId,
         pay_type: 'alipay' // 默认使用支付宝
@@ -524,12 +524,12 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
               <div className="error-message">生成二维码失败</div>
             )}
           </div>
-          <p className="payment-amount">支付金额：{paymentType === 'vip' ? "¥15.00" : "¥3.00"}</p>
+          <p className="payment-amount">支付金额：{paymentType === 'vip' ? "¥28.60（原¥50）" : "¥3.00"}</p>
           <p className="payment-note">
             {paymentType === 'vip' ? "支付成功后，点击'支付完成'按钮完成VIP升级" : "支付成功后，点击'支付完成'按钮查看完整文章"}
           </p>
           <p className="payment-note">
-            {paymentType === 'vip' ? "VIP有效期限时延长至“120天”（原90天）（暂不支持退款）" : ""}
+            {paymentType === 'vip' ? "VIP有效期“180天”（限时特惠）（暂不支持退款）" : ""}
           </p>
         </div>
       </Modal>
