@@ -174,7 +174,7 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
 
   const { isAuthenticated: userIsAuthenticated, isPremium: userIsPremium, upgradeToPremium, completeUpgradeToPremium,
      purchaseArticle, completePurchaseArticle, paymentModalVisible, closePaymentModal,
-     paymentType, hasPurchasedArticle, currentAoid } = useUser();
+     paymentType, vipPlan, setVipPlan, hasPurchasedArticle, currentAoid } = useUser();
   const { setAoid } = useUser();  // 获取用户的当前订单号和设置订单号的函数
   // 生成支付二维码
   const generatePaymentQRCode = async () => {
@@ -196,9 +196,10 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
       const orderId = generateOrderNo();
       
       // 构建支付参数
+      const vipPrice = vipPlan === 'quarter' ? '17.00' : '28.60';
       const paymentParams = {
         name: paymentType === 'vip' ? 'VIP升级' : '单篇文章购买',
-        price: paymentType === 'vip' ? '28.60' : '3.00', // 单位：元
+        price: paymentType === 'vip' ? vipPrice : '3.00', // 单位：元
         order_id: orderId,
         user_id: userId,
         pay_type: 'alipay' // 默认使用支付宝
@@ -233,7 +234,7 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
       setPaymentQRCode(null);
       setPaymentPolling(false); // 停止轮询
     }
-  }, [paymentModalVisible, paymentType]);
+  }, [paymentModalVisible, paymentType, vipPlan]);
 
   // 轮询检测支付状态
   useEffect(() => {
@@ -505,11 +506,35 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
             支付已完成
           </Button>
         ]}
-        width={360}
+        width={paymentType === 'vip' ? 520 : 360}
         centered
         zIndex={2000}
       >
         <div className="payment-modal-content">
+          {paymentType === 'vip' && (
+            <div className="vip-plan-selector">
+              <div
+                className={`vip-plan-card ${vipPlan === 'quarter' ? 'vip-plan-active' : ''}`}
+                onClick={() => setVipPlan('quarter')}
+              >
+                <div className="vip-plan-badge">推荐</div>
+                <div className="vip-plan-name">季度会员</div>
+                <div className="vip-plan-price">¥17</div>
+                <div className="vip-plan-original">原价¥25</div>
+                <div className="vip-plan-duration">90天</div>
+              </div>
+              <div
+                className={`vip-plan-card ${vipPlan === 'halfyear' ? 'vip-plan-active' : ''}`}
+                onClick={() => setVipPlan('halfyear')}
+              >
+                <div className="vip-plan-badge vip-plan-badge-hot">超值</div>
+                <div className="vip-plan-name">半年会员</div>
+                <div className="vip-plan-price">¥28.6</div>
+                <div className="vip-plan-original">原价¥50</div>
+                <div className="vip-plan-duration">180天</div>
+              </div>
+            </div>
+          )}
           <p className="payment-description">请使用支付宝扫描下方二维码支付</p>
           <div className="qr-code-container">
             {paymentLoading ? (
@@ -524,12 +549,19 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
               <div className="error-message">生成二维码失败</div>
             )}
           </div>
-          <p className="payment-amount">支付金额：{paymentType === 'vip' ? "¥28.60（原¥50）" : "¥3.00"}</p>
+          <p className="payment-amount">
+            支付金额：
+            {paymentType === 'vip'
+              ? (vipPlan === 'quarter' ? '¥17.00' : '¥28.60')
+              : '¥3.00'}
+          </p>
           <p className="payment-note">
             {paymentType === 'vip' ? "支付成功后，点击'支付完成'按钮完成VIP升级" : "支付成功后，点击'支付完成'按钮查看完整文章"}
           </p>
           <p className="payment-note">
-            {paymentType === 'vip' ? "VIP有效期“180天”（限时特惠）（暂不支持退款）" : ""}
+            {paymentType === 'vip'
+              ? `VIP有效期"${vipPlan === 'quarter' ? '90' : '180'}天"（限时特惠）（暂不支持退款）`
+              : ""}
           </p>
         </div>
       </Modal>

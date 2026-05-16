@@ -49,6 +49,88 @@ body {
   padding: 20px 0;
 }
 
+/* VIP 套餐选择器 */
+.vip-plan-selector {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.vip-plan-card {
+  position: relative;
+  flex: 1;
+  max-width: 200px;
+  padding: 16px 12px 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  background: #fafafa;
+}
+
+.vip-plan-card:hover {
+  border-color: #1890ff;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.15);
+}
+
+.vip-plan-active {
+  border-color: #1890ff;
+  background: #e6f7ff;
+  box-shadow: 0 2px 12px rgba(24, 144, 255, 0.25);
+}
+
+.vip-plan-badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1890ff;
+  color: #fff;
+  font-size: 11px;
+  padding: 2px 10px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.vip-plan-badge-hot {
+  background: #ff4d4f;
+}
+
+.vip-plan-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+  margin-top: 4px;
+}
+
+.vip-plan-price {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ff4d4f;
+  margin-bottom: 4px;
+}
+
+.vip-plan-original {
+  font-size: 12px;
+  color: #999;
+  text-decoration: line-through;
+  margin-bottom: 2px;
+}
+
+.vip-plan-duration {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.vip-plan-daily {
+  font-size: 11px;
+  color: #999;
+}
+
 .payment-description {
   margin-bottom: 20px;
   font-size: 14px;
@@ -2259,6 +2341,36 @@ body {
 /* 深色模式支付弹窗内容样式 */
 [data-theme="dark"] .payment-modal-content {
   color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .vip-plan-card {
+  background: #1f1f1f;
+  border-color: #444;
+}
+
+[data-theme="dark"] .vip-plan-card:hover {
+  border-color: #1890ff;
+}
+
+[data-theme="dark"] .vip-plan-active {
+  background: #111d2c;
+  border-color: #1890ff;
+}
+
+[data-theme="dark"] .vip-plan-name {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .vip-plan-duration {
+  color: #aaa;
+}
+
+[data-theme="dark"] .vip-plan-daily {
+  color: #888;
+}
+
+[data-theme="dark"] .vip-plan-original {
+  color: #777;
 }
 
 [data-theme="dark"] .payment-description {
