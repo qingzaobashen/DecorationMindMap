@@ -196,7 +196,7 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
       const orderId = generateOrderNo();
       
       // 构建支付参数
-      const vipPrice = vipPlan === 'quarter' ? '17.00' : '28.60';
+      const vipPrice = vipPlan === 'quadmonth' ? '15.00' : '30.00';
       const paymentParams = {
         name: paymentType === 'vip' ? 'VIP升级' : '单篇文章购买',
         price: paymentType === 'vip' ? vipPrice : '3.00', // 单位：元
@@ -514,24 +514,24 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
           {paymentType === 'vip' && (
             <div className="vip-plan-selector">
               <div
-                className={`vip-plan-card ${vipPlan === 'quarter' ? 'vip-plan-active' : ''}`}
-                onClick={() => setVipPlan('quarter')}
+                className={`vip-plan-card ${vipPlan === 'quadmonth' ? 'vip-plan-active' : ''}`}
+                onClick={() => setVipPlan('quadmonth')}
               >
                 <div className="vip-plan-badge">推荐</div>
-                <div className="vip-plan-name">季度会员</div>
-                <div className="vip-plan-price">¥17</div>
-                <div className="vip-plan-original">原价¥25</div>
-                <div className="vip-plan-duration">90天</div>
+                <div className="vip-plan-name">四月会员</div>
+                <div className="vip-plan-price">¥15</div>
+                <div className="vip-plan-duration">120天</div>
+                <div className="vip-plan-daily">注：装修周期一般四个月以内</div>
               </div>
               <div
-                className={`vip-plan-card ${vipPlan === 'halfyear' ? 'vip-plan-active' : ''}`}
-                onClick={() => setVipPlan('halfyear')}
+                className={`vip-plan-card ${vipPlan === 'yearly' ? 'vip-plan-active' : ''}`}
+                onClick={() => setVipPlan('yearly')}
               >
                 <div className="vip-plan-badge vip-plan-badge-hot">超值</div>
-                <div className="vip-plan-name">半年会员</div>
-                <div className="vip-plan-price">¥28.6</div>
+                <div className="vip-plan-name">年度会员</div>
+                <div className="vip-plan-price">¥30</div>
                 <div className="vip-plan-original">原价¥50</div>
-                <div className="vip-plan-duration">180天</div>
+                <div className="vip-plan-duration">360天</div>
               </div>
             </div>
           )}
@@ -552,7 +552,7 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
           <p className="payment-amount">
             支付金额：
             {paymentType === 'vip'
-              ? (vipPlan === 'quarter' ? '¥17.00' : '¥28.60')
+              ? (vipPlan === 'quadmonth' ? '¥15.00' : '¥30.00')
               : '¥3.00'}
           </p>
           <p className="payment-note">
@@ -560,7 +560,7 @@ function MainAppUI({ isAuthenticated, isPremium, logout, showLogin })
           </p>
           <p className="payment-note">
             {paymentType === 'vip'
-              ? `VIP有效期"${vipPlan === 'quarter' ? '90' : '180'}天"（限时特惠）（暂不支持退款）`
+              ? `VIP有效期"${vipPlan === 'quadmonth' ? '120' : '360'}天"（限时特惠）（暂不支持退款）`
               : ""}
           </p>
         </div>

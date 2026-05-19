@@ -14,7 +14,7 @@ export const UserProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [paymentModalVisible, setPaymentModalVisible] = useState(false);
   const [paymentType, setPaymentType] = useState(null); // null, 'vip' or 'article'
-  const [vipPlan, setVipPlan] = useState('quarter'); // 'quarter' 季度套餐, 'halfyear' 半年套餐
+  const [vipPlan, setVipPlan] = useState('quadmonth'); // 'quadmonth' 4个月套餐, 'yearly' 年度套餐
   const [currentArticleId, setCurrentArticleId] = useState(null); // 当前正在付费的文章ID
   const [purchasedArticles, setPurchasedArticles] = useState([]); // 用户已购买的文章列表
   const [isEmailVerified, setIsEmailVerified] = useState(false); // 邮箱验证状态
@@ -464,7 +464,7 @@ export const UserProvider = ({ children }) => {
       }
       
       // 根据套餐设置有效期天数
-      const planDays = vipPlan === 'quarter' ? 90 : 180;
+      const planDays = vipPlan === 'quadmonth' ? 120 : 360;
       
       // 2. 更新Supabase用户的元数据，标记为VIP用户
       const { data, error } = await supabase.auth.updateUser({

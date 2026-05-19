@@ -293,8 +293,8 @@ const WelcomePage = ({ showLogin }) => {
             <div className="premium-price-section">
               <div className="premium-price">
                 <span className="price-label">VIP会员</span>
-                <span className="price-value">¥28.60（原¥50）</span>
-                <span className="price-unit">/180天</span>
+                <span className="price-value">¥15.0（原¥25）</span>
+                <span className="price-unit">/120天</span>
               </div>
               <div className="premium-features-summary">
                 <span className="summary-item">✓ 全面</span>
