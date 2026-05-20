@@ -83,6 +83,20 @@ BEGIN
   END IF;
 END$$;
 
+-- GRANT permissions for payments table
+GRANT SELECT ON public.payments TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.payments TO service_role;
+
+-- Enable RLS for payments
+ALTER TABLE public.payments ENABLE ROW LEVEL SECURITY;
+
+-- RLS policies for payments
+CREATE POLICY "Users can view their own payments"
+ON public.payments
+FOR SELECT
+TO authenticated
+USING (user_id = auth.uid());
+
 -- Webhook events table for failed writes / retries
 CREATE TABLE IF NOT EXISTS public.webhook_events (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -110,6 +124,9 @@ END$$;
 -- Indexes for webhook_events
 CREATE INDEX IF NOT EXISTS idx_webhook_events_provider ON public.webhook_events (provider);
 CREATE INDEX IF NOT EXISTS idx_webhook_events_next_retry_at ON public.webhook_events (next_retry_at);
+
+-- GRANT permissions for webhook_events table (service_role only, used by backend)
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.webhook_events TO service_role;
 
 -- feedbacks 表：存储用户反馈
 CREATE TABLE IF NOT EXISTS public.feedbacks (
@@ -153,6 +170,10 @@ CREATE INDEX IF NOT EXISTS idx_feedbacks_feedback_type ON public.feedbacks (feed
 CREATE INDEX IF NOT EXISTS idx_feedbacks_created_at ON public.feedbacks (created_at DESC);
 
 -- 配置feedback表的RLS策略
+-- GRANT permissions for feedbacks table
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.feedbacks TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.feedbacks TO service_role;
+
 ALTER TABLE public.feedbacks ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Authenticated users can select their feedbacks"
