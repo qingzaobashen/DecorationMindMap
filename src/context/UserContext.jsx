@@ -1,7 +1,8 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext, useRef } from 'react';
 import { message } from 'antd';
 // 导入共享的Supabase客户端实例
 import supabase from '../utils/supabase';
+import { registerSession, removeSession, heartbeat, cleanExpiredSessions, MAX_DEVICES } from '../utils/sessionManager';
 
 // 创建上下文
 export const UserContext = createContext();
@@ -21,6 +22,7 @@ export const UserProvider = ({ children }) => {
   const [currentAoid, setCurrentAoid] = useState(null); // XorPay平台返回的订单号
   const [visitCount, setVisitCount] = useState(0); // 访问次数
   const [lastVisit, setLastVisit] = useState(null); // 上次访问时间
+  const heartbeatRef = useRef(null); // 心跳定时器引用
 
   // 检查会员是否到期
   const checkPremiumExpiration = async (user) => {
@@ -106,6 +108,14 @@ export const UserProvider = ({ children }) => {
       } else {
         localStorage.removeItem('premiumExpiresAt');
       }
+
+      // 注册当前设备会话并启动心跳
+      registerSession(user.id).then(result => {
+        if (!result.success) {
+          console.warn('会话注册失败:', result.message);
+        }
+      });
+      startHeartbeat(user.id);
     } else {
       setIsAuthenticated(false);
       setUsername('');
@@ -203,6 +213,7 @@ export const UserProvider = ({ children }) => {
       //console.log('认证状态变化:', event, session);
       // 增强认证状态验证
       if (event === 'SIGNED_OUT' || !session?.user) {
+        stopHeartbeat();
         updateUserState(null);
       } else {
         updateUserState(session.user);
@@ -210,6 +221,7 @@ export const UserProvider = ({ children }) => {
     });
     
     return () => {
+      stopHeartbeat();
       authListener?.subscription.unsubscribe();
     };
   }, []);
@@ -296,11 +308,34 @@ export const UserProvider = ({ children }) => {
     console.log('Login function called - state handled by onAuthStateChange');
   };
 
-  // 注销处理
+  // 启动心跳定时器，定期更新会话活跃时间
+  const startHeartbeat = (userId) => {
+    stopHeartbeat();
+    heartbeatRef.current = setInterval(async () => {
+      await heartbeat(userId);
+      await cleanExpiredSessions(userId);
+    }, 5 * 60 * 1000);
+  };
+
+  // 停止心跳定时器
+  const stopHeartbeat = () => {
+    if (heartbeatRef.current) {
+      clearInterval(heartbeatRef.current);
+      heartbeatRef.current = null;
+    }
+  };
+
+  // 注销处理 - 仅登出当前设备，不影响其他设备的会话
   const logout = async () => {
     try {
-      // 调用Supabase的登出接口
-      await supabase.auth.signOut();
+      // 获取当前用户ID用于清理会话
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await removeSession(user.id);
+      }
+      stopHeartbeat();
+      // scope: 'local' 仅清除当前设备的会话，其他设备不受影响
+      await supabase.auth.signOut({ scope: 'local' });
       // 状态更新由onAuthStateChange自动处理
       message.info('您已退出登录');
     } catch (error) {

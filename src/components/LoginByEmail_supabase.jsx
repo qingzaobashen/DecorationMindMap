@@ -73,7 +73,8 @@ export default function LoginBySupabase({ onSuccess }) {
     };
 
     const handleLogout = async () => {
-        await supabase.auth.signOut();
+        // scope: 'local' 仅登出当前设备，不影响其他设备的会话
+        await supabase.auth.signOut({ scope: 'local' });
         setSession(null);
     };
 

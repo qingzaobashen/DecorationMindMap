@@ -200,3 +200,51 @@ ON public.feedbacks
 FOR DELETE
 TO authenticated
 USING (user_id = (SELECT auth.uid()));
+
+-- user_sessions 表：跟踪用户多设备会话，限制最多5台设备同时在线
+CREATE TABLE IF NOT EXISTS public.user_sessions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  device_id text NOT NULL,
+  device_info text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  last_active_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE(user_id, device_id)
+);
+
+-- GRANT permissions for user_sessions table
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.user_sessions TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.user_sessions TO service_role;
+
+-- Enable RLS for user_sessions
+ALTER TABLE public.user_sessions ENABLE ROW LEVEL SECURITY;
+
+-- RLS policies for user_sessions
+CREATE POLICY "Users can view their own sessions"
+ON public.user_sessions
+FOR SELECT
+TO authenticated
+USING (user_id = auth.uid());
+
+CREATE POLICY "Users can insert their own sessions"
+ON public.user_sessions
+FOR INSERT
+TO authenticated
+WITH CHECK (user_id = auth.uid());
+
+CREATE POLICY "Users can update their own sessions"
+ON public.user_sessions
+FOR UPDATE
+TO authenticated
+USING (user_id = auth.uid())
+WITH CHECK (user_id = auth.uid());
+
+CREATE POLICY "Users can delete their own sessions"
+ON public.user_sessions
+FOR DELETE
+TO authenticated
+USING (user_id = auth.uid());
+
+-- 索引：用于查询用户会话和清理过期会话
+CREATE INDEX IF NOT EXISTS idx_user_sessions_user_id ON public.user_sessions (user_id);
+CREATE INDEX IF NOT EXISTS idx_user_sessions_last_active_at ON public.user_sessions (last_active_at);
