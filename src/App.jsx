@@ -24,6 +24,11 @@ const CommunityPage = lazy(() => import('./components/Community/CommunityPage'))
 const PostDetailPage = lazy(() => import('./components/Community/PostDetailPage'));
 const NotFoundPage = lazy(() => import('./components/NotFoundPage'));
 const MainAppUI = lazy(() => import('./components/MainAppUI'));
+// 法律与合规页面
+const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
+const AboutUs = lazy(() => import('./components/AboutUs'));
+const ContactUs = lazy(() => import('./components/ContactUs'));
+const TermsOfService = lazy(() => import('./components/TermsOfService'));
 
 export default function App() {
   const navigate = useNavigate();
@@ -69,6 +74,38 @@ export default function App() {
           keywords: '装修文档,装修指南,装修流程,材料选购,施工标准',
           url: currentUrl,
           type: 'article'
+        };
+      case '/privacy':
+        return {
+          title: '隐私政策 - 装修知识思维导图',
+          description: '装修知识思维导图的隐私政策，详细说明我们如何收集、使用和保护您的个人信息，包括Google AdSense和Google Analytics相关说明。',
+          keywords: '隐私政策,数据保护,个人信息',
+          url: currentUrl,
+          type: 'website'
+        };
+      case '/about':
+        return {
+          title: '关于我们 - 装修知识思维导图',
+          description: '了解装修知识思维导图 - 致力于为装修业主提供专业、系统、可视化的装修知识平台。',
+          keywords: '关于我们,装修知识,装修平台介绍',
+          url: currentUrl,
+          type: 'website'
+        };
+      case '/contact':
+        return {
+          title: '联系我们 - 装修知识思维导图',
+          description: '如有任何问题、建议或合作意向，欢迎联系我们。我们会在1-3个工作日内回复您的留言。',
+          keywords: '联系我们,问题反馈,合作咨询',
+          url: currentUrl,
+          type: 'website'
+        };
+      case '/terms':
+        return {
+          title: '使用条款 - 装修知识思维导图',
+          description: '装修知识思维导图的使用条款，明确用户使用本站的权利与义务。',
+          keywords: '使用条款,用户协议,免责声明',
+          url: currentUrl,
+          type: 'website'
         };
       default:
         if (location.pathname.startsWith('/forum/post/')) {
@@ -244,6 +281,11 @@ export default function App() {
               <Route path="/forum" element={<CommunityPage />} />
               <Route path="/forum/post/:postId" element={<PostDetailPage />} />
             </Route>
+            {/* 法律与合规页面 - 无需登录即可访问 */}
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/contact" element={<ContactUs />} />
+            <Route path="/terms" element={<TermsOfService />} />
             <Route path="*" element={<NotFoundPage />} /> {/* 捕获所有未匹配的路由并显示404页面 */}
           </Routes>
 

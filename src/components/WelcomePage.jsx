@@ -5,7 +5,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Row, Col, Typography, Divider, Space, message } from 'antd';
+import { Button, Card, Row, Col, Typography, Divider, Space } from 'antd';
 import { UserOutlined, FileTextOutlined, GlobalOutlined, CrownOutlined, InfoCircleOutlined, ArrowRightOutlined, ThunderboltOutlined, SafetyOutlined, RocketOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
@@ -35,33 +35,6 @@ const WelcomePage = ({ showLogin }) => {
     if (showLogin) {
       showLogin();
     }
-  };
-
-  /**
-   * 处理演示模式登录
-   * @param {string} path - 导航路径
-   */
-  const handleDemoLogin = (path) => {
-    login({
-      token: 'demo_token',
-      username: 'demo',
-      isPremium: false
-    });
-    message.success('演示模式登录成功！');
-    navigate(path || '/');
-  };
-
-  /**
-   * 处理VIP演示模式登录
-   */
-  const handlePremiumDemoLogin = () => {
-    login({
-      token: 'premium_demo_token',
-      username: 'premium_demo',
-      isPremium: true
-    });
-    message.success('VIP演示模式登录成功！');
-    navigate('/');
   };
 
   return (
@@ -309,6 +282,55 @@ const WelcomePage = ({ showLogin }) => {
       {/* 页脚 */}
       <footer className="welcome-footer">
         <Divider />
+        {/* 法律与合规链接 */}
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          gap: '24px',
+          marginBottom: '16px'
+        }}>
+          <a onClick={() => navigate('/privacy')} style={{
+            color: '#666',
+            fontSize: '0.9rem',
+            cursor: 'pointer',
+            textDecoration: 'none',
+            transition: 'color 0.2s'
+          }} onMouseEnter={(e) => e.target.style.color = '#1890ff'}
+             onMouseLeave={(e) => e.target.style.color = '#666'}>
+            隐私政策
+          </a>
+          <a onClick={() => navigate('/terms')} style={{
+            color: '#666',
+            fontSize: '0.9rem',
+            cursor: 'pointer',
+            textDecoration: 'none',
+            transition: 'color 0.2s'
+          }} onMouseEnter={(e) => e.target.style.color = '#1890ff'}
+             onMouseLeave={(e) => e.target.style.color = '#666'}>
+            使用条款
+          </a>
+          <a onClick={() => navigate('/about')} style={{
+            color: '#666',
+            fontSize: '0.9rem',
+            cursor: 'pointer',
+            textDecoration: 'none',
+            transition: 'color 0.2s'
+          }} onMouseEnter={(e) => e.target.style.color = '#1890ff'}
+             onMouseLeave={(e) => e.target.style.color = '#666'}>
+            关于我们
+          </a>
+          <a onClick={() => navigate('/contact')} style={{
+            color: '#666',
+            fontSize: '0.9rem',
+            cursor: 'pointer',
+            textDecoration: 'none',
+            transition: 'color 0.2s'
+          }} onMouseEnter={(e) => e.target.style.color = '#1890ff'}
+             onMouseLeave={(e) => e.target.style.color = '#666'}>
+            联系我们
+          </a>
+        </div>
         <Paragraph className="footer-text">
           © 2026 装修思维导图系统 - 让装修更简单！
         </Paragraph>

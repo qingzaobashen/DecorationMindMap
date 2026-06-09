@@ -203,7 +203,7 @@ function DocsLayout() {
         {/* 主题切换按钮 */}
         <div className="theme-toggle-container" style={{
           position: 'fixed',
-          top: isMobile ? '2px' : '15px',
+          top: isMobile ? '2px' : '10px',
           right: isMobile ? '5px' : '20px',
           zIndex: 1001,
         }}>
@@ -251,6 +251,70 @@ function DocsLayout() {
             <LoginBySupabaseUsername onSuccess={handleLoginSuccess} />
           </Suspense>
         </Modal>
+        {/* 底部页脚 - 法律与合规链接 */}
+        <footer style={{
+          padding: '24px 20px',
+          textAlign: 'center',
+          borderTop: '1px solid var(--color-border, #e8e8e8)',
+          marginTop: 'auto',
+          backgroundColor: 'var(--color-bg-primary, #fafafa)'
+        }}>
+          <div style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            gap: '16px',
+            marginBottom: '8px'
+          }}>
+            <a onClick={() => navigate('/privacy')} style={{
+              color: 'var(--color-text-secondary, #666)',
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              textDecoration: 'none',
+              transition: 'color 0.2s'
+            }} onMouseEnter={(e) => e.target.style.color = 'var(--color-primary, #1890ff)'}
+               onMouseLeave={(e) => e.target.style.color = 'var(--color-text-secondary, #666)'}>
+              隐私政策
+            </a>
+            <a onClick={() => navigate('/terms')} style={{
+              color: 'var(--color-text-secondary, #666)',
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              textDecoration: 'none',
+              transition: 'color 0.2s'
+            }} onMouseEnter={(e) => e.target.style.color = 'var(--color-primary, #1890ff)'}
+               onMouseLeave={(e) => e.target.style.color = 'var(--color-text-secondary, #666)'}>
+              使用条款
+            </a>
+            <a onClick={() => navigate('/about')} style={{
+              color: 'var(--color-text-secondary, #666)',
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              textDecoration: 'none',
+              transition: 'color 0.2s'
+            }} onMouseEnter={(e) => e.target.style.color = 'var(--color-primary, #1890ff)'}
+               onMouseLeave={(e) => e.target.style.color = 'var(--color-text-secondary, #666)'}>
+              关于我们
+            </a>
+            <a onClick={() => navigate('/contact')} style={{
+              color: 'var(--color-text-secondary, #666)',
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              textDecoration: 'none',
+              transition: 'color 0.2s'
+            }} onMouseEnter={(e) => e.target.style.color = 'var(--color-primary, #1890ff)'}
+               onMouseLeave={(e) => e.target.style.color = 'var(--color-text-secondary, #666)'}>
+              联系我们
+            </a>
+          </div>
+          <p style={{
+            margin: 0,
+            fontSize: '0.8rem',
+            color: 'var(--color-text-tertiary, #999)'
+          }}>
+            &copy; {new Date().getFullYear()} qingzao.site 装修知识思维导图 版权所有
+          </p>
+        </footer>
       </div>
     </>
   );
