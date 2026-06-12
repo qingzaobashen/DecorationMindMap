@@ -1,36 +1,94 @@
 /**
  * 联系我们页面组件
  * 提供有效的联系方式（邮箱、在线表单），符合Google AdSense审核要求
+ * 提交逻辑复用 FeedbackModal 的 Edge Function 提交路径
  */
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Button, Input, message } from 'antd';
 import { MailOutlined, EnvironmentOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import axios from 'axios';
+import supabase from '../utils/supabase';
+import { useUser } from '../context/UserContext';
 
 const { TextArea } = Input;
 
+// 反馈提交 Edge Function 地址（与 FeedbackModal 保持一致，复用同一条提交路径）
+const FEEDBACK_EDGE_FUNCTION_URL = 'https://uwgvflkueracnwgwdwpe.supabase.co/functions/v1/feedback';
+
 const ContactUs = () => {
+  const { isAuthenticated } = useUser();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
   const [content, setContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    if (!name.trim() || !email.trim() || !content.trim()) {
-      message.warning('请填写姓名、邮箱和留言内容');
+  /**
+   * 提交留言处理函数
+   * 复用 FeedbackModal 的 Edge Function 提交路径：
+   *   - name + email → contact
+   *   - subject + content → content
+   *   - feedbackType 固定为 "其他"
+   * 未登录用户需先登录后才能提交（与 FeedbackModal 行为一致）
+   */
+  const handleSubmit = async () => {
+    // Edge Function 强制要求登录态，复用 FeedbackModal 同样的鉴权要求
+    if (!isAuthenticated) {
+      window.confirm('提交留言需要先登录账号');
       return;
     }
+
     setSubmitting(true);
-    // 模拟提交
-    setTimeout(() => {
-      message.success('感谢您的留言，我们会尽快回复！');
-      setName('');
-      setEmail('');
-      setSubject('');
-      setContent('');
+    try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) {
+        throw new Error('无法获取 session: ' + sessionError.message);
+      }
+      const accessToken = session?.access_token;
+      if (!accessToken) {
+        window.confirm('登录状态已失效，请重新登录后再提交');
+        setSubmitting(false);
+        return;
+      }
+
+      // 复用 FeedbackModal 的 Edge Function 提交路径
+      const response = await axios.post(
+        FEEDBACK_EDGE_FUNCTION_URL,
+        {
+          feedbackType: '其他',
+          content: subject.trim()
+            ? `[${subject.trim()}] ${content.trim()}`
+            : content.trim(),
+          contact: `${name.trim()} (${email.trim()})`,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (response.data?.success) {
+        window.confirm('感谢您的留言，我们会尽快回复！');
+        setName('');
+        setEmail('');
+        setSubject('');
+        setContent('');
+      } else {
+        window.confirm(response.data?.message || '提交失败，请稍后再试。');
+      }
+    } catch (error) {
+      console.error('提交留言失败:', error);
+      if (error.response?.status === 401) {
+        window.confirm('登录已过期，请重新登录后再提交');
+      } else {
+        window.confirm('提交留言失败，请检查网络或稍后再试。');
+      }
+    } finally {
       setSubmitting(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -106,10 +164,10 @@ const ContactUs = () => {
         <div style={{ maxWidth: '600px' }}>
           <div style={{ marginBottom: '16px' }}>
             <label style={{ display: 'block', marginBottom: '6px', fontWeight: 500 }}>
-              姓名 <span style={{ color: 'red' }}>*</span>
+              姓名 <span style={{ color: 'red' }}></span>
             </label>
             <Input
-              placeholder="请输入您的姓名"
+              placeholder="请输入您的姓名（选填）"
               value={name}
               onChange={(e) => setName(e.target.value)}
               maxLength={50}

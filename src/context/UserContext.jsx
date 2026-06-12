@@ -148,16 +148,42 @@ export const UserProvider = ({ children }) => {
         }
       }
       
-      // 检查是否是密码重置场景（URL hash 中有 type=recovery）
-      // 注：这段逻辑检查不出来是否是密码重置场景，得改
-      const isPasswordResetFlow = window.location.hash.includes('type=recovery');
+      // 解析 URL hash 中的 Supabase 认证回调参数
+      // 涵盖所有 Supabase 邮件/链接流程：密码重置、邮箱确认、邀请注册、
+      // magic link 登录、邮箱变更、各种错误回调（OTP 过期、链接过期、access_denied 等）
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const supabaseAuthType = hashParams.get('type');           // recovery | signup | invite | magiclink | email_change 等
+      const errorCode = hashParams.get('error_code');            // otp_expired | access_denied | link_expired 等
+      const errorDescription = hashParams.get('error_description');
       //console.log("isPasswordResetFlow: ", isPasswordResetFlow);
       //console.log("window.location.hash: ", window.location.hash);
-      const isExpired = window.location.hash.includes('error_code=otp_expired');
-      // 如果是密码重置流程，跳过 getUser() 调用，等待 App.jsx 处理
-      if (isPasswordResetFlow || isExpired) {
+      // 修复 Bug 3：原逻辑只判 type=recovery 和 error_code=otp_expired，
+      // 会漏掉 type=signup/invite/magiclink/email_change 以及其他 error_code，
+      // 命中后直接 return 不更新状态，导致已登录用户被"卡"在未登录态。
+      // 改为：仅 type=recovery 这一种需要交给 App.jsx 接管，跳过 checkAuth；
+      // 其他所有 Supabase 认证回调都先清掉 URL hash，再走正常登录态恢复流程。
+      if (supabaseAuthType === 'recovery') {
+        // 密码重置流程由 App.jsx 中的 initRecoverySession 接管处理，
+        // 这里必须 return，避免后续 checkAuth 把刚由 setSession 恢复的会话又重置掉
         setLoading(false);
         return;
+      }
+
+      if (supabaseAuthType || errorCode || errorDescription) {
+        // 其他 Supabase 认证回调（邮箱确认、邀请注册、magic link、OTP/链接错误等）：
+        // 1) 用 history.replaceState 清掉 URL hash，避免后续访问任何页面时残留这些参数
+        // 2) 不 return，继续走下面的正常登录态检查流程，已登录用户的会话保持不变
+        if (window.history && typeof window.history.replaceState === 'function') {
+          const cleanUrl = window.location.pathname + window.location.search;
+          window.history.replaceState({}, document.title, cleanUrl);
+        }
+        if (errorCode) {
+          // 错误回调：仅打 warn 日志，不强制登出、不弹 alert，
+          // 由 UI 层在合适时机（如登录弹窗、toast）展示具体错误信息
+          console.warn(
+            `Supabase 认证链接错误: ${errorCode}${errorDescription ? ' - ' + errorDescription : ''}`
+          );
+        }
       }
         
       try {
@@ -188,9 +214,23 @@ export const UserProvider = ({ children }) => {
           if (isAuthenticatedUser) {
             // 尝试刷新会话
             const { error: refreshError } = await supabase.auth.refreshSession();
+            // 修复 Bug 1：refreshSession 失败不一定意味着会话过期，
+            // 更多时候是网络抖动、CDN 抽风或临时 5xx。盲目 updateUserState(null)
+            // 会把用户的登录态、VIP、购买记录等本地缓存一起清掉，
+            // 造成"每次都要登录"的体验问题。
+            // 改为：只在 refresh_token 真正失效（401/403 等 4xx）时才登出，
+            // 其他情况只打 warn，保留本地状态，等待后续请求或 onAuthStateChange 自然恢复。
             if (refreshError) {
-              // 刷新会话也失败，说明登录已过期
-              updateUserState(null);
+              const status = refreshError.status;
+              const isAuthError = typeof status === 'number' && status >= 400 && status < 500;
+              if (isAuthError) {
+                // refresh_token 真正失效，需要登出
+                console.warn('refresh_token 已失效，登出当前会话:', refreshError);
+                updateUserState(null);
+              } else {
+                // 可能是网络/服务端异常，保留本地状态不登出
+                console.warn('refreshSession 失败但非鉴权错误，保留登录态等待恢复:', refreshError);
+              }
             }
           }
         } else {
@@ -199,8 +239,10 @@ export const UserProvider = ({ children }) => {
         }
       } catch (error) {
         console.error('检查用户状态失败:', error);
-        // 出错时清除本地存储的状态，确保安全
-        updateUserState(null);
+        // 修复 Bug 2：catch 块不再一刀切 updateUserState(null)。
+        // 网络抖动、JSON 解析失败等异常也会进 catch，
+        // 这时盲目清登录态同样会导致"每次都要登录"。
+        // 改为只打 error，保留本地登录态，由后续 onAuthStateChange 自行纠正。
       } finally {
         setLoading(false);
       }
