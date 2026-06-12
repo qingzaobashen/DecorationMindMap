@@ -253,13 +253,27 @@ export const UserProvider = ({ children }) => {
     // 监听Supabase认证状态变化
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       //console.log('认证状态变化:', event, session);
-      // 增强认证状态验证
-      if (event === 'SIGNED_OUT' || !session?.user) {
+      // 修复 Bug 4：原逻辑用 !session?.user 一刀切，会把以下场景误判为登出：
+      //   1) INITIAL_SESSION 首次触发时 session 还在异步加载（session 为 null）
+      //   2) TOKEN_REFRESHED 期间 session 临时为 null
+      //   3) PASSWORD_RECOVERY / MFA_CHALLENGE_VERIFIED 等事件下 user 可能短暂缺失
+      // 误判会调用 updateUserState(null)，把用户踢出登录。
+      // 改为：只有明确 SIGNED_OUT 才清登录态；其他场景按需处理，保留本地状态。
+      if (event === 'SIGNED_OUT') {
+        // 明确登出事件：清登录态、停心跳
         stopHeartbeat();
         updateUserState(null);
-      } else {
+      } else if (session && session.user) {
+        // 有有效 session（SIGNED_IN / TOKEN_REFRESHED / USER_UPDATED 等）：
+        // 同步更新本地用户信息
         updateUserState(session.user);
+      } else if (event === 'INITIAL_SESSION') {
+        // INITIAL_SESSION 首次触发但 session 为 null：用户从未登录过
+        // 只结束 loading 态，不动 user 状态（避免覆盖本地可能存在的缓存，也避免把"未登录过"误当成"登出"）
+        setLoading(false);
       }
+      // 其他边界情况（如 PASSWORD_RECOVERY、session 临时缺失）：
+      // 不动本地状态，由后续事件自然纠正
     });
     
     return () => {

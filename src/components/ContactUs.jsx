@@ -5,7 +5,7 @@
  */
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Button, Input, message } from 'antd';
+import { Button, Input } from 'antd';
 import { MailOutlined, EnvironmentOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import supabase from '../utils/supabase';
