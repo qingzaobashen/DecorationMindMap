@@ -144,7 +144,7 @@ const Layout = ({
             fontSize: '0.8rem',
             color: 'var(--color-text-tertiary, #999)'
           }}>
-            &copy; {new Date().getFullYear()} qingzao.site 装修知识思维导图 版权所有
+            &copy; {new Date().getFullYear()} decoration.qingzao.site 装修知识思维导图 版权所有
           </p>
         </footer>
       </div>

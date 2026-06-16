@@ -151,7 +151,7 @@ const ContactUs = () => {
           }}>
             <EnvironmentOutlined style={{ fontSize: '28px', color: '#1890ff', marginBottom: '12px' }} />
             <h3 style={{ margin: '0 0 8px 0' }}>网站地址</h3>
-            <p style={{ margin: 0, color: '#666' }}>https://www.qingzao.site</p>
+            <p style={{ margin: 0, color: '#666' }}>https://decoration.qingzao.site</p>
             <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#999' }}>全天候在线服务</p>
           </div>
         </div>

@@ -47,7 +47,7 @@ export default function App() {
 
   // 根据路由动态生成 SEO 元数据
   const getSEOProps = () => {
-    const baseUrl = 'https://www.qingzao.site';
+    const baseUrl = 'https://decoration.qingzao.site';
     const currentUrl = `${baseUrl}${location.pathname}`;
 
     switch (location.pathname) {

@@ -20,7 +20,7 @@ const __dirname = path.dirname(__filename);
  */
 const CONFIG = {
   // 网站基础 URL
-  baseUrl: 'https://www.qingzao.site',
+  baseUrl: 'https://decoration.qingzao.site',
   
   // 文档目录
   docsDir: path.join(__dirname, '../public/docs'),

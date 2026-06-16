@@ -183,9 +183,9 @@ function main() {
     log('✅ 所有检查通过！可以提交到百度站长平台', 'green');
     log('\n验证方式:', 'blue');
     log('1. 文件验证（推荐）:', 'cyan');
-    log('   URL: https://www.qingzao.site/baidu_verify_codeva-gf1t9VJLil.txt', 'reset');
+    log('   URL: https://decoration.qingzao.site/baidu_verify_codeva-gf1t9VJLil.txt', 'reset');
     log('2. HTML 标签验证:', 'cyan');
-    log('   URL: https://www.qingzao.site', 'reset');
+    log('   URL: https://decoration.qingzao.site', 'reset');
     log('   注意: 如果存在 301 重定向，建议使用文件验证', 'yellow');
     log('\n下一步:', 'blue');
     log('1. 运行 npm run build 构建项目', 'reset');

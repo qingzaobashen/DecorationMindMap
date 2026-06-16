@@ -167,7 +167,7 @@ function markdownToHtml(markdown) {
 
 // 生成 HTML 模板
 function generateHtmlTemplate(title, content, docPath, keywords) {
-  const canonicalUrl = `https://qingzao.site/docs/${docPath}`;
+  const canonicalUrl = `https://decoration.qingzao.site/docs/${docPath}`;
   const defaultKeywords = '装修知识,装修流程,装修指南,装修思维导图,装修预算,装修验收';
   const keywordsStr = keywords || defaultKeywords;
   const siteName = '装修知识思维导图';
@@ -583,7 +583,7 @@ function generateDocsIndexPage(files) {
   <meta name="author" content="装修知识思维导图" />
   <meta name="robots" content="index, follow" />
   
-  <link rel="canonical" href="https://qingzao.site/docs/" />
+  <link rel="canonical" href="https://decoration.qingzao.site/docs/" />
   
   <style>
     * { box-sizing: border-box; }

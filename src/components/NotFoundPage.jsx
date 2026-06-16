@@ -30,7 +30,7 @@ const NotFoundPage = () => {
         <meta name="description" content="抱歉，您访问的页面不存在或已被移除。请返回首页或浏览文档中心。" />
         <meta name="robots" content="noindex, nofollow" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="canonical" href="https://www.qingzao.site/404" />
+        <link rel="canonical" href="https://decoration.qingzao.site/404" />
       </Helmet>
       <div className="not-found-container">
         <div className="not-found-content">

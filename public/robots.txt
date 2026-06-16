@@ -1,4 +1,4 @@
-# robots.txt - 装修知识思维导图 (https://www.qingzao.site)
+# robots.txt - 装修知识思维导图 (https://decoration.qingzao.site)
 # 允许所有搜索引擎爬取
 
 User-agent: *
@@ -8,7 +8,7 @@ Allow: /
 Disallow: /api/
 
 # Sitemap 位置
-Sitemap: https://www.qingzao.site/sitemap.xml
+Sitemap: https://decoration.qingzao.site/sitemap.xml
 
 # 爬取延迟（单位：秒），降低服务器负载
 Crawl-delay: 5

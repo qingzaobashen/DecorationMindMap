@@ -38,7 +38,7 @@ function DocsLayout() {
 
   const docName = rawDocNameFromParams || 'README';
   const finalDocPath = `/docs/${docName}`;
-  const baseUrl = 'https://www.qingzao.site';
+  const baseUrl = 'https://decoration.qingzao.site';
   const currentUrl = `${baseUrl}/docs/${docName}`;
 
   const docTitles = {
@@ -312,7 +312,7 @@ function DocsLayout() {
             fontSize: '0.8rem',
             color: 'var(--color-text-tertiary, #999)'
           }}>
-            &copy; {new Date().getFullYear()} qingzao.site 装修知识思维导图 版权所有
+            &copy; {new Date().getFullYear()} decoration.qingzao.site 装修知识思维导图 版权所有
           </p>
         </footer>
       </div>
